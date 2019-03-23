@@ -25,14 +25,10 @@ async def on_message(message):
     if message.content.find("sh.hola") != -1:
         await message.channel.send("Come tierra") # If the user says !hello we will send back hi
 
-    #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
-    if message.content.find("sh.nh ") != -1 and message.channel.is_nsfw():
-
-        # Check if in correct channel
+    #recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
+    if message.content.find("sh.nh ") != -1:
         nh_number = message.content[6:]
         await message.channel.send("https://nhentai.net/g/{}".format(nh_number))
-    elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw():
-        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
 
     
