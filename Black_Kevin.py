@@ -1,5 +1,8 @@
+from random import randint
 import discord
 import Setup
+import myanimelist
+
 
 client = discord.Client()
 '''
@@ -31,10 +34,21 @@ async def on_message(message):
     elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw():
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
-'''@client.event
-async def on_message(message):
-    if message.content.find("sh.nh ") != -1:
-        nh_number = message.content[6:]
-        await message.channel.send("https://nhentai.net/g/{}".format(nh_number))'''
+
+    if message.content.find("sh.anime ") != -1:
+        tag = on_message[9:]
+        await message.channel.send(myanimelist.anime.Anime(tag))
+    '''
+    #frases random de jojos
+    if message.content.find("sh.jojos") != -1:
+        a = randint(1, 5)
+        if a == 1:
+            await message.channel.send("Yare yare daze ")
+        if a == 2:
+            await message.channel.send("Come tierra") # If the user says !hello we will send back hi'''
+
+
+
+
 
 client.run(Setup.token)
