@@ -1,16 +1,14 @@
-from random import randint
 import discord
 import Setup
 
-
-
-client = discord.Client()
 '''
 Bot para Stick Horse
 Versión 0.0.1 - Ingreso comandos básicos, puesta en marcha
 Autor: Richard Peña (Vaalus)
 Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
+client = discord.Client()
+
 @client.event
 async def on_message(message):
     print(message.content) # Now every message sent will be printed to the console
@@ -25,16 +23,22 @@ async def on_message(message):
     if message.content.find("sh.hola") != -1:
         await message.channel.send("Come tierra") # If the user says !hello we will send back hi
 
-    #recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
-    if message.content.find("sh.nh ") != -1:
+    #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
+    if message.content.find("sh.nh ") != -1 and message.channel.is_nsfw():
+
+        #Recibe información del manga, rescata el codigo y genera el enlace al manga.
         nh_number = message.content[6:]
         await message.channel.send("https://nhentai.net/g/{}".format(nh_number))
+    #En caso de que esté en un canal SFW da está respuesta
+    elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw():
+        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+
 
 
     
     if message.content.find("sh.anime ") != -1:
         #tag = on_message[9:]
-        await message.channel.send("desarrollo en proceso)
+        await message.channel.send("desarrollo en proceso")
         
     
     #frases random de jojos
@@ -44,6 +48,7 @@ async def on_message(message):
         #    await message.channel.send("Yare yare daze ")
         #if a == 2:
         await message.channel.send("desarrollo en proceso")
+
 
 
 
