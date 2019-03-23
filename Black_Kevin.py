@@ -35,10 +35,11 @@ async def on_message(message):
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
 
+    '''
     if message.content.find("sh.anime ") != -1:
         tag = on_message[9:]
         await message.channel.send(myanimelist.anime.Anime(tag))
-    '''
+    
     #frases random de jojos
     if message.content.find("sh.jojos") != -1:
         a = randint(1, 5)
