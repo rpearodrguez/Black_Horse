@@ -29,8 +29,13 @@
         <entry file="file://$PROJECT_DIR$/Black_Kevin.py">
           <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
             <state relative-caret-position="510">
               <caret line="39" column="42" selection-start-line="39" selection-start-column="42" selection-end-line="39" selection-end-column="42" />
+=======
+            <state relative-caret-position="374">
+              <caret line="22" column="67" selection-start-line="22" selection-start-column="67" selection-end-line="27" selection-end-column="80" />
+>>>>>>> parent of 0c761e8... Reparación sh.nh
 =======
             <state relative-caret-position="374">
               <caret line="22" column="67" selection-start-line="22" selection-start-column="67" selection-end-line="27" selection-end-column="80" />
@@ -210,9 +215,12 @@
     <entry file="file://$PROJECT_DIR$/Black_Horse.py">
       <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <state relative-caret-position="34">
           <caret line="4" column="68" selection-start-line="4" selection-start-column="68" selection-end-line="4" selection-end-column="68" />
 =======
+=======
+>>>>>>> parent of 0c761e8... Reparación sh.nh
         <state relative-caret-position="51">
           <caret line="3" column="46" selection-start-line="3" selection-start-column="46" selection-end-line="3" selection-end-column="46" />
         </state>
@@ -222,6 +230,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
           <caret line="22" column="67" selection-start-line="22" selection-start-column="67" selection-end-line="27" selection-end-column="80" />
+<<<<<<< HEAD
+>>>>>>> parent of 0c761e8... Reparación sh.nh
+=======
 >>>>>>> parent of 0c761e8... Reparación sh.nh
           <folding>
             <element signature="e#0#14#0" expanded="true" />
@@ -232,8 +243,13 @@
     <entry file="file://$PROJECT_DIR$/Setup.py">
       <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <state relative-caret-position="510">
           <caret line="39" column="42" selection-start-line="39" selection-start-column="42" selection-end-line="39" selection-end-column="42" />
+=======
+        <state relative-caret-position="68">
+          <caret line="4" column="68" selection-start-line="4" selection-start-column="68" selection-end-line="4" selection-end-column="68" />
+>>>>>>> parent of 0c761e8... Reparación sh.nh
 =======
         <state relative-caret-position="68">
           <caret line="4" column="68" selection-start-line="4" selection-start-column="68" selection-end-line="4" selection-end-column="68" />
