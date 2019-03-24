@@ -78,10 +78,4 @@ async def on_message(message):
             await message.channel.send("No se encontró el anime solicitado")
             pass
 
-
-
-
-
-
-
 client.run(Setup.token)
