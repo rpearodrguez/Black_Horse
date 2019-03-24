@@ -3,6 +3,8 @@ import Setup
 import random
 from Pymoe import Kitsu
 
+
+
 '''
 Bot para Stick Horse
 Versión 0.0.1 - Ingreso comandos básicos, puesta en marcha
@@ -19,17 +21,17 @@ async def on_message(message):
 @client.event
 async def on_message(message):
     #entrega información de comandos
-    if message.content == "sh.help":
-        embed = discord.Embed(title="Ayuda", description="prefijo sh. - Comandos variados")
-        embed.add_field(name="hola", value="Te manda a comer tierra")
-        embed.add_field(name="anime", value="Aun en desarrollo, te dará información de un anime solicitado")
-        embed.add_field(name="jojos", value="Aun en desarrollo (a petición del público), Jojokes")
+    if message.content.find("sh.help") != -1:
+        embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
+        embed.add_field(name="hola", value="Saluda al más puro estilo de Stick Horse")
+        embed.add_field(name="anime", value="Busca anime solicitado")
+        embed.add_field(name="Jojoke", value="Trabajo en proceso")
         await message.channel.send(content=None, embed=embed)
 
-    if message.content == "sh.help":
-        embed = discord.Embed(title="Comandos NSFW", description="prefijo sh. - Comandos variados")
-        embed.add_field(name="nh <codigo del manga>", value="Devuelve el link para visualizar esa obra de arte")
-        embed.add_field(name="nhrandom", value="Genera un link aleatorio de nhentai")
+    if message.content.find("sh.help") != -1 and message.channel.is_nsfw():
+        embed = discord.Embed(title="Ayuda", description="Comandos NSFW")
+        embed.add_field(name="nh <codigo>", value="Devuelve link de nhentai relacionado con el codigo entregado")
+        embed.add_field(name="nhrandom", value="Entrega un link aleatorio desde nhentai")
         await message.channel.send(content=None, embed=embed)
 
     #saluda a quien lo salude
@@ -45,6 +47,7 @@ async def on_message(message):
     #En caso de que esté en un canal SFW da está respuesta
     elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw():
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+
 
     if message.content.find("sh.nhrandom") != -1 and message.channel.is_nsfw():
         #Genera un numero random que será utilizado como indice de busqueda en nhentai
@@ -75,14 +78,10 @@ async def on_message(message):
             await message.channel.send("No se encontró el anime solicitado")
             pass
 
-    
-    #frases random de jojos
-    if message.content.find("sh.jojos") != -1:
-        #a = randint(1, 5)
-        #if a == 1:
-        #    await message.channel.send("Yare yare daze ")
-        #if a == 2:
-        await message.channel.send("desarrollo en proceso")
+
+
+
+
 
 
 client.run(Setup.token)
