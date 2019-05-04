@@ -3,8 +3,6 @@ import Setup
 import random
 from Pymoe import Kitsu
 
-
-
 '''
 Bot para Stick Horse
 Versión 0.0.1 - Ingreso comandos básicos, puesta en marcha
@@ -25,7 +23,7 @@ async def on_message(message):
         embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
         embed.add_field(name="hola", value="Saluda al más puro estilo de Stick Horse")
         embed.add_field(name="anime", value="Busca anime solicitado")
-        embed.add_field(name="Jojoke", value="Trabajo en proceso")
+        embed.add_field(name="roll x n", value="Tira x cantidad de dados de n caras")
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.help") != -1 and message.channel.is_nsfw():
@@ -49,6 +47,7 @@ async def on_message(message):
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
 
+
     if message.content.find("sh.nhrandom") != -1 and message.channel.is_nsfw():
         #Genera un numero random que será utilizado como indice de busqueda en nhentai
         #Este numero es el maximo posible al día 23 de marzo del 2019 - 23:34 (GTM-4).
@@ -58,6 +57,27 @@ async def on_message(message):
     #En caso de que esté en un canal SFW da está respuesta
     elif message.content.find("sh.nhrandom") != -1 and not message.channel.is_nsfw():
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+
+    # Dados
+    if message.content.find("sh.roll") != -1:
+        # Separa la cantidad de dados y de caras del mensaje.
+        dado = message.content.split()
+        caras = int(dado[-1])
+        cant_dados = int(dado[1])
+        cant_dados = cant_dados+1
+        # Simula el tiro de x dadod
+        if(cant_dados>4):
+            await message.channel.send("Se quiere morir ese?")
+        elif:
+            for x in range(1, cant_dados):
+                # Tira el dado
+                result = random.randint(1, caras)
+                # Muestra el resultado como mensaje
+                await message.channel.send("dado {} de {} caras: {}".format(x, caras, result))
+
+
+
+
 
     if message.content.find("sh.anime ") != -1:
         anime = message.content.split()
