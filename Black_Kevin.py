@@ -62,22 +62,26 @@ async def on_message(message):
     if message.content.find("sh.roll") != -1:
         # Separa la cantidad de dados y de caras del mensaje.
         dado = message.content.split()
-        caras = int(dado[-1])
-        cant_dados = int(dado[1])
-        #Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
-        if(cant_dados<10 or cant_dados==10):
-            # Simula el tiro de x dadod
-            for x in range(1, (1+cant_dados)):
-                # Tira el dado
-                result = random.randint(1, caras)
-                # Muestra el resultado como mensaje
-                await message.channel.send("dado {} de {} caras: {}".format(x, caras, result))
+        # Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
+        try:
+            caras = int(dado[-1])
+            cant_dados = int(dado[1])
+            #Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
 
-        elif(cant_dados>11):
-            await message.channel.send("Se quiere morir ese?")
+            if(cant_dados<10 or cant_dados==10):
+                # Simula el tiro de x dadod
+                for x in range(1, (1+cant_dados)):
+                    # Tira el dado
+                    result = random.randint(1, caras)
+                    # Muestra el resultado como mensaje
+                    await message.channel.send("dado {} de {} caras: {}".format(x, caras, result))
+            elif(cant_dados>10):
+                await message.channel.send("Se quiere morir ese?")
 
 
-
+        except:
+            await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados y caras")
+            pass
 
 
 
