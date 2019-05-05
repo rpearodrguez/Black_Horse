@@ -64,11 +64,10 @@ async def on_message(message):
         dado = message.content.split()
         caras = int(dado[-1])
         cant_dados = int(dado[1])
-        cant_dados = cant_dados+1
         #Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
         if(cant_dados<10 or cant_dados==10):
             # Simula el tiro de x dadod
-            for x in range(1, cant_dados):
+            for x in range(1, (1+cant_dados)):
                 # Tira el dado
                 result = random.randint(1, caras)
                 # Muestra el resultado como mensaje
