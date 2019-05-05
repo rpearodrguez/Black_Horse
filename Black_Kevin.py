@@ -65,15 +65,16 @@ async def on_message(message):
         caras = int(dado[-1])
         cant_dados = int(dado[1])
         cant_dados = cant_dados+1
-        # Simula el tiro de x dadod
-        if(cant_dados<=4):
+        #Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
+        if(cant_dados<=10):
+            # Simula el tiro de x dadod
             for x in range(1, cant_dados):
                 # Tira el dado
                 result = random.randint(1, caras)
                 # Muestra el resultado como mensaje
                 await message.channel.send("dado {} de {} caras: {}".format(x, caras, result))
 
-        elif(cant_dados>4):
+        elif(cant_dados>10):
             await message.channel.send("Se quiere morir ese?")
 
 
