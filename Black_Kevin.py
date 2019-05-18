@@ -1,7 +1,8 @@
 import discord
 import Setup
 import random
-from Pymoe import Kitsu
+import Scrapper
+
 
 '''
 Bot para Stick Horse
@@ -10,7 +11,7 @@ Autor: Richard Peña (Vaalus)
 Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
 client = discord.Client()
-instance = Kitsu(Setup.kitsu_client_id, Setup.kitsu_client_secret)
+
 
 @client.event
 async def on_message(message):
@@ -83,25 +84,19 @@ async def on_message(message):
             await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados y caras")
             pass
 
-
-
     if message.content.find("sh.anime ") != -1:
-        anime = message.content.split()
-        search = instance.anime.search(anime[1:])  # Search anime by term
+        animeId = message.content.split()
+        animeBusqueda = "+".join(animeId[1:])
         try:
-            await message.channel.send(search[1]['attributes']['posterImage']['small'])
-            embed = discord.Embed(title="", description=search[1]['attributes']['titles']['en_jp'])
-            embed.add_field(name="Nombre Inglés", value=search[1]['attributes']['titles']['en'])
-            embed.add_field(name="Sinopsis", value=search[1]['attributes']['synopsis'])
-            embed.add_field(name="Fecha de Emisión", value=search[1]['attributes']['startDate'])
-            embed.add_field(name="Fecha de Término", value=search[1]['attributes']['endDate'])
-            embed.add_field(name="Rating", value=search[1]['attributes']['ageRatingGuide'])
-            embed.add_field(name="Estado", value=search[1]['attributes']['status'])
+            resultado = Scrapper.animeScrap(animeBusqueda)
+            embed = discord.Embed(title="Titulo", description=resultado[0])
+            embed.add_field(name="Sumario", value=resultado[1])
+            embed.add_field(name="Puntaje", value=resultado[2])
+            embed.add_field(name="Episodios", value=resultado[3])
             await message.channel.send(content=None, embed=embed)
 
         except:
-
-            await message.channel.send("No se encontró el anime solicitado")
+            await message.channel.send("No se encontró resultado")
             pass
 
 client.run(Setup.token)
