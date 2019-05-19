@@ -23,7 +23,8 @@ async def on_message(message):
     if message.content.find("sh.help") != -1:
         embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
         embed.add_field(name="hola", value="Saluda al más puro estilo de Stick Horse")
-        embed.add_field(name="anime", value="Busca anime solicitado")
+        embed.add_field(name="anime", value="Busca información de un anime solicitado")
+        embed.add_field(name="manga", value="Busca información de un manga solicitado")
         embed.add_field(name="roll x n", value="Tira x cantidad de dados de n caras")
         await message.channel.send(content=None, embed=embed)
 
@@ -89,10 +90,27 @@ async def on_message(message):
         animeBusqueda = "+".join(animeId[1:])
         try:
             resultado = Scrapper.animeScrap(animeBusqueda)
+            await message.channel.send(resultado[4])
             embed = discord.Embed(title="Titulo", description=resultado[0])
             embed.add_field(name="Sumario", value=resultado[1])
             embed.add_field(name="Puntaje", value=resultado[2])
             embed.add_field(name="Episodios", value=resultado[3])
+            await message.channel.send(content=None, embed=embed)
+
+        except:
+            await message.channel.send("No se encontró resultado")
+            pass
+
+    if message.content.find("sh.manga ") != -1:
+        animeId = message.content.split()
+        mangaBusqueda = "+".join(animeId[1:])
+        try:
+            resultado = Scrapper.mangaScrap(mangaBusqueda)
+            await message.channel.send(resultado[4])
+            embed = discord.Embed(title="Titulo", description=resultado[0])
+            embed.add_field(name="Sumario", value=resultado[1])
+            embed.add_field(name="Puntaje", value=resultado[2])
+            embed.add_field(name="Volumenes", value=resultado[3])
             await message.channel.send(content=None, embed=embed)
 
         except:
