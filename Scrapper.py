@@ -12,7 +12,7 @@ def animeScrap(urlb=""):
     if resp.status_code == 200:
         print("Successfully opened the web page")
         print("Este es el sumario del anime solicitado :-\n")
-        find = ["N/E", "N/E", "N/E", "N/E", "N/E"]
+        find = ["N/E", "N/E", "Ni idea", "Un Chingo", "N/E"]
 
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
@@ -47,9 +47,10 @@ def animeScrap(urlb=""):
             meta = i.text
             meta = meta.split()
             try:
-                print(meta)
-                find[2] = meta[0]
-                print(find[2])
+                if len(meta[0])==3:
+                    print(meta)
+                    find[2] = meta[0]
+                    print(find[2])
             except:
                 pass
 
@@ -78,7 +79,7 @@ def mangaScrap(urlb=""):
     if resp.status_code == 200:
         print("Successfully opened the web page")
         print("Este es el sumario del manga solicitado :-\n")
-        find = ["N/E", "N/E", "N/E", "N/E", "N/E"]
+        find = ["N/E", "N/E", "Ni idea", "Un Chingo", "N/E"]
 
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
@@ -112,9 +113,10 @@ def mangaScrap(urlb=""):
             meta = i.text
             meta = meta.split()
             try:
-                print(meta)
-                find[2] = meta[0]
-                print(find[2])
+                if len(meta[0]) == 3:
+                    print(meta)
+                    find[2] = meta[0]
+                    print(find[2])
             except:
                 pass
 
