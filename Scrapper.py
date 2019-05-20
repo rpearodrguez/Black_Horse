@@ -12,7 +12,7 @@ def animeScrap(urlb=""):
     if resp.status_code == 200:
         print("Successfully opened the web page")
         print("Este es el sumario del anime solicitado :-\n")
-        find = ["", "", "", "", ""]
+        find = ["N/E", "N/E", "N/E", "N/E", "N/E"]
 
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
@@ -28,26 +28,45 @@ def animeScrap(urlb=""):
 
 
         for i in l.findAll("p", {"class": "summary"}, limit=1):
-            summary = i.text
-            find[1] = summary
-            print(find[1])
+            try:
+                summary = i.text
+                find[1] = summary[1:]
+                print(find[1])
+            except:
+                pass
 
         for i in l.findAll("h3", {"class": "title"}, limit=1):
-            title = i.text
-            find[0] = title
-            print(find[0])
+            try:
+                title = i.text
+                find[0] = title
+                print(find[0])
+            except:
+                pass
 
         for i in l.findAll("p", {"class": "meta"}, limit=1):
             meta = i.text
-            points = meta[1:4]
-            episodes = meta[12:]
-            find[2] = points
-            find[3] = episodes
-            print(find[2])
-            print(find[3])
+            meta = meta.split()
+            try:
+                print(meta)
+                find[2] = meta[0]
+                print(find[2])
+            except:
+                pass
+
+            try:
+                episodes = meta[meta.index("Episodios") - 1]
+                if (episodes):
+                    find[3] = episodes
+                    print("Espisodios"+find[3])
+            except:
+                pass
+
+
 
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
+    print(find)
     return find
+
 
 def mangaScrap(urlb=""):
     # url = the target we want to open
@@ -59,7 +78,7 @@ def mangaScrap(urlb=""):
     if resp.status_code == 200:
         print("Successfully opened the web page")
         print("Este es el sumario del manga solicitado :-\n")
-        find = ["", "", "", "", ""]
+        find = ["N/E", "N/E", "N/E", "N/E", "N/E"]
 
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
@@ -74,23 +93,39 @@ def mangaScrap(urlb=""):
         print(find[4])
 
         for i in l.findAll("p", {"class": "summary"}, limit=1):
-            summary = i.text
-            find[1] = summary
-            print(find[1])
+            try:
+                summary = i.text
+                find[1] = summary[1:]
+                print(find[1])
+            except:
+                pass
 
         for i in l.findAll("h3", {"class": "title"}, limit=1):
-            title = i.text
-            find[0] = title
-            print(find[0])
+            try:
+                title = i.text
+                find[0] = title
+                print(find[0])
+            except:
+                pass
 
         for i in l.findAll("p", {"class": "meta"}, limit=1):
             meta = i.text
-            points = meta[1:4]
-            episodes = meta[14:]
-            find[2] = points
-            find[3] = episodes
-            print(find[2])
-            print(find[3])
+            meta = meta.split()
+            try:
+                print(meta)
+                find[2] = meta[0]
+                print(find[2])
+            except:
+                pass
+
+            try:
+                episodes = meta[meta.index("Episodios") - 1]
+                if (episodes):
+                    find[3] = episodes
+                    print("Espisodios" + find[3])
+            except:
+                pass
 
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
+    print(find)
     return find

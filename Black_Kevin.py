@@ -88,33 +88,24 @@ async def on_message(message):
     if message.content.find("sh.anime ") != -1:
         animeId = message.content.split()
         animeBusqueda = "+".join(animeId[1:])
-        try:
-            resultado = Scrapper.animeScrap(animeBusqueda)
-            await message.channel.send(resultado[4])
-            embed = discord.Embed(title="Titulo", description=resultado[0])
-            embed.add_field(name="Sumario", value=resultado[1])
-            embed.add_field(name="Puntaje", value=resultado[2])
-            embed.add_field(name="Episodios", value=resultado[3])
-            await message.channel.send(content=None, embed=embed)
+        resultado = Scrapper.animeScrap(animeBusqueda)
+        await message.channel.send(resultado[4])
+        embed = discord.Embed(title="Titulo", description=resultado[0])
+        embed.add_field(name="Sumario", value=resultado[1])
+        embed.add_field(name="Puntaje", value=resultado[2])
+        embed.add_field(name="Episodios", value=resultado[3])
+        await message.channel.send(content=None, embed=embed)
 
-        except:
-            await message.channel.send("No se encontró resultado")
-            pass
 
     if message.content.find("sh.manga ") != -1:
-        animeId = message.content.split()
-        mangaBusqueda = "+".join(animeId[1:])
-        try:
-            resultado = Scrapper.mangaScrap(mangaBusqueda)
-            await message.channel.send(resultado[4])
-            embed = discord.Embed(title="Titulo", description=resultado[0])
-            embed.add_field(name="Sumario", value=resultado[1])
-            embed.add_field(name="Puntaje", value=resultado[2])
-            embed.add_field(name="Volumenes", value=resultado[3])
-            await message.channel.send(content=None, embed=embed)
-
-        except:
-            await message.channel.send("No se encontró resultado")
-            pass
+        mangaId = message.content.split()
+        mangaBusqueda = "+".join(mangaId[1:])
+        resultado = Scrapper.mangaScrap(mangaBusqueda)
+        await message.channel.send(resultado[4])
+        embed = discord.Embed(title="Titulo", description=resultado[0])
+        embed.add_field(name="Sumario", value=resultado[1])
+        embed.add_field(name="Puntaje", value=resultado[2])
+        embed.add_field(name="Volumenes", value=resultado[3])
+        await message.channel.send(content=None, embed=embed)
 
 client.run(Setup.token)
