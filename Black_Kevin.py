@@ -26,7 +26,7 @@ async def on_message(message):
         embed.add_field(name="steam", value="Busca enlace a juego en steam")
         embed.add_field(name="anime", value="Busca información de un anime solicitado")
         embed.add_field(name="manga", value="Busca información de un manga solicitado")
-        embed.add_field(name="roll x n", value="Tira x cantidad de dados de n caras")
+        embed.add_field(name="roll x n +", value="Tira x cantidad de dados de n caras + el bonificador")
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.help") != -1 and message.channel.is_nsfw():
@@ -72,23 +72,24 @@ async def on_message(message):
         dado = message.content.split()
         # Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
         try:
-            caras = int(dado[-1])
+            caras = int(dado[2])
             cant_dados = int(dado[1])
+            bonificador = int(dado[3])
             #Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
 
             if(cant_dados<10 or cant_dados==10):
                 # Simula el tiro de x dadod
                 for x in range(1, (1+cant_dados)):
                     # Tira el dado
-                    result = random.randint(1, caras)
+                    result = random.randint(1, caras) + bonificador
                     # Muestra el resultado como mensaje
-                    await message.channel.send("dado {} de {} caras: {}".format(x, caras, result))
+                    await message.channel.send("dado {} de {} caras: {}, bonificador {} incluido".format(x, caras, result, bonificador))
             elif(cant_dados>10):
                 await message.channel.send("Se quiere morir ese?")
 
 
         except:
-            await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados y caras")
+            await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
             pass
 
     if message.content.find("sh.anime ") != -1:
