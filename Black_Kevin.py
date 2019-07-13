@@ -119,7 +119,19 @@ async def on_message(message):
 
         juegoID = message.content.split()
         juegoBusqueda = "+".join(juegoID[1:])
-        resultado = Scrapper.steamUrlSearch(juegoBusqueda)
-        await message.channel.send(resultado)
+        resultado = Scrapper.steamDataSearch(juegoBusqueda)
+        await message.channel.send(resultado[0])
+        try:
+            embed = discord.Embed(title="Nombre", description=resultado[1])
+            embed.add_field(name="Descripción", value=resultado[2])
+            embed.add_field(name="Desarrollador", value=resultado[3])
+            embed.add_field(name="Fecha de lanzamiento", value=resultado[4])
+            embed.add_field(name="Género", value=resultado[5])
+            embed.add_field(name="Metacritic", value=resultado[6])
+            embed.add_field(name="Precio", value=resultado[7])
+            await message.channel.send(content=None, embed=embed)
+
+        except:
+            pass
 
 client.run(Setup.token)
