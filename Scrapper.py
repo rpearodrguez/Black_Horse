@@ -1,3 +1,4 @@
+import random
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -131,3 +132,64 @@ def mangaScrap(urlb=""):
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
     print(find)
     return find
+
+def steamUrlSearch(urlb=""):
+    # url = the target we want to open
+    url = "https://store.steampowered.com/search/?term=" + urlb + "&category1=998"
+    # open with GET method
+    resp = requests.get(url)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Encontraron resultados :-\n")
+
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        #busca el estilo del objeto con la clase .search_result_row
+        #l = soup.find("div", {"class": "search_pagination"})
+
+        #style = soup.find("a", {"class": "search_pagination"})['style']
+        for i in soup.findAll("a", {"class": "search_result_row"}, limit=1):
+            try:
+                url = i.get('href')
+                print(url)
+            except:
+                pass
+
+    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
+    return url
+
+def nhentaiRandomSearch(urlb="https://nhentai.net"):
+    # url = the target we want to open
+    url = "https://nhentai.net"
+    # open with GET method
+    resp = requests.get(url)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Encontraron resultados :-\n")
+
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        #busca el estilo del objeto con la clase .search_result_row
+        #l = soup.find("div", {"class": "search_pagination"})
+
+        #style = soup.find("a", {"class": "search_pagination"})['style']
+        for i in soup.findAll("a", {"class": "cover"}, limit=1):
+            try:
+                url = i.get('href').split('/')
+                print(url)
+                randnh = random.randint(1, int(url[2]))
+                print(randnh)
+                urlFull = "https://nhentai.net/g/"+str(randnh)
+
+
+            except:
+                pass
+
+    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
+    return urlFull

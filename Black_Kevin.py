@@ -23,6 +23,7 @@ async def on_message(message):
     if message.content.find("sh.help") != -1:
         embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
         embed.add_field(name="hola", value="Saluda al más puro estilo de Stick Horse")
+        embed.add_field(name="steam", value="Busca enlace a juego en steam")
         embed.add_field(name="anime", value="Busca información de un anime solicitado")
         embed.add_field(name="manga", value="Busca información de un manga solicitado")
         embed.add_field(name="roll x n", value="Tira x cantidad de dados de n caras")
@@ -31,7 +32,7 @@ async def on_message(message):
     if message.content.find("sh.help") != -1 and message.channel.is_nsfw():
         embed = discord.Embed(title="Ayuda", description="Comandos NSFW")
         embed.add_field(name="nh <codigo>", value="Devuelve link de nhentai relacionado con el codigo entregado")
-        embed.add_field(name="nhrandom", value="Entrega un link aleatorio desde nhentai")
+        embed.add_field(name="nh <random>", value="Entrega un link aleatorio desde nhentai")
         await message.channel.send(content=None, embed=embed)
 
     #saluda a quien lo salude
@@ -43,13 +44,17 @@ async def on_message(message):
 
         #Recibe información del manga, rescata el codigo y genera el enlace al manga.
         nh_number = message.content.split()
-        await message.channel.send("https://nhentai.net/g/{}".format(nh_number[1]))
+        if(nh_number[1]=="random"):
+            await message.channel.send(Scrapper.nhentaiRandomSearch())
+        elif(int(nh_number[1])):
+            await message.channel.send("https://nhentai.net/g/{}".format(nh_number[1]))
+        elif(not int(nh_number[1])):
+            await message.channel.send("Formato incorrecto, ingrese numero o escriba random como parametro")
     #En caso de que esté en un canal SFW da está respuesta
     elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw():
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
-
-
+    '''
     if message.content.find("sh.nhrandom") != -1 and message.channel.is_nsfw():
         #Genera un numero random que será utilizado como indice de busqueda en nhentai
         #Este numero es el maximo posible al día 23 de marzo del 2019 - 23:34 (GTM-4).
@@ -59,6 +64,7 @@ async def on_message(message):
     #En caso de que esté en un canal SFW da está respuesta
     elif message.content.find("sh.nhrandom") != -1 and not message.channel.is_nsfw():
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+    '''
 
     # Dados
     if message.content.find("sh.roll") != -1:
@@ -107,5 +113,12 @@ async def on_message(message):
         embed.add_field(name="Puntaje", value=resultado[2])
         embed.add_field(name="Volumenes", value=resultado[3])
         await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.steam ") != -1:
+
+        juegoID = message.content.split()
+        juegoBusqueda = "+".join(juegoID[1:])
+        resultado = Scrapper.steamUrlSearch(juegoBusqueda)
+        await message.channel.send(resultado)
 
 client.run(Setup.token)
