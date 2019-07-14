@@ -120,17 +120,20 @@ async def on_message(message):
         juegoID = message.content.split()
         juegoBusqueda = "+".join(juegoID[1:])
         resultado = Scrapper.steamDataSearch(juegoBusqueda)
-        await message.channel.send(resultado[0])
-        try:
-            embed = discord.Embed(title="Nombre", description=resultado[1])
-            embed.add_field(name="Descripción", value=resultado[2])
-            embed.add_field(name="Desarrollador", value=resultado[3])
-            embed.add_field(name="Fecha de lanzamiento", value=resultado[4])
-            embed.add_field(name="Género", value=resultado[5])
-            embed.add_field(name="Metacritic", value=resultado[6])
-            embed.add_field(name="Precio", value=resultado[7])
-            await message.channel.send(content=None, embed=embed)
 
+        try:
+            if resultado[0] != "" and resultado[1] != "" and resultado[2] != "" and resultado[3] != "" and resultado[4] != "" and resultado[5] != "" and resultado[6] != "" and resultado[7] != "":
+                await message.channel.send(resultado[0])
+                embed = discord.Embed(title="Nombre", description=resultado[1])
+                embed.add_field(name="Descripción", value=resultado[2])
+                embed.add_field(name="Desarrollador", value=resultado[3])
+                embed.add_field(name="Fecha de lanzamiento", value=resultado[4])
+                embed.add_field(name="Género", value=resultado[5])
+                embed.add_field(name="Metacritic", value=resultado[6])
+                embed.add_field(name="Precio", value=resultado[7])
+                await message.channel.send(content=None, embed=embed)
+            else:
+                await message.channel.send("Juego no encontrado o con bloqueo de edad")
         except:
             pass
 
