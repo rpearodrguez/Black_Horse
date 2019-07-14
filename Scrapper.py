@@ -195,14 +195,21 @@ def steamDataSearch(busqueda):
                 try:
                     titulo = i.text.split("\n")
                     print(titulo)
-                    #Nombre
-                    find[1] = titulo[1][7:]
-                    #Desarrollador
-                    find[3] = titulo[5]
-                    # Fecha de lanzamiento
-                    find[4] = titulo[11][14:]
-                    #Genero
-                    find[5] = titulo[2][7:]
+                    if titulo[1][7:] != "":
+                        #Nombre
+                        find[1] = titulo[1][7:]
+
+                    if titulo[5] != "":
+                        #Desarrollador
+                        find[3] = titulo[5]
+
+                    if titulo[11][14:] != "":
+                        #Fecha de lanzamiento
+                        find[4] = titulo[11][14:]
+
+                    if titulo[2][7:] != "":
+                        #Genero
+                        find[5] = titulo[2][7:]
 
                 except:
                     pass
@@ -211,8 +218,9 @@ def steamDataSearch(busqueda):
                 try:
                     titulo = i.text.split("\t")
                     print(titulo)
-                    #Metascore
-                    find[6] = titulo[10]
+                    if titulo[10] != "":
+                        #Metascore
+                        find[6] = titulo[10]
 
                 except:
                     pass
@@ -221,8 +229,9 @@ def steamDataSearch(busqueda):
                 try:
                     titulo = i.text.split("\t")
                     print(titulo)
-                    #Descripcion
-                    find[2] = titulo[8]
+                    if titulo[8] != "":
+                        #Descripcion
+                        find[2] = titulo[8]
 
                 except:
                     pass
@@ -231,8 +240,9 @@ def steamDataSearch(busqueda):
                 try:
                     titulo = i.text.split("\t")
                     print(titulo)
-                    #Descripcion
-                    find[7] = titulo[7]
+                    if titulo[7] != "":
+                        #Descripcion
+                        find[7] = titulo[7]
 
                 except:
                     pass
