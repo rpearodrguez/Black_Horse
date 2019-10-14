@@ -153,9 +153,11 @@ def steamUrlSearch(urlb=""):
         #style = soup.find("a", {"class": "search_pagination"})['style']
         for i in soup.findAll("a", {"class": "search_result_row"}, limit=1):
             try:
-                url = i.get('href')
-                print(url)
+                print(i)
+                urla = i.get('href')
+                print(urla)
             except:
+                print("No se pudo rescatar información de la pagina")
                 pass
 
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
@@ -175,8 +177,14 @@ def steamDataSearch(busqueda):
         soup = BeautifulSoup(resp.text, 'html.parser')
         # l is the list which contains all the text i.e news
         glance = soup.find("div", {"class": "glance_ctn"})
+        print("Primera información")
+        print(glance)
         meta = soup.find("div", {"class": "game_meta_data"})
+        print("Metadata")
+        print(meta)
         price = soup.find("div", {"id": "game_area_purchase"})
+        print("Precio:")
+        print(price)
         # now we want to print only the text part of the anchor.
         # find all the elements of a, i.e anchor
         try:
