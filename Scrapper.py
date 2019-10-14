@@ -154,10 +154,12 @@ def steamUrlSearch(urlb=""):
         for i in soup.findAll("a", {"class": "search_result_row"}, limit=1):
             try:
                 print(i)
-                global url = i.get('href')
-                print(url)
+                urla = i.get('href')
+                print(urla)
+                return urla
             except:
                 print("No se pudo rescatar información de la pagina")
+                return url
                 pass
 
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
