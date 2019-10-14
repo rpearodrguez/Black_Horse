@@ -179,14 +179,8 @@ def steamDataSearch(busqueda):
         soup = BeautifulSoup(resp.text, 'html.parser')
         # l is the list which contains all the text i.e news
         glance = soup.find("div", {"class": "glance_ctn"})
-        print("Primera información")
-        print(glance)
         meta = soup.find("div", {"class": "game_meta_data"})
-        print("Metadata")
-        print(meta)
         price = soup.find("div", {"id": "game_area_purchase"})
-        print("Precio:")
-        print(price)
         # now we want to print only the text part of the anchor.
         # find all the elements of a, i.e anchor
         try:
@@ -262,6 +256,7 @@ def steamDataSearch(busqueda):
         # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
         print(find)
         return find
+    
 
 def nhentaiRandomSearch(urlb="https://nhentai.net"):
     # url = the target we want to open
