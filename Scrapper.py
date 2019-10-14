@@ -154,8 +154,8 @@ def steamUrlSearch(urlb=""):
         for i in soup.findAll("a", {"class": "search_result_row"}, limit=1):
             try:
                 print(i)
-                urla = i.get('href')
-                print(urla)
+                global url = i.get('href')
+                print(url)
             except:
                 print("No se pudo rescatar información de la pagina")
                 pass
