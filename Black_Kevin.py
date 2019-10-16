@@ -143,5 +143,5 @@ async def on_message(message):
             pass
 
     if message.content.find("sh.invite") != -1:
-        await message.channel.send("Placeholder para invitación")
+        await message.channel.send("https://discordapp.com/oauth2/authorize?client_id=558102665695985674&permissions=0&scope=bot")
 client.run(Setup.token)
