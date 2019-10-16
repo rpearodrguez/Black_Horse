@@ -6,7 +6,7 @@ import Scrapper
 
 '''
 Bot para Stick Horse
-Versión 0.0.1 - Ingreso comandos básicos, puesta en marcha
+Versión 1.0.1 - Versión Operativa, adición comandos adicionales.
 Autor: Richard Peña (Vaalus)
 Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
@@ -23,6 +23,7 @@ async def on_message(message):
     if message.content.find("sh.help") != -1:
         embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
         embed.add_field(name="hola", value="Saluda al más puro estilo de Stick Horse")
+        embed.add_field(name="invite", value="Link de invitación")
         embed.add_field(name="steam", value="Busca enlace a juego en steam")
         embed.add_field(name="anime", value="Busca información de un anime solicitado")
         embed.add_field(name="manga", value="Busca información de un manga solicitado")
@@ -124,7 +125,7 @@ async def on_message(message):
         try:
             #"Portada", "Nombre", "Descripcion", "Desarrollador", "Lanzamiento", "Genero", "Metacritic", "Precio"
             if resultado[0] != "Portada" and resultado[1] == "Nombre" and resultado[2] == "Descripcion" and resultado[3] == "Desarrollador" and resultado[4] == "Lanzamiento" and resultado[5] == "Genero" and resultado[6] == "Metacritic" and resultado[7] != "Precio":
-                await message.channel.send(resultado[1])
+                await message.channel.send(resultado[0])
             
             elif resultado[1] != "Nombre" or resultado[2] != "Descripcion" or resultado[3] != "Desarrollador" or resultado[4] != "Lanzamiento" or resultado[5] != "Genero" or resultado[6] != "Metacritic" or resultado[7] != "Precio":
                 await message.channel.send(resultado[0])
@@ -141,4 +142,6 @@ async def on_message(message):
         except:
             pass
 
+    if message.content.find("sh.invite") != -1:
+        await message.channel.send("Placeholder para invitación")
 client.run(Setup.token)
