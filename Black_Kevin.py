@@ -20,18 +20,23 @@ async def on_message(message):
     print(message.content) # Now every message sent will be printed to the console
     if message.content.find("sh.help") != -1:
         embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
+        embed.set_image(url = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png")
         embed.add_field(name="hola", value="Saluda al más puro estilo de Stick Horse")
         embed.add_field(name="invite", value="Link de invitación")
         embed.add_field(name="steam", value="Busca enlace a juego en steam")
         embed.add_field(name="anime", value="Busca información de un anime solicitado")
         embed.add_field(name="manga", value="Busca información de un manga solicitado")
+        embed.add_field(name="escobazo", value="Dale un buen escobazo a alguien más, o ti mismo, no te juzgo")
         embed.add_field(name="roll x n +", value="Tira x cantidad de dados de n caras + el bonificador")
+        embed.add_field(name=" ", value="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.help") != -1 and message.channel.is_nsfw():
         embed = discord.Embed(title="Ayuda", description="Comandos NSFW")
+        embed.set_image(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/black_horse.png")
         embed.add_field(name="nh <codigo>", value="Devuelve link de nhentai relacionado con el codigo entregado")
         embed.add_field(name="nh <random>", value="Entrega un link aleatorio desde nhentai")
+        embed.add_field(name="ts <codigo>", value="Lo mismo que nh pero para tsumino.com")
         await message.channel.send(content=None, embed=embed)
 
     #saluda a quien lo salude
@@ -84,8 +89,8 @@ async def on_message(message):
         animeId = message.content.split()
         animeBusqueda = "+".join(animeId[1:])
         resultado = Scrapper.animeScrap(animeBusqueda)
-        await message.channel.send(resultado[4])
         embed = discord.Embed(title="Titulo", description=resultado[0])
+        embed.set_image(url = resultado[4])
         embed.add_field(name="Sumario", value=resultado[1])
         embed.add_field(name="Puntaje", value=resultado[2])
         embed.add_field(name="Episodios", value=resultado[3])
@@ -95,8 +100,8 @@ async def on_message(message):
         mangaId = message.content.split()
         mangaBusqueda = "+".join(mangaId[1:])
         resultado = Scrapper.mangaScrap(mangaBusqueda)
-        await message.channel.send(resultado[4])
         embed = discord.Embed(title="Titulo", description=resultado[0])
+        embed.set_image(url = resultado[4])
         embed.add_field(name="Sumario", value=resultado[1])
         embed.add_field(name="Puntaje", value=resultado[2])
         embed.add_field(name="Volumenes", value=resultado[3])
@@ -114,8 +119,8 @@ async def on_message(message):
                 await message.channel.send(resultado[0])
             
             elif resultado[1] != "Nombre" or resultado[2] != "Descripcion" or resultado[3] != "Desarrollador" or resultado[4] != "Lanzamiento" or resultado[5] != "Genero" or resultado[6] != "Metacritic" or resultado[7] != "Precio":
-                await message.channel.send(resultado[0])
                 embed = discord.Embed(title="Nombre", description=resultado[1])
+                embed.set_image(url = resultado[0])
                 embed.add_field(name="Descripción", value=resultado[2])
                 embed.add_field(name="Desarrollador", value=resultado[3])
                 embed.add_field(name="Fecha de lanzamiento", value=resultado[4])
@@ -135,14 +140,16 @@ async def on_message(message):
 
         #Recibe información del manga, rescata el codigo y genera el enlace al manga.
         ts_number = message.content.split()
+        '''
         if(ts_number[1]=="random"):
             await message.channel.send(Scrapper.tsuminoRandomSearch())
         elif(ts_number[1]!="random" and not ts_number[1].isdigit()):
             pass
             #await message.channel.send(Scrapper.tsuminoTagSearch(ts_number[1].capitalize()))
-        elif(int(ts_number[1])):
+        '''
+        if(int(ts_number[1])):
             await message.channel.send("https://www.tsumino.com/entry/{}".format(ts_number[1]))
-        elif(not int(ts_number[1])):
+        elif(not ts_number[1].isdigit()):
             await message.channel.send("Formato incorrecto, ingrese numero o escriba random como parametro")
     #En caso de que esté en un canal SFW da está respuesta
     elif message.content.find("sh.ts ") != -1 and not message.channel.is_nsfw():
