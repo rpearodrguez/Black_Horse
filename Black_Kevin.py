@@ -12,14 +12,12 @@ Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
 client = discord.Client()
 
-
-@client.event
-async def on_message(message):
-    print(message.content) # Now every message sent will be printed to the console
+    
 
 @client.event
 async def on_message(message):
     #entrega información de comandos
+    print(message.content) # Now every message sent will be printed to the console
     if message.content.find("sh.help") != -1:
         embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
         embed.add_field(name="hola", value="Saluda al más puro estilo de Stick Horse")
@@ -144,4 +142,20 @@ async def on_message(message):
 
     if message.content.find("sh.invite") != -1:
         await message.channel.send("https://discordapp.com/oauth2/authorize?client_id=558102665695985674&permissions=0&scope=bot")
+
+    if message.content.find("sh.ts ") != -1 and message.channel.is_nsfw():
+
+        #Recibe información del manga, rescata el codigo y genera el enlace al manga.
+        ts_number = message.content.split()
+        if(ts_number[1]=="random"):
+            await message.channel.send(Scrapper.tsuminoRandomSearch())
+        elif(ts_number[1]!="random" and not ts_number[1].isdigit()):
+            await message.channel.send(Scrapper.tsuminoTagSearch(ts_number[1].capitalize()))
+        elif(int(ts_number[1])):
+            await message.channel.send("https://www.tsumino.com/entry/{}".format(ts_number[1]))
+        elif(not int(ts_number[1])):
+            await message.channel.send("Formato incorrecto, ingrese numero o escriba random como parametro")
+    #En caso de que esté en un canal SFW da está respuesta
+    elif message.content.find("sh.ts ") != -1 and not message.channel.is_nsfw():
+        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 client.run(Setup.token)

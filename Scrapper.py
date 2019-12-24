@@ -160,7 +160,6 @@ def steamUrlSearch(urlb=""):
             except:
                 print("No se pudo rescatar información de la pagina")
                 return url
-                pass
 
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
     return url
@@ -256,11 +255,11 @@ def steamDataSearch(busqueda):
         # Find posee los atributos (en el mismo orden) 0=Portada, 1=Nombre, 2=Descripcion , 3=Desarrollador, 4=Lanzamiento, 5=Genero, 6=Metacritic, 7=Precio
         print(find)
         return find
-    
 
-def nhentaiRandomSearch(urlb="https://nhentai.net"):
+
+def tsuminoRandomSearch(urlb="https://www.tsumino.com/"):
     # url = the target we want to open
-    url = "https://nhentai.net"
+    url = urlb
     # open with GET method
     resp = requests.get(url)
 
@@ -276,13 +275,50 @@ def nhentaiRandomSearch(urlb="https://nhentai.net"):
         #l = soup.find("div", {"class": "search_pagination"})
 
         #style = soup.find("a", {"class": "search_pagination"})['style']
-        for i in soup.findAll("a", {"class": "cover"}, limit=1):
+        randts = random.randint(1, 48961)
+        urlFull = "https://www.tsumino.com/entry/"+str(randts)
+        '''
+        for i in soup.findAll("a", {"class": "overlay-button"}, limit=1):
             try:
-                url = i.get('href').split('/')
+                url = i.get('href')
                 print(url)
-                randnh = random.randint(1, int(url[2]))
+                randts = random.randint(1, 48961)
                 print(randnh)
-                urlFull = "https://nhentai.net/g/"+str(randnh)
+                
+
+
+            except:
+                pass
+
+    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
+    '''
+    return urlFull
+
+'''
+def tsuminoTagSearch(urlb="tag"):
+    # url = the target we want to open
+    url = "https://www.tsumino.com/books#~(Sort~'Random~Tags~(~(Type~1~Text~'{}~Exclude~false)))#".format(urlb)
+    # open with GET method
+    resp = requests.get(url)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Encontraron resultados :-\n")
+
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        #busca el estilo del objeto con la clase .search_result_row
+        #l = soup.find("div", {"class": "search_pagination"})
+
+        #style = soup.find("a", {"class": "search_pagination"})['style']
+        for i in soup.findAll("img", {"src": "https://content.tsumino.com/thumbs/"}, limit=1):
+            try:
+                url = i.get('src')
+                idUrl = url.split("/")[4]
+                print(idUrl)
+                urlFull = "https://www.tsumino.com"+str(idUrl)
 
 
             except:
@@ -290,3 +326,4 @@ def nhentaiRandomSearch(urlb="https://nhentai.net"):
 
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
     return urlFull
+    '''
