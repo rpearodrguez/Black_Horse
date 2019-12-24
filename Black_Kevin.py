@@ -28,7 +28,7 @@ async def on_message(message):
         embed.add_field(name="manga", value="Busca información de un manga solicitado")
         embed.add_field(name="escobazo", value="Dale un buen escobazo a alguien más, o ti mismo, no te juzgo")
         embed.add_field(name="roll x n +", value="Tira x cantidad de dados de n caras + el bonificador")
-        embed.add_field(name=" ", value="Para más información visitanos en www.stickhorse.cl")
+        embed.add_field(name="web", value="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.help") != -1 and message.channel.is_nsfw():
