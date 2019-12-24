@@ -256,8 +256,40 @@ def steamDataSearch(busqueda):
         print(find)
         return find
 
+def nhentaiRandomSearch(urlb="https://nhentai.net"):
+    # url = the target we want to open
+    url = "https://nhentai.net"
+    # open with GET method
+    resp = requests.get(url)
 
-def tsuminoRandomSearch(urlb="https://www.tsumino.com/"):
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Encontraron resultados :-\n")
+
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        #busca el estilo del objeto con la clase .search_result_row
+        #l = soup.find("div", {"class": "search_pagination"})
+
+        #style = soup.find("a", {"class": "search_pagination"})['style']
+        for i in soup.findAll("a", {"class": "cover"}, limit=1):
+            try:
+                url = i.get('href').split('/')
+                print(url)
+                randnh = random.randint(1, int(url[2]))
+                print(randnh)
+                urlFull = "https://nhentai.net/g/"+str(randnh)
+
+
+            except:
+                pass
+
+    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
+    return urlFull
+
+def tsuminoRandomSearch(urlb="https://www.tsumino.com/Search/Operate/?type=Book"):
     # url = the target we want to open
     url = urlb
     # open with GET method
@@ -275,6 +307,7 @@ def tsuminoRandomSearch(urlb="https://www.tsumino.com/"):
         #l = soup.find("div", {"class": "search_pagination"})
 
         #style = soup.find("a", {"class": "search_pagination"})['style']
+        '''
         randts = random.randint(1, 48961)
         urlFull = "https://www.tsumino.com/entry/"+str(randts)
         '''
@@ -282,8 +315,9 @@ def tsuminoRandomSearch(urlb="https://www.tsumino.com/"):
             try:
                 url = i.get('href')
                 print(url)
-                randts = random.randint(1, 48961)
-                print(randnh)
+                randts = random.randint(1, int(url[2]))
+                print(randts)
+                urlFull = "https://www.tsumino.com/entry/"+str(randts)
                 
 
 
@@ -291,7 +325,7 @@ def tsuminoRandomSearch(urlb="https://www.tsumino.com/"):
                 pass
 
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
-    '''
+    
     return urlFull
 
 '''

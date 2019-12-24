@@ -53,22 +53,11 @@ async def on_message(message):
     elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw():
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
-    '''
-    if message.content.find("sh.nhrandom") != -1 and message.channel.is_nsfw():
-        #Genera un numero random que será utilizado como indice de busqueda en nhentai
-        #Este numero es el maximo posible al día 23 de marzo del 2019 - 23:34 (GTM-4).
-        nhrnd = random.randint(1, 266905)
-        #Recibe información del manga, rescata el codigo y genera el enlace al manga.
-        await message.channel.send("https://nhentai.net/g/{}".format(nhrnd))
-    #En caso de que esté en un canal SFW da está respuesta
-    elif message.content.find("sh.nhrandom") != -1 and not message.channel.is_nsfw():
-        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
-    '''
-
     # Dados
     if message.content.find("sh.roll") != -1:
         # Separa la cantidad de dados y de caras del mensaje.
         dado = message.content.split()
+        usuario = str(message.author).split("#")
         # Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
         try:
             caras = int(dado[2])
@@ -82,7 +71,7 @@ async def on_message(message):
                     # Tira el dado
                     result = random.randint(1, caras) + bonificador
                     # Muestra el resultado como mensaje
-                    await message.channel.send("dado {} de {} caras: {}, bonificador {} incluido".format(x, caras, result, bonificador))
+                    await message.channel.send("Tiro de: {} dado {} de {} caras: {}, bonificador {} incluido".format(usuario[0], x, caras, result, bonificador))
             elif(cant_dados>10):
                 await message.channel.send("Se quiere morir ese?")
 
@@ -101,7 +90,6 @@ async def on_message(message):
         embed.add_field(name="Puntaje", value=resultado[2])
         embed.add_field(name="Episodios", value=resultado[3])
         await message.channel.send(content=None, embed=embed)
-
 
     if message.content.find("sh.manga ") != -1:
         mangaId = message.content.split()
@@ -150,7 +138,8 @@ async def on_message(message):
         if(ts_number[1]=="random"):
             await message.channel.send(Scrapper.tsuminoRandomSearch())
         elif(ts_number[1]!="random" and not ts_number[1].isdigit()):
-            await message.channel.send(Scrapper.tsuminoTagSearch(ts_number[1].capitalize()))
+            pass
+            #await message.channel.send(Scrapper.tsuminoTagSearch(ts_number[1].capitalize()))
         elif(int(ts_number[1])):
             await message.channel.send("https://www.tsumino.com/entry/{}".format(ts_number[1]))
         elif(not int(ts_number[1])):
@@ -158,4 +147,12 @@ async def on_message(message):
     #En caso de que esté en un canal SFW da está respuesta
     elif message.content.find("sh.ts ") != -1 and not message.channel.is_nsfw():
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+
+    if message.content.find("sh.escobazo ") != -1:
+        victima = message.content.split()
+        embed = discord.Embed(title="Alerta de escobazo")
+        embed.set_image(url = "https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif")
+        embed.add_field(name="D:", value="{} dio un escobazo a {}".format(message.author,victima[1]))
+        await message.channel.send(content=None, embed=embed)
+
 client.run(Setup.token)
