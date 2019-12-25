@@ -289,6 +289,49 @@ def nhentaiRandomSearch(urlb="https://nhentai.net"):
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
     return urlFull
 
+
+def nhentaiTagSearch(tag="https://nhentai.net"):
+    # url = the target we want to open
+    url = 'https://nhentai.net/search/?q=tag:"{}"&sort=popular'.format(tag)
+    # open with GET method
+    resp = requests.get(url)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Encontraron resultados :-\n")
+
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        #busca el estilo del objeto con la clase .search_result_row
+        #l = soup.find("div", {"class": "search_pagination"})
+
+        #style = soup.find("a", {"class": "search_pagination"})['style']
+        if "No results found" in soup.text:
+            return "No se encontraron resultados con el tag solicitado"
+        
+        lista = []
+
+        for i in soup.findAll("a", {"class": "cover"}):
+            try:
+
+                url = i.get('href').split('/')
+                print(url)
+                urlFull = "https://nhentai.net/g/"+str(url[2])
+                lista.append(urlFull)
+
+
+            except:
+                pass
+        
+        randtag = random.randint(0, len(lista)-1)
+        return lista[randtag]
+
+    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
+    
+
+
 def tsuminoRandomSearch(urlb="https://www.tsumino.com/Search/Operate/?type=Book"):
     # url = the target we want to open
     url = urlb
@@ -327,37 +370,3 @@ def tsuminoRandomSearch(urlb="https://www.tsumino.com/Search/Operate/?type=Book"
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
     
     return urlFull
-
-'''
-def tsuminoTagSearch(urlb="tag"):
-    # url = the target we want to open
-    url = "https://www.tsumino.com/books#~(Sort~'Random~Tags~(~(Type~1~Text~'{}~Exclude~false)))#".format(urlb)
-    # open with GET method
-    resp = requests.get(url)
-
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Encontraron resultados :-\n")
-
-
-        # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        #busca el estilo del objeto con la clase .search_result_row
-        #l = soup.find("div", {"class": "search_pagination"})
-
-        #style = soup.find("a", {"class": "search_pagination"})['style']
-        for i in soup.findAll("img", {"src": "https://content.tsumino.com/thumbs/"}, limit=1):
-            try:
-                url = i.get('src')
-                idUrl = url.split("/")[4]
-                print(idUrl)
-                urlFull = "https://www.tsumino.com"+str(idUrl)
-
-
-            except:
-                pass
-
-    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
-    return urlFull
-    '''
