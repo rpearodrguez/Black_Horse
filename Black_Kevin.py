@@ -50,6 +50,8 @@ async def on_message(message):
         nh_number = message.content.split()
         if(nh_number[1]=="random"):
             await message.channel.send(Scrapper.nhentaiRandomSearch())
+        elif(nh_number[1]!="random" and not nh_number[1].isdigit()):
+            await message.channel.send(Scrapper.nhentaiTagSearch(nh_number[1]))
         elif(int(nh_number[1])):
             await message.channel.send("https://nhentai.net/g/{}".format(nh_number[1]))
         elif(not int(nh_number[1])):
