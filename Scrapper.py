@@ -292,7 +292,8 @@ def nhentaiRandomSearch(urlb="https://nhentai.net"):
 
 def nhentaiTagSearch(tag="https://nhentai.net"):
     # url = the target we want to open
-    url = 'https://nhentai.net/search/?q=tag:"{}"&sort=popular'.format(tag)
+    url = 'https://nhentai.net/search/?q={}&sort=popular'.format(tag)
+    #url = 'https://nhentai.net/search/?q=tag:"{}"&sort=popular'.format(tag)
     # open with GET method
     resp = requests.get(url)
 
