@@ -51,6 +51,7 @@ async def on_message(message):
         if(nh_number[1]=="random"):
             await message.channel.send(Scrapper.nhentaiRandomSearch())
         elif(nh_number[1]!="random" and not nh_number[1].isdigit()):
+            busqueda = "+".join(nh_number[1:])
             await message.channel.send(Scrapper.nhentaiTagSearch(nh_number[1]))
         elif(int(nh_number[1])):
             await message.channel.send("https://nhentai.net/g/{}".format(nh_number[1]))
