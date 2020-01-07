@@ -172,7 +172,7 @@ def steamDataSearch(busqueda):
     if resp.status_code == 200:
         print("Successfully opened the web page")
         print("Este es el sumario del juego solicitado :-\n")
-        find = ["Portada", "Nombre", "Descripcion", "Desarrollador", "Lanzamiento", "Genero", "Metacritic", "Precio"]
+        find = ["Portada", "Nombre", "Descripcion", "Desarrollador", "Algun día", "Genero", "Demasiado malo para ser puntuado", "No es gratis, pero no tengo idea"]
 
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
