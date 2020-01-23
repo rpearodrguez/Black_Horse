@@ -371,3 +371,11 @@ def tsuminoRandomSearch(urlb="https://www.tsumino.com/Search/Operate/?type=Book"
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
     
     return urlFull
+
+def reactionImage(feel=""):
+    imagenes = [""]
+    if feel == "escobazo":
+        imagenes = ["https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif", "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-2.gif", "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-3.gif"]
+
+    randImage = random.randint(0, len(imagenes))
+    return imagenes[randImage]
