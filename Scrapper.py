@@ -379,3 +379,42 @@ def reactionImage(feel=""):
 
     randImage = random.randint(0, len(imagenes))
     return imagenes[randImage]
+
+def imageSearch(tag="boa+del+desierto+arabe"):
+    # url = the target we want to open
+    url = 'https://www.bing.com/images/search?q={}'.format(tag)
+    
+    # open with GET method
+    resp = requests.get(url)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Encontraron resultados :-\n")
+
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        #busca el estilo del objeto con la clase .search_result_row
+        #l = soup.find("div", {"class": "search_pagination"})
+
+        #style = soup.find("a", {"class": "search_pagination"})['style']
+        if "No results found" in soup.text:
+            return "No se encontraron resultados con el tag solicitado"
+        
+        lista = []
+
+        for i in soup.findAll("a", {"class": "iusc"}):
+            try:
+
+                url = i.get('m')
+                urlFull = url["murl"]
+                print(urlFull)
+                lista.append(urlFull)
+
+
+            except:
+                pass
+        
+        randtag = random.randint(0, len(lista)-1)
+        return lista[randtag]
