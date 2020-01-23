@@ -160,9 +160,11 @@ async def on_message(message):
 
     if message.content.find("sh.escobazo ") != -1:
         victima = message.content.split()
+        imagen = Scrapper.reactionImage("escobazo")
         embed = discord.Embed(title="Alerta de escobazo")
-        embed.set_image(url = "https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif")
+        embed.set_image(url = imagen)
         embed.add_field(name="D:", value="{} dio un escobazo a {}".format(message.author,victima[1]))
         await message.channel.send(content=None, embed=embed)
+
 
 client.run(Setup.token)
