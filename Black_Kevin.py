@@ -165,6 +165,17 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.add_field(name="D:", value="{} dio un escobazo a {}".format(message.author,victima[1]))
         await message.channel.send(content=None, embed=embed)
+    
+    if message.content.find("sh.img ") != -1:
+        imgId = message.content.split()
+        imgBusqueda = "+".join(imgId[1:])
+        imagen = Scrapper.imageSearch(imgBusqueda)
+        embed = discord.Embed(title="Imagen random encontrada")
+        embed.set_image(url = imagen)
+        embed.add_field(name="Esta fue la imagen encontrada", value="Esta es una versión de prueba")
+        await message.channel.send(content=None, embed=embed)
+
+    
 
 
 client.run(Setup.token)
