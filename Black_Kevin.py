@@ -209,7 +209,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.pat ") != -1:
-        victima = message.content.split()
+        victima = message.mentions
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("pat")
