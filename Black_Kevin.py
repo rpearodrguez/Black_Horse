@@ -163,7 +163,7 @@ async def on_message(message):
 
     if message.content.find("sh.escobazo ") != -1:
         victima = message.content.split()
-        autor = message.author.split("#")[0]
+        autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("escobazo")
         embed = discord.Embed(title="Alerta de escobazo")
         embed.set_image(url = imagen)
