@@ -178,6 +178,7 @@ async def on_message(message):
         embed = discord.Embed(title="Alerta de abrazo")
         embed.set_image(url = imagen)
         embed.add_field(name=":D", value="{} dio un abrazo a {}".format(autor,victima[1]))
+        embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.lick ") != -1:
@@ -188,6 +189,7 @@ async def on_message(message):
         embed = discord.Embed(title="Alerta de lamida")
         embed.set_image(url = imagen)
         embed.add_field(name=";A;", value="{} lamió a {}".format(autor,victima[1]))
+        embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
 
