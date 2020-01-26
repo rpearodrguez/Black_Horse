@@ -9,26 +9,58 @@ import os
 #Anime Scrapping
 def animeScrap(urlb=""):
     # url = the target we want to open
-    url = "https://animeflv.chrismichael.now.sh/api/v1/Search/:{}".format(urlb)
+    if urlb in "accion,infantil,sobrenatural,josei,superpoderes,aventura,juegos,suspenso,carreras,magia,terror,mecha,vampiros,comedia,militar,yaoi,demencia,misterio,yuri,demonios,musica,deportes,parodia,drama,psicologico,ecchi,escolares,romance,espacial,samurai,fantasia,seinen,harem,shoujo,historico,shounen":
+        url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/{}/rating/1".format(urlb)
+    elif urlb == "artes+marciales":
+        url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/artes-marciales/rating/1"
+    elif urlb == "ciencia+ficcion":
+        url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/ciencia-ficcion/rating/1"
+    elif urlb == "recuentos+de+la+vida,":
+        url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/recuentos-de-la-vida/rating/1"
+    else:
+        url = "https://animeflv.chrismichael.now.sh/api/v1/Search/:{}".format(urlb)
     # open with GET method
     resp = requests.get(url)
 
     # http_respone 200 means OK status
+    if resp.status_code == 404:
+        find = ["no encontrado"]
     if resp.status_code == 200:
         find = ["N/E", "N/E", "Ni idea", "Un Chingo", "N/E"]
+        
 
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
-        titulo = resultado["search"][0]["title"]
-        portada = resultado["search"][0]["poster"]
-        sinopsis = resultado["search"][0]["synopsis"]
-        lanzamiento = resultado["search"][0]["debut"]
-        tipo = resultado["search"][0]["type"]
-        rating = resultado["search"][0]["rating"]
-        generos =  ", ".join(resultado["search"][0]["genres"])
-        episodios = resultado["search"][0]["episodes"]
         try:
-            episodios = resultado["search"][0]["episodes"][1]["episode"]
+            rand = random.randint(0,len(resultado["search"])-1)
+            titulo = resultado["search"][rand]["title"]
+            portada = resultado["search"][rand]["poster"]
+            sinopsis = resultado["search"][rand]["synopsis"]
+            lanzamiento = resultado["search"][rand]["debut"]
+            tipo = resultado["search"][rand]["type"]
+            rating = resultado["search"][rand]["rating"]
+            generos =  ", ".join(resultado["search"][rand]["genres"])
+            episodios = resultado["search"][rand]["episodes"]
+            try:
+                episodios = resultado["search"][rand]["episodes"][1]["episode"]
+            except:
+                pass
+        except:
+            pass
+        try:
+            rand = random.randint(0,len(resultado["animes"])-1)
+            titulo = resultado["animes"][rand]["title"]
+            portada = resultado["animes"][rand]["poster"]
+            sinopsis = resultado["animes"][rand]["synopsis"]
+            lanzamiento = resultado["animes"][rand]["debut"]
+            tipo = resultado["animes"][rand]["type"]
+            rating = resultado["animes"][rand]["rating"]
+            generos =  ", ".join(resultado["animes"][rand]["genres"])
+            episodios = resultado["animes"][rand]["episodes"]
+            try:
+                episodios = resultado["animes"][rand]["episodes"][1]["episode"]
+            except:
+                pass
         except:
             pass
         find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
