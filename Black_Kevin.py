@@ -200,7 +200,7 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("lamer")
-        embed = discord.Embed(title=""{} lamió a {}".format(autor,victima))
+        embed = discord.Embed(title="{} lamió a {}".format(autor,victima))
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
