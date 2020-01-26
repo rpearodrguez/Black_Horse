@@ -157,18 +157,20 @@ async def on_message(message):
 
     if message.content.find("sh.escobazo ") != -1:
         victima = message.content.split()
+        autor = message.author.split("#")[0]
         imagen = Feels.reactionImage("escobazo")
         embed = discord.Embed(title="Alerta de escobazo")
         embed.set_image(url = imagen)
-        embed.add_field(name="D:", value="@{} dio un escobazo a {}".format(message.author,victima[1]))
+        embed.add_field(name="D:", value="{} dio un escobazo a {}".format(autor,victima[1]))
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.hug ") != -1:
         victima = message.content.split()
+        autor = message.author.split("#")[0]
         imagen = Feels.reactionImage("abrazo")
         embed = discord.Embed(title="Alerta de abrazo")
         embed.set_image(url = imagen)
-        embed.add_field(name=":D", value="@{} dio un abrazo a {}".format(message.author,victima[1]))
+        embed.add_field(name=":D", value="{} dio un abrazo a {}".format(message.autor,victima[1]))
         await message.channel.send(content=None, embed=embed)
 
 
