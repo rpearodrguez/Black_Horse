@@ -209,13 +209,14 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.pat ") != -1:
-        victima = message.mentions.name
+        victima = message.mentions.split("")
+        victima2 = victima[1].split("")
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("pat")
         embed = discord.Embed(title="Alerta de pateo")
         embed.set_image(url = imagen)
-        embed.add_field(name="*-*", value="{} acarició la cabeza de {}".format(autor,victima))
+        embed.add_field(name="*-*", value="{} acarició la cabeza de {}".format(autor,victima2[1]))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
