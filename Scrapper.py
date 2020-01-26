@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+#Anime Scrapping
 def animeScrap(urlb=""):
     # url = the target we want to open
     url = "https://animaifu.com/anime/search?q=" + urlb
@@ -69,7 +70,7 @@ def animeScrap(urlb=""):
     print(find)
     return find
 
-
+#Manga Scrapping
 def mangaScrap(urlb=""):
     # url = the target we want to open
     url = "https://animaifu.com/manga/search?q=" + urlb
@@ -133,6 +134,7 @@ def mangaScrap(urlb=""):
     print(find)
     return find
 
+#Game Scrapping
 def steamUrlSearch(urlb=""):
     # url = the target we want to open
     url = "https://store.steampowered.com/search/?term=" + urlb + "&category1=998"
@@ -256,6 +258,7 @@ def steamDataSearch(busqueda):
         print(find)
         return find
 
+#Hentai Scrapping
 def nhentaiRandomSearch(urlb="https://nhentai.net"):
     # url = the target we want to open
     url = "https://nhentai.net"
@@ -288,7 +291,6 @@ def nhentaiRandomSearch(urlb="https://nhentai.net"):
 
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
     return urlFull
-
 
 def nhentaiTagSearch(tag="https://nhentai.net"):
     # url = the target we want to open
@@ -332,89 +334,3 @@ def nhentaiTagSearch(tag="https://nhentai.net"):
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
     
 
-
-def tsuminoRandomSearch(urlb="https://www.tsumino.com/Search/Operate/?type=Book"):
-    # url = the target we want to open
-    url = urlb
-    # open with GET method
-    resp = requests.get(url)
-
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Encontraron resultados :-\n")
-
-
-        # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        #busca el estilo del objeto con la clase .search_result_row
-        #l = soup.find("div", {"class": "search_pagination"})
-
-        #style = soup.find("a", {"class": "search_pagination"})['style']
-        '''
-        randts = random.randint(1, 48961)
-        urlFull = "https://www.tsumino.com/entry/"+str(randts)
-        '''
-        for i in soup.findAll("a", {"class": "overlay-button"}, limit=1):
-            try:
-                url = i.get('href')
-                print(url)
-                randts = random.randint(1, int(url[2]))
-                print(randts)
-                urlFull = "https://www.tsumino.com/entry/"+str(randts)
-                
-
-
-            except:
-                pass
-
-    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
-    
-    return urlFull
-
-def reactionImage(feel=""):
-    imagenes = [""]
-    if feel == "escobazo":
-        imagenes = ["https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif", "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-2.gif", "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-3.gif"]
-
-    randImage = random.randint(0, len(imagenes))
-    return imagenes[randImage]
-
-def imageSearch(tag="boa+del+desierto+arabe"):
-    # url = the target we want to open
-    url = 'https://www.bing.com/images/search?q={}'.format(tag)
-    
-    # open with GET method
-    resp = requests.get(url)
-
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Encontraron resultados :-\n")
-
-
-        # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        #busca el estilo del objeto con la clase .search_result_row
-        #l = soup.find("div", {"class": "search_pagination"})
-
-        #style = soup.find("a", {"class": "search_pagination"})['style']
-        if "No results found" in soup.text:
-            return "No se encontraron resultados con el tag solicitado"
-        
-        lista = []
-
-        for i in soup.findAll("a", {"class": "iusc"}):
-            try:
-
-                url = i.get('m')
-                urlFull = url["murl"]
-                print(urlFull)
-                lista.append(urlFull)
-
-
-            except:
-                pass
-        
-        randtag = random.randint(0, len(lista)-1)
-        return lista[randtag]
