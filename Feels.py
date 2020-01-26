@@ -18,7 +18,7 @@ def reactionImage(feel=""):
     if feel == "lamer":
         search_term = "anime+lick"
 
-    if feel == "lamer":
+    if feel == "pat":
         search_term = "anime+head+pat"
 
     if feel !=  "escobazo":
