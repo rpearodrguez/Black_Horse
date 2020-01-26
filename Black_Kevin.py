@@ -1,6 +1,7 @@
 import discord
 import random
 import Scrapper
+import Feels
 import os
 from boto.s3.connection import S3Connection
 #s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
@@ -20,6 +21,9 @@ client = discord.Client()
 async def on_message(message):
     #entrega información de comandos
     print(message.content) # Now every message sent will be printed to the console
+
+#General Module
+
     if message.content.find("sh.help") != -1:
         embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
         embed.set_image(url = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png")
@@ -41,9 +45,15 @@ async def on_message(message):
         embed.add_field(name="ts <codigo>", value="Lo mismo que nh pero para tsumino.com")
         await message.channel.send(content=None, embed=embed)
 
+    if message.content.find("sh.invite") != -1:
+        await message.channel.send("https://discordapp.com/api/oauth2/authorize?client_id=558102665695985674&permissions=92160&scope=bot")
+
     #saluda a quien lo salude
     if message.content.find("sh.hola") != -1:
         await message.channel.send("Come tierra") # If the user says !hello we will send back hi
+
+
+#NSFW Module
 
     #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
     if message.content.find("sh.nh ") != -1 and message.channel.is_nsfw():
@@ -62,6 +72,8 @@ async def on_message(message):
     #En caso de que esté en un canal SFW da está respuesta
     elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw():
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+
+#Roleplay Module
 
     # Dados
     if message.content.find("sh.roll") != -1:
@@ -89,6 +101,8 @@ async def on_message(message):
         except:
             await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
             pass
+
+#Entertainment Module
 
     if message.content.find("sh.anime ") != -1:
         animeId = message.content.split()
@@ -138,46 +152,24 @@ async def on_message(message):
         except:
             pass
 
-    if message.content.find("sh.invite") != -1:
-        await message.channel.send("https://discordapp.com/oauth2/authorize?client_id=558102665695985674&permissions=0&scope=bot")
-
-    if message.content.find("sh.ts ") != -1 and message.channel.is_nsfw():
-
-        #Recibe información del manga, rescata el codigo y genera el enlace al manga.
-        ts_number = message.content.split()
-        '''
-        if(ts_number[1]=="random"):
-            await message.channel.send(Scrapper.tsuminoRandomSearch())
-        elif(ts_number[1]!="random" and not ts_number[1].isdigit()):
-            pass
-            #await message.channel.send(Scrapper.tsuminoTagSearch(ts_number[1].capitalize()))
-        '''
-        if(int(ts_number[1])):
-            await message.channel.send("https://www.tsumino.com/entry/{}".format(ts_number[1]))
-        elif(not ts_number[1].isdigit()):
-            await message.channel.send("Formato incorrecto, ingrese numero o escriba random como parametro")
-    #En caso de que esté en un canal SFW da está respuesta
-    elif message.content.find("sh.ts ") != -1 and not message.channel.is_nsfw():
-        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+    
+#Reactions Module
 
     if message.content.find("sh.escobazo ") != -1:
         victima = message.content.split()
-        imagen = Scrapper.reactionImage("escobazo")
+        imagen = Feels.reactionImage("escobazo")
         embed = discord.Embed(title="Alerta de escobazo")
         embed.set_image(url = imagen)
-        embed.add_field(name="D:", value="{} dio un escobazo a {}".format(message.author,victima[1]))
+        embed.add_field(name="D:", value="@{} dio un escobazo a {}".format(message.author,victima[1]))
         await message.channel.send(content=None, embed=embed)
     
-    if message.content.find("sh.img ") != -1:
-        imgId = message.content.split()
-        imgBusqueda = "+".join(imgId[1:])
-        imagen = Scrapper.imageSearch(imgBusqueda)
-        embed = discord.Embed(title="Imagen random encontrada")
+    if message.content.find("sh.hug ") != -1:
+        victima = message.content.split()
+        imagen = Feels.reactionImage("abrazo")
+        embed = discord.Embed(title="Alerta de abrazo")
         embed.set_image(url = imagen)
-        embed.add_field(name="Esta fue la imagen encontrada", value="Esta es una versión de prueba")
+        embed.add_field(name=":D", value="@{} dio un abrazo a {}".format(message.author,victima[1]))
         await message.channel.send(content=None, embed=embed)
-
-    
 
 
 client.run(os.environ.get('DISCORD_TOKEN'))
