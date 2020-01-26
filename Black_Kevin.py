@@ -166,7 +166,7 @@ async def on_message(message):
         imageId = message.content.split()
         imageBusqueda = "+".join(imageId[1:])
         resultado = Scrapper.imgSearch(imageBusqueda)
-        embed = discord.Embed(title="Imagen encontrada", description=" ".join(imageId))
+        embed = discord.Embed(title="Imagen encontrada", description=" ".join(imageId[1:]))
         embed.set_image(url = resultado)
         await message.channel.send(content=None, embed=embed)
 
