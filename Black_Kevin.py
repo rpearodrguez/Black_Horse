@@ -166,7 +166,8 @@ async def on_message(message):
     
     if message.content.find("sh.hug ") != -1:
         victima = message.content.split()
-        autor = message.author.split("#")[0]
+        print(message.author)
+        autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("abrazo")
         embed = discord.Embed(title="Alerta de abrazo")
         embed.set_image(url = imagen)
