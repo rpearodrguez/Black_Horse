@@ -171,7 +171,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("abrazo")
         embed = discord.Embed(title="Alerta de abrazo")
         embed.set_image(url = imagen)
-        embed.add_field(name=":D", value="{} dio un abrazo a {}".format(message.autor,victima[1]))
+        embed.add_field(name=":D", value="{} dio un abrazo a {}".format(autor,victima[1]))
         await message.channel.send(content=None, embed=embed)
 
 
