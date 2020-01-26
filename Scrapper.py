@@ -43,6 +43,7 @@ def animeScrap(urlb=""):
                 episodios = resultado["search"][rand]["episodes"][1]["episode"]
             except:
                 pass
+            find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
         except:
             pass
         try:
@@ -59,9 +60,10 @@ def animeScrap(urlb=""):
                 episodios = resultado["animes"][rand]["episodes"][1]["episode"]
             except:
                 pass
+            find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
         except:
             pass
-        find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
+        
 
 
 
