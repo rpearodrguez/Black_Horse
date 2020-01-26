@@ -211,7 +211,7 @@ async def on_message(message):
     if message.content.find("sh.pat ") != -1:
         victima = message.mentions[0]
         print(victima)
-        victima2 = victima[1].split("")
+        victima2 = str(victima[1]).split()
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("pat")
