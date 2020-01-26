@@ -25,6 +25,8 @@ def animeScrap(urlb=""):
     # http_respone 200 means OK status
     if resp.status_code == 404:
         find = ["no encontrado"]
+        print(find)
+        return find
     elif resp.status_code == 200:
         
         # we need a parser,Python built-in HTML parser is enough .
@@ -44,6 +46,8 @@ def animeScrap(urlb=""):
             except:
                 pass
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
+            print(find)
+            return find
         except:
             pass
         try:
@@ -61,15 +65,14 @@ def animeScrap(urlb=""):
             except:
                 pass
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
+            print(find)
+            return find
         except:
             pass
         
-
-
-
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
-    print(find)
-    return find
+    
+    
 
 #Manga Scrapping
 def mangaScrap(urlb=""):
