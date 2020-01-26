@@ -8,5 +8,5 @@ def reactionImage(feel=""):
     if feel == "abrazo":
         imagenes = ["https://media.tenor.com/images/9fe95432f2d10d7de2e279d5c10b9b51/tenor.gif"]
 
-    randImage = random.randint(0, len(imagenes))
-    return imagenes[randImage]
+    randImage = random.randint(0, len(imagenes)-1)
+return imagenes[randImage]
