@@ -234,8 +234,9 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("slap")
-        embed = discord.Embed(title="{} golpeó a ".format(autor))
+        embed = discord.Embed(title="Alerta de slap")
         embed.set_image(url = imagen)
+        embed.add_field(name=";A;", value="{} cacheteó a {}".format(autor,victima[1]))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
@@ -243,9 +244,10 @@ async def on_message(message):
         victima = message.content.split()
         print(message.author)
         autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("kiss")
-        embed = discord.Embed(title="{} besó a ".format(autor))
+        imagen = Feels.reactionImage("slap")
+        embed = discord.Embed(title="Alerta de besito")
         embed.set_image(url = imagen)
+        embed.add_field(name=".3.", value="{} besó a {}".format(autor,victima[1]))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
