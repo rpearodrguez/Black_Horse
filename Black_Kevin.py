@@ -213,8 +213,9 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("pat")
-        embed = discord.Embed(title="{} acarició la cabeza de {}".format(autor,str(victima[1][1:])))
+        embed = discord.Embed(title="Alerta de pateo")
         embed.set_image(url = imagen)
+        embed.add_field(name="*-*", value="{} acarició la cabeza de {}".format(autor,victima[1]))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
@@ -233,8 +234,9 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("slap")
-        embed = discord.Embed(title="{} cacheteó a {}".format(autor,victima[1]))
+        embed = discord.Embed(title="Alerta de cachetada")
         embed.set_image(url = imagen)
+        embed.add_field(name=";A;", value="{} cacheteó a {}".format(autor,victima[1]))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
@@ -243,8 +245,9 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("slap")
-        embed = discord.Embed(title="{} besó a {}".format(autor,victima[1]))
+        embed = discord.Embed(title="Alerta de besito")
         embed.set_image(url = imagen)
+        embed.add_field(name=";A;", value="{} besó a {}".format(autor,victima[1]))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
