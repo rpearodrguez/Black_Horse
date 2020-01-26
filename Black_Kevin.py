@@ -63,7 +63,6 @@ async def on_message(message):
         mensaje2 = " ".join(mensaje[1:])
         await message.channel.send(mensaje2)
 
-
 #NSFW Module
 
     #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
