@@ -58,6 +58,11 @@ async def on_message(message):
     if message.content.find("sh.hola") != -1:
         await message.channel.send("Come tierra") # If the user says !hello we will send back hi
 
+    if message.content.find("sh.say") != -1:
+        mensaje = message.content.split()
+        mensaje2 = mensaje[1:]
+        await message.channel.send(mensaje2)
+
 
 #NSFW Module
 
@@ -189,6 +194,17 @@ async def on_message(message):
         embed = discord.Embed(title="Alerta de lamida")
         embed.set_image(url = imagen)
         embed.add_field(name=";A;", value="{} lamió a {}".format(autor,victima[1]))
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.pat ") != -1:
+        victima = message.content.split()
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("pat")
+        embed = discord.Embed(title="Alerta de pateo")
+        embed.set_image(url = imagen)
+        embed.add_field(name="*-*", value="{} acarició la cabeza de {}".format(autor,victima[1]))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
