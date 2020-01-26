@@ -25,10 +25,8 @@ def animeScrap(urlb=""):
     # http_respone 200 means OK status
     if resp.status_code == 404:
         find = ["no encontrado"]
-    if resp.status_code == 200:
-        find = ["N/E", "N/E", "Ni idea", "Un Chingo", "N/E"]
+    elif resp.status_code == 200:
         
-
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
         try:
