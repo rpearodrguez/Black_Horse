@@ -27,13 +27,19 @@ async def on_message(message):
     if message.content.find("sh.help") != -1:
         embed = discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
         embed.set_image(url = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png")
+        embed.add_field(name="Modulo", value="General")
         embed.add_field(name="hola", value="Saluda al más puro estilo de Stick Horse")
         embed.add_field(name="invite", value="Link de invitación")
+        embed.add_field(name="Modulo", value="Entretenimiento")
         embed.add_field(name="steam", value="Busca enlace a juego en steam")
         embed.add_field(name="anime", value="Busca información de un anime solicitado")
         embed.add_field(name="manga", value="Busca información de un manga solicitado")
-        embed.add_field(name="escobazo", value="Dale un buen escobazo a alguien más, o ti mismo, no te juzgo")
+        embed.add_field(name="Modulo", value="Rol")
         embed.add_field(name="roll x n +", value="Tira x cantidad de dados de n caras + el bonificador")
+        embed.add_field(name="Modulo", value="Feels")
+        embed.add_field(name="escobazo", value="Dale un buen escobazo a alguien más, o ti mismo, no te juzgo")
+        embed.add_field(name="hug", value="Reparte abrazos por el mundo")
+        embed.add_field(name="lick", value="Si tienes complejo de rana allá tu")
         embed.add_field(name="web", value="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
 
@@ -172,7 +178,6 @@ async def on_message(message):
         embed = discord.Embed(title="Alerta de abrazo")
         embed.set_image(url = imagen)
         embed.add_field(name=":D", value="{} dio un abrazo a {}".format(autor,victima[1]))
-        embed.add_field(name="Creditos", value="Imagen obtenida de tenor.com")
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.lick ") != -1:
@@ -183,7 +188,6 @@ async def on_message(message):
         embed = discord.Embed(title="Alerta de lamida")
         embed.set_image(url = imagen)
         embed.add_field(name=";A;", value="{} lamió a {}".format(autor,victima[1]))
-        embed.add_field(name="Creditos", value="Imagen obtenida de tenor.com")
         await message.channel.send(content=None, embed=embed)
 
 
