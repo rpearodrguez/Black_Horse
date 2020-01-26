@@ -22,9 +22,10 @@ def reactionImage(feel=""):
         # http_respone 200 means OK status
         if resp.status_code == 200:
             gifs = json.loads(resp.content)
-            imagenes[0] = gifs["results"][0]["media"][0]["webm"]["url"]
+            imagenes[0] = gifs["results"][0]["media"][0]["gif"]["url"]
+            print(imagenes[0])
         else:
-            pass
+            imagenes[0] = "https://media.tenor.com/images/ff8a2ea033a2f87a35d895eebd09cbe8/tenor.gif"
             
         
     randImage = random.randint(0, len(imagenes)-1)
