@@ -190,9 +190,8 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("abrazo")
-        embed = discord.Embed(title="Alerta de abrazo")
+        embed = discord.Embed(title="{} dio un abrazo a {}".format(autor,victima))
         embed.set_image(url = imagen)
-        embed.add_field(name=":D", value="{} dio un abrazo a {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
     
@@ -201,9 +200,8 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("lamer")
-        embed = discord.Embed(title="Alerta de lamida")
+        embed = discord.Embed(title=""{} lamió a {}".format(autor,victima))
         embed.set_image(url = imagen)
-        embed.add_field(name=";A;", value="{} lamió a {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
@@ -215,9 +213,8 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("pat")
-        embed = discord.Embed(title="Alerta de pateo")
+        embed = discord.Embed(title="{} acarició la cabeza de {}".format(autor,victima))
         embed.set_image(url = imagen)
-        embed.add_field(name="*-*", value="{} acarició la cabeza de {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
@@ -236,9 +233,8 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("slap")
-        embed = discord.Embed(title="Alerta de cachetada")
+        embed = discord.Embed(title="{} cacheteó a {}".format(autor,victima))
         embed.set_image(url = imagen)
-        embed.add_field(name=";A;", value="{} cacheteó a {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
@@ -247,9 +243,8 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("slap")
-        embed = discord.Embed(title="Alerta de besito")
+        embed = discord.Embed(title="{} besó a {}".format(autor,victima))
         embed.set_image(url = imagen)
-        embed.add_field(name=";A;", value="{} besó a {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
