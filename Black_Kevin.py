@@ -215,7 +215,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("pat")
         embed = discord.Embed(title="Alerta de pateo")
         embed.set_image(url = imagen)
-        embed.add_field(name="*-*", value="{} acarició la cabeza de {}".format(autor,victima[1]))
+        embed.add_field(name="*-*", value="{} acarició la cabeza de {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
