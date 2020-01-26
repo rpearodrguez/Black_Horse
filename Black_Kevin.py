@@ -60,7 +60,7 @@ async def on_message(message):
 
     if message.content.find("sh.say") != -1:
         mensaje = message.content.split()
-        mensaje2 = join(mensaje[1:])
+        mensaje2 = "".join(mensaje[1:])
         await message.channel.send(mensaje2)
 
 
