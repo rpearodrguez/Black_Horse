@@ -229,6 +229,26 @@ async def on_message(message):
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
+    if message.content.find("sh.slap ") != -1:
+        victima = message.content.split()
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("slap")
+        embed = discord.Embed(title="{} golpeó a ".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.kiss ") != -1:
+        victima = message.content.split()
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("kiss")
+        embed = discord.Embed(title="{} besó a ".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
     if message.content.find("sh.suicide") != -1:
         victima = message.content.split()
         print(message.author)
