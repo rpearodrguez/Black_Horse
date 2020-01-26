@@ -1,5 +1,4 @@
 import discord
-import Setup
 import random
 import Scrapper
 import os
