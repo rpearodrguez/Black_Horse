@@ -208,5 +208,24 @@ async def on_message(message):
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
+    if message.content.find("sh.jojo ") != -1:
+        victima = message.content.split()
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("jojo")
+        embed = discord.Embed(title="{} hizo una Jojopose".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.suicide ") != -1:
+        victima = message.content.split()
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("suicide")
+        embed = discord.Embed(title="{} se mató".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Si realmente estas mal y necesitas ayuda visita http://www.asulac.org/necesitas-ayuda/")
+        await message.channel.send(content=None, embed=embed)
 
 client.run(os.environ.get('DISCORD_TOKEN'))
