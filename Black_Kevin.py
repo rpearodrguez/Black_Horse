@@ -178,33 +178,32 @@ async def on_message(message):
 #Reactions Module
 
     if message.content.find("sh.escobazo ") != -1:
-        victima = message.content.split()
+        victima = message.mentions[0]
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("escobazo")
-        embed = discord.Embed(title="Alerta de escobazo")
+        embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
         embed.set_image(url = imagen)
-        embed.add_field(name="D:", value="{} dio un escobazo a {}".format(autor,victima[1]))
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.hug ") != -1:
-        victima = message.content.split()
+        victima = message.mentions[0]
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("abrazo")
         embed = discord.Embed(title="Alerta de abrazo")
         embed.set_image(url = imagen)
-        embed.add_field(name=":D", value="{} dio un abrazo a {}".format(autor,victima[1]))
+        embed.add_field(name=":D", value="{} dio un abrazo a {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.lick ") != -1:
-        victima = message.content.split()
+        victima = message.mentions[0]
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("lamer")
         embed = discord.Embed(title="Alerta de lamida")
         embed.set_image(url = imagen)
-        embed.add_field(name=";A;", value="{} lamió a {}".format(autor,victima[1]))
+        embed.add_field(name=";A;", value="{} lamió a {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
@@ -233,24 +232,24 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.slap ") != -1:
-        victima = message.content.split()
+        victima = message.mentions[0]
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("slap")
         embed = discord.Embed(title="Alerta de cachetada")
         embed.set_image(url = imagen)
-        embed.add_field(name=";A;", value="{} cacheteó a {}".format(autor,victima[1]))
+        embed.add_field(name=";A;", value="{} cacheteó a {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.kiss ") != -1:
-        victima = message.content.split()
+        victima = message.mentions[0]
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("slap")
         embed = discord.Embed(title="Alerta de besito")
         embed.set_image(url = imagen)
-        embed.add_field(name=";A;", value="{} besó a {}".format(autor,victima[1]))
+        embed.add_field(name=";A;", value="{} besó a {}".format(autor,victima))
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
