@@ -31,7 +31,7 @@ def animeScrap(urlb=""):
         
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
-        try:
+        if resultado["search"] != "":
             rand = random.randint(0,len(resultado["search"])-1)
             titulo = resultado["search"][rand]["title"]
             portada = resultado["search"][rand]["poster"]
@@ -48,9 +48,8 @@ def animeScrap(urlb=""):
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
             print(find)
             return find
-        except:
-            pass
-        try:
+
+        if resultado["animes"] != "":
             rand = random.randint(0,len(resultado["animes"])-1)
             titulo = resultado["animes"][rand]["title"]
             portada = resultado["animes"][rand]["poster"]
@@ -67,8 +66,6 @@ def animeScrap(urlb=""):
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
             print(find)
             return find
-        except:
-            pass
         
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
     
