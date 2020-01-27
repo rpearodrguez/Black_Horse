@@ -33,7 +33,11 @@ def animeScrap(urlb=""):
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
         if resultado["search"] != "":
-            rand = random.randint(0,len(resultado["search"])-1)
+            rand = 0
+            try:
+                rand = random.randint(0,len(resultado["search"])-1)
+            except:
+                pass
             titulo = resultado["search"][rand]["title"]
             portada = resultado["search"][rand]["poster"]
             sinopsis = resultado["search"][rand]["synopsis"]
@@ -51,7 +55,11 @@ def animeScrap(urlb=""):
             return find
 
         elif resultado["animes"] != "":
-            rand = random.randint(0,len(resultado["animes"])-1)
+            rand = 0
+            try:
+                rand = random.randint(0,len(resultado["animes"])-1)
+            except:
+                pass
             titulo = resultado["animes"][rand]["title"]
             portada = resultado["animes"][rand]["poster"]
             sinopsis = resultado["animes"][rand]["synopsis"]
