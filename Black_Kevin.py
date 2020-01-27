@@ -292,7 +292,7 @@ async def on_message(message):
         victima = message.mentions[0]
         print(message.author)
         autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("slap")
+        imagen = Feels.reactionImage("kiss")
         embed = discord.Embed(title="{} besó a {}".format(autor,victima))
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
