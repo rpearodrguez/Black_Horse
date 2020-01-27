@@ -40,8 +40,15 @@ async def on_message(message):
         embed.add_field(name="roll x n +", value="Tira x cantidad de dados de n caras + el bonificador", inline=True)
         embed.add_field(name="MODULO", value="FEELS", inline=False)
         embed.add_field(name="escobazo", value="Dale un buen escobazo a alguien más, o ti mismo, no te juzgo", inline=True)
+        embed.add_field(name="pat", value="Acaricias la cabeza de alguien más", inline=True)
         embed.add_field(name="hug", value="Reparte abrazos por el mundo", inline=True)
         embed.add_field(name="lick", value="Si tienes complejo de rana allá tu", inline=True)
+        embed.add_field(name="slap", value="Cacheteas a alguien", inline=True)
+        embed.add_field(name="kiss", value="Besas a alguien <3", inline=True)
+        embed.add_field(name="feed", value="Alimentas a alguien", inline=True)
+        embed.add_field(name="kick", value="Pateas a alguien, no confundir con expulsar del server", inline=True)
+        embed.add_field(name="smug", value="Esa risa engreída", inline=True)
+        embed.add_field(name="jojo", value="Jojoposes", inline=True)
         embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
 
@@ -294,6 +301,36 @@ async def on_message(message):
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("kiss")
         embed = discord.Embed(title="{} besó a {}".format(autor,victima))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.feed ") != -1:
+        victima = message.mentions[0]
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("food")
+        embed = discord.Embed(title="{} alimentó a {}".format(autor,victima))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.kick ") != -1:
+        victima = message.mentions[0]
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("kickbutt")
+        embed = discord.Embed(title="{} pateó a {}".format(autor,victima))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.smug") != -1:
+        victima = message.content.split()
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("smug")
+        embed = discord.Embed(title="{} es un(a) creido(a)".format(autor))
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
