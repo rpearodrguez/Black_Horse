@@ -55,26 +55,34 @@ def animeScrap(urlb=""):
                 return resultado
 
         elif resultado["animes"] != "":
-            rand = 0
             try:
                 rand = random.randint(0,len(resultado["animes"])-1)
+                print(rand)
+                titulo = resultado["animes"][rand]["title"]
+                print(titulo)
+                portada = resultado["animes"][rand]["poster"]
+                print(portada)
+                sinopsis = resultado["animes"][rand]["synopsis"]
+                print(sinopsis)
+                lanzamiento = resultado["animes"][rand]["debut"]
+                print(lanzamiento)
+                tipo = resultado["animes"][rand]["type"]
+                print(tipo)
+                rating = resultado["animes"][rand]["rating"]
+                print(rating)
+                generos =  ", ".join(resultado["animes"][rand]["genres"])
+                print(generos)
+                episodios = resultado["animes"][rand]["episodes"]
+                try:
+                    episodios = resultado["animes"][rand]["episodes"][1]["episode"]
+                except:
+                    pass
+                print(episodios)
+                find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
+                print(find)
+                return find
             except:
                 pass
-            titulo = resultado["animes"][rand]["title"]
-            portada = resultado["animes"][rand]["poster"]
-            sinopsis = resultado["animes"][rand]["synopsis"]
-            lanzamiento = resultado["animes"][rand]["debut"]
-            tipo = resultado["animes"][rand]["type"]
-            rating = resultado["animes"][rand]["rating"]
-            generos =  ", ".join(resultado["animes"][rand]["genres"])
-            episodios = resultado["animes"][rand]["episodes"]
-            try:
-                episodios = resultado["animes"][rand]["episodes"][1]["episode"]
-            except:
-                pass
-            find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
-            print(find)
-            return find
 
             
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
