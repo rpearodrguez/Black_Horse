@@ -36,6 +36,7 @@ async def on_message(message):
         embed.add_field(name="anime genero", value="Busca información de un anime del genero solicitado", inline=True)
         embed.add_field(name="genero", value="Entrega una lista de los generos disponibles para buscar", inline=True)
         embed.add_field(name="manga", value="Busca información de un manga solicitado", inline=True)
+        embed.add_field(name="img", value="Busca el primer resultado de un término en google images", inline=True)
         embed.add_field(name="MODULO", value="ROL", inline=False)
         embed.add_field(name="roll x n +", value="Tira x cantidad de dados de n caras + el bonificador", inline=True)
         embed.add_field(name="MODULO", value="FEELS", inline=False)
