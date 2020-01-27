@@ -32,57 +32,55 @@ def animeScrap(urlb=""):
         
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
-        if resultado["search"] != "":
+        try:
+            rand = random.randint(0,len(resultado["search"])-1)
+            titulo = resultado["search"][rand]["title"]                
+            portada = resultado["search"][rand]["poster"]
+            sinopsis = resultado["search"][rand]["synopsis"]
+            lanzamiento = resultado["search"][rand]["debut"]
+            tipo = resultado["search"][rand]["type"]
+            rating = resultado["search"][rand]["rating"]
+            generos =  ", ".join(resultado["search"][rand]["genres"])
+            episodios = resultado["search"][rand]["episodes"]
             try:
-                rand = random.randint(0,len(resultado["search"])-1)
-                titulo = resultado["search"][rand]["title"]
-                portada = resultado["search"][rand]["poster"]
-                sinopsis = resultado["search"][rand]["synopsis"]
-                lanzamiento = resultado["search"][rand]["debut"]
-                tipo = resultado["search"][rand]["type"]
-                rating = resultado["search"][rand]["rating"]
-                generos =  ", ".join(resultado["search"][rand]["genres"])
-                episodios = resultado["search"][rand]["episodes"]
-                try:
-                    episodios = resultado["search"][rand]["episodes"][1]["episode"]
-                except:
-                    pass
-                find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
-                print(find)
-                return find
-            except:
-                resultado[0] = "Anime o genero no encontrado"
-                return resultado
-
-        elif resultado["animes"] != "":
-            try:
-                rand = random.randint(0,len(resultado["animes"])-1)
-                print(rand)
-                titulo = resultado["animes"][rand]["title"]
-                print(titulo)
-                portada = resultado["animes"][rand]["poster"]
-                print(portada)
-                sinopsis = resultado["animes"][rand]["synopsis"]
-                print(sinopsis)
-                lanzamiento = resultado["animes"][rand]["debut"]
-                print(lanzamiento)
-                tipo = resultado["animes"][rand]["type"]
-                print(tipo)
-                rating = resultado["animes"][rand]["rating"]
-                print(rating)
-                generos =  ", ".join(resultado["animes"][rand]["genres"])
-                print(generos)
-                episodios = resultado["animes"][rand]["episodes"]
-                try:
-                    episodios = resultado["animes"][rand]["episodes"][1]["episode"]
-                except:
-                    pass
-                print(episodios)
-                find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
-                print(find)
-                return find
+                episodios = resultado["search"][rand]["episodes"][1]["episode"]
             except:
                 pass
+            find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
+            print(find)
+            return find
+        except:
+            pass
+
+        try:
+            rand = random.randint(0,len(resultado["animes"])-1)
+            print(rand)
+            titulo = resultado["animes"][rand]["title"]
+            print(titulo)
+            portada = resultado["animes"][rand]["poster"]
+            print(portada)                
+            sinopsis = resultado["animes"][rand]["synopsis"]
+            print(sinopsis)
+            lanzamiento = resultado["animes"][rand]["debut"]
+            print(lanzamiento)
+            tipo = resultado["animes"][rand]["type"]
+            print(tipo)
+            rating = resultado["animes"][rand]["rating"]
+            print(rating)
+            generos =  ", ".join(resultado["animes"][rand]["genres"])
+            print(generos)
+            episodios = resultado["animes"][rand]["episodes"]
+            try:
+                episodios = resultado["animes"][rand]["episodes"][1]["episode"]
+            except:
+                pass
+            print(episodios)
+            find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
+            print(find)
+            return find
+        except:
+            resultado[0] = "Anime o genero no encontrado"
+            return resultado
 
             
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
