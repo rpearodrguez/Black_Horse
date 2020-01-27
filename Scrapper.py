@@ -9,25 +9,26 @@ import os
 #Anime Scrapping
 def animeScrap(urlb=""):
     # url = the target we want to open
-    if urlb in "accion,infantil,sobrenatural,josei,superpoderes,aventura,juegos,suspenso,carreras,magia,terror,mecha,vampiros,comedia,militar,yaoi,demencia,misterio,yuri,demonios,musica,deportes,parodia,drama,psicologico,ecchi,escolares,romance,espacial,samurai,fantasia,seinen,harem,shoujo,historico,shounen":
+    if urlb in "accion , infantil , sobrenatural , josei , superpoderes , aventura , juegos , suspenso , carreras , magia , terror , mecha , vampiros , comedia , militar , yaoi , demencia , misterio , yuri , demonios , musica , deportes , parodia , drama , psicologico , ecchi , escolares , romance , espacial , samurai , fantasia , seinen , harem , shoujo , historico , shounen ":
         url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/{}/rating/1".format(urlb)
+        print(url)
     elif urlb == "artes+marciales":
         url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/artes-marciales/rating/1"
+        print(url)
     elif urlb == "ciencia+ficcion":
         url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/ciencia-ficcion/rating/1"
+        print(url)
     elif urlb == "recuentos+de+la+vida,":
         url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/recuentos-de-la-vida/rating/1"
+        print(url)
     else:
         url = "https://animeflv.chrismichael.now.sh/api/v1/Search/:{}".format(urlb)
+        print(url)
     # open with GET method
     resp = requests.get(url)
 
     # http_respone 200 means OK status
-    if resp.status_code == 404:
-        find = ["no encontrado"]
-        print(find)
-        return find
-    elif resp.status_code == 200:
+    if resp.status_code == 200:
         
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
@@ -49,7 +50,7 @@ def animeScrap(urlb=""):
             print(find)
             return find
 
-        if resultado["animes"] != "":
+        elif resultado["animes"] != "":
             rand = random.randint(0,len(resultado["animes"])-1)
             titulo = resultado["animes"][rand]["title"]
             portada = resultado["animes"][rand]["poster"]
@@ -66,7 +67,8 @@ def animeScrap(urlb=""):
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
             print(find)
             return find
-        
+        else:
+            resultado[0] = "Anime o genero no encontrado"
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
     
     
