@@ -33,26 +33,26 @@ def animeScrap(urlb=""):
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
         if resultado["search"] != "":
-            rand = 0
             try:
                 rand = random.randint(0,len(resultado["search"])-1)
+                titulo = resultado["search"][rand]["title"]
+                portada = resultado["search"][rand]["poster"]
+                sinopsis = resultado["search"][rand]["synopsis"]
+                lanzamiento = resultado["search"][rand]["debut"]
+                tipo = resultado["search"][rand]["type"]
+                rating = resultado["search"][rand]["rating"]
+                generos =  ", ".join(resultado["search"][rand]["genres"])
+                episodios = resultado["search"][rand]["episodes"]
+                try:
+                    episodios = resultado["search"][rand]["episodes"][1]["episode"]
+                except:
+                    pass
+                find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
+                print(find)
+                return find
             except:
-                pass
-            titulo = resultado["search"][rand]["title"]
-            portada = resultado["search"][rand]["poster"]
-            sinopsis = resultado["search"][rand]["synopsis"]
-            lanzamiento = resultado["search"][rand]["debut"]
-            tipo = resultado["search"][rand]["type"]
-            rating = resultado["search"][rand]["rating"]
-            generos =  ", ".join(resultado["search"][rand]["genres"])
-            episodios = resultado["search"][rand]["episodes"]
-            try:
-                episodios = resultado["search"][rand]["episodes"][1]["episode"]
-            except:
-                pass
-            find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
-            print(find)
-            return find
+                resultado[0] = "Anime o genero no encontrado"
+                return resultado
 
         elif resultado["animes"] != "":
             rand = 0
@@ -75,8 +75,8 @@ def animeScrap(urlb=""):
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
             print(find)
             return find
-        else:
-            resultado[0] = "Anime o genero no encontrado"
+
+            
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
     
     
