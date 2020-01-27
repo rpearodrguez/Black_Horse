@@ -119,7 +119,7 @@ async def on_message(message):
         animeBusqueda = "+".join(animeId[1:])
         resultado = Scrapper.animeScrap(animeBusqueda)
         #find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
-        if len(resultado)>1:
+        try:
             embed = discord.Embed(title="Titulo", description=resultado[0])
             embed.set_image(url = resultado[1])
             embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
@@ -130,8 +130,11 @@ async def on_message(message):
             embed.add_field(name="Episodios", value=resultado[7], inline=True)
             embed.set_footer(text="Creditos a animeflv.net")
             await message.channel.send(content=None, embed=embed)
-        elif len(resultado)==1:
+        except:
             await message.channel.send(resultado[0])
+
+
+
     if message.content.find("sh.manga ") != -1:
         mangaId = message.content.split()
         mangaBusqueda = "+".join(mangaId[1:])
