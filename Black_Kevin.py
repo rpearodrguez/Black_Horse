@@ -52,7 +52,7 @@ async def on_message(message):
         embed.add_field(name="feed", value="7", inline=True)
         embed.add_field(name="kick", value="8", inline=True)
         embed.add_field(name="smug", value="9", inline=True)
-        embed.add_field(name="spin", value=10", inline=True)
+        embed.add_field(name="spin", value="10", inline=True)
         embed.add_field(name="blush", value="11", inline=True)
         embed.add_field(name="shy", value="12", inline=True)
         embed.add_field(name="tsundere", value="13", inline=True)
