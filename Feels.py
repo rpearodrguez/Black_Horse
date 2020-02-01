@@ -68,6 +68,7 @@ def reactionImage(feel=""):
 
     if feel !=  "escobazo":
         url = "https://api.tenor.com/v1/random?key={}&q={}&locale=en_US&contentfilter=off&media_filter=minimal&ar_range=wide&limit=1".format(os.environ.get('TENOR_KEY'), search_term)
+        print(url)
         # open with GET method
         resp = requests.get(url)
         # http_respone 200 means OK status
