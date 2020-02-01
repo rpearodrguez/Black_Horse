@@ -419,7 +419,7 @@ async def on_message(message):
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("dance")
         try:
-            if mensaje[2].lower() == "caramelldansen":
+            if mensaje[1].lower() == "caramelldansen":
                 imagen = Feels.reactionImage("caramelldansen")
         except:
             pass
