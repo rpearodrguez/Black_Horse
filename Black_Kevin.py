@@ -429,11 +429,13 @@ async def on_message(message):
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
-def exception_handler(loop,context):
-   print("Caught the following exception")
-   print(context['message'])
-
-client.loop.set_exception_handler(exception_handler)
-client.run(os.environ.get('DISCORD_TOKEN'))
 
 
+a = 0
+while a == 0:
+    try:
+        client.run(os.environ.get('DISCORD_TOKEN'))
+        a = 1
+    except:
+        print("Se crasheó... revisa el log")
+        a = 0
