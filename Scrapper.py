@@ -76,9 +76,9 @@ def animeScrap(urlb=""):
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
             print(find)
             return find
-        finally:
-            resultado[0] = "Anime o genero no encontrado"
-            return resultado
+        #except:
+        #    resultado[0] = "Anime o genero no encontrado"
+        #    return resultado
 
             
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
