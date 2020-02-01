@@ -245,7 +245,7 @@ async def on_message(message):
 #Reactions Module
 
     if message.content.find("sh.escobazo ") != -1:
-        victima = message.mentions[0]
+        victima = message.mentions[0].name.name
         print(message.mentions)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("escobazo")
@@ -254,7 +254,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.hug ") != -1:
-        victima = message.mentions[0].name
+        victima = message.mentions[0].name.name
         print(message.mentions[0])
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -265,7 +265,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.lick ") != -1:
-        victima = message.mentions[0]
+        victima = message.mentions[0].name
         print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -276,7 +276,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.pat ") != -1:
-        victima = message.mentions[0]
+        victima = message.mentions[0].name
         print(message.mentions)        
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -296,7 +296,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.slap ") != -1:
-        victima = message.mentions[0]
+        victima = message.mentions[0].name
         print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -307,7 +307,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.kiss ") != -1:
-        victima = message.mentions[0]
+        victima = message.mentions[0].name
         print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -318,7 +318,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.feed ") != -1:
-        victima = message.mentions[0]
+        victima = message.mentions[0].name
         print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -329,7 +329,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.kick ") != -1:
-        victima = message.mentions[0]
+        victima = message.mentions[0].name
         print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -349,7 +349,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.baka") != -1:
-        victima = message.mentions[0]
+        victima = message.mentions[0].name
         print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -415,7 +415,7 @@ async def on_message(message):
     
     if message.content.find("sh.dance") != -1:
         mensaje = message.content.split()
-        victima = message.mentions[0]
+        victima = message.mentions[0].name
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("dance")
