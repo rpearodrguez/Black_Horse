@@ -424,9 +424,9 @@ async def on_message(message):
                 imagen = Feels.reactionImage("caramelldansen")
         except:
             pass
-        if victima:
+        try:
             embed = discord.Embed(title="{} se puso a bailar con {}".format(autor,victima))
-        elif not victima:
+        except IndexError:
             embed = discord.Embed(title="{} se puso a bailar".format(autor))
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
