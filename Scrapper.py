@@ -50,29 +50,29 @@ def animeScrap(urlb=""):
             print(find)
             return find
         except Exception as e:
-            print(e)
+            print("Exception" + e)
             rand = random.randint(0,len(resultado["animes"])-1)
-            print(rand)
+            print("Numero de indice: "+ rand)
             titulo = resultado["animes"][rand]["title"]
-            print(titulo)
+            print("Titulo: "+ titulo)
             portada = resultado["animes"][rand]["poster"]
-            print(portada)                
+            print("Portada: "+ portada)                
             sinopsis = resultado["animes"][rand]["synopsis"]
-            print(sinopsis)
+            print("Sinopsis: "+ sinopsis)
             lanzamiento = resultado["animes"][rand]["debut"]
-            print(lanzamiento)
+            print("Lanzamiento: " + lanzamiento)
             tipo = resultado["animes"][rand]["type"]
-            print(tipo)
+            print("Tipo: "+tipo)
             rating = resultado["animes"][rand]["rating"]
-            print(rating)
+            print("Rating: "+ rating)
             generos =  ", ".join(resultado["animes"][rand]["genres"])
-            print(generos)
+            print("Generos: " + generos)
             episodios = resultado["animes"][rand]["episodes"]
             try:
                 episodios = resultado["animes"][rand]["episodes"][1]["episode"]
             except:
                 pass
-            print(episodios)
+            print("Episodios: "+episodios)
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
             print(find)
             return find
