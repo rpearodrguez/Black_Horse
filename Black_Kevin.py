@@ -254,8 +254,8 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
     
     if message.content.find("sh.hug ") != -1:
-        victima = message.mentions[0]
-        print(message.mentions[0].nick)
+        victima = message.mentions[0].name
+        print(message.mentions[0])
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("abrazo")
