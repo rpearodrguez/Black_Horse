@@ -44,6 +44,7 @@ async def on_message(message):
         embed.add_field(name="MODULO", value="FEELS", inline=False)
         embed.add_field(name="escobazo", value="Dale un buen escobazo a alguien más, o ti mismo, no te juzgo", inline=True)
         embed.add_field(name="pat", value="Acaricias la cabeza de alguien más", inline=True)
+        embed.add_field(name="baka", value="Señalas la estupidez de otra persona", inline=True)
         embed.add_field(name="hug", value="Reparte abrazos por el mundo", inline=True)
         embed.add_field(name="lick", value="Si tienes complejo de rana allá tu", inline=True)
         embed.add_field(name="slap", value="Cacheteas a alguien", inline=True)
@@ -51,6 +52,12 @@ async def on_message(message):
         embed.add_field(name="feed", value="Alimentas a alguien", inline=True)
         embed.add_field(name="kick", value="Pateas a alguien, no confundir con expulsar del server", inline=True)
         embed.add_field(name="smug", value="Esa risa engreída", inline=True)
+        embed.add_field(name="spin", value="Te pones a girar como pendejo", inline=True)
+        embed.add_field(name="blush", value="Te sonrojas", inline=True)
+        embed.add_field(name="shy", value="Te avergüenzas", inline=True)
+        embed.add_field(name="tsundere", value="Te vuelves tsundere", inline=True)
+        embed.add_field(name="lewd", value="Pensamientos impuros recorren tu mente", inline=True)
+        embed.add_field(name="dance", value="Pues... bailas, busca el baile secreto (y si se te ocurre alguno comentalo)", inline=True)
         embed.add_field(name="jojo", value="Jojoposes", inline=True)
         embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
@@ -239,6 +246,7 @@ async def on_message(message):
 
     if message.content.find("sh.escobazo ") != -1:
         victima = message.mentions[0]
+        print(message.mentions)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("escobazo")
         embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
@@ -247,6 +255,7 @@ async def on_message(message):
     
     if message.content.find("sh.hug ") != -1:
         victima = message.mentions[0]
+        print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("abrazo")
@@ -257,6 +266,7 @@ async def on_message(message):
     
     if message.content.find("sh.lick ") != -1:
         victima = message.mentions[0]
+        print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("lamer")
@@ -267,9 +277,7 @@ async def on_message(message):
 
     if message.content.find("sh.pat ") != -1:
         victima = message.mentions[0]
-        print(victima)
-        #victima2 = victima[1]
-        
+        print(message.mentions)        
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("pat")
@@ -279,7 +287,6 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.jojo") != -1:
-        victima = message.content.split()
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("jojo")
@@ -290,6 +297,7 @@ async def on_message(message):
 
     if message.content.find("sh.slap ") != -1:
         victima = message.mentions[0]
+        print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("slap")
@@ -300,6 +308,7 @@ async def on_message(message):
 
     if message.content.find("sh.kiss ") != -1:
         victima = message.mentions[0]
+        print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("kiss")
@@ -310,6 +319,7 @@ async def on_message(message):
 
     if message.content.find("sh.feed ") != -1:
         victima = message.mentions[0]
+        print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("food")
@@ -320,6 +330,7 @@ async def on_message(message):
 
     if message.content.find("sh.kick ") != -1:
         victima = message.mentions[0]
+        print(message.mentions)
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("kickbutt")
@@ -329,7 +340,6 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.smug") != -1:
-        victima = message.content.split()
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("smug")
@@ -337,15 +347,86 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+    
+    if message.content.find("sh.baka") != -1:
+        victima = message.mentions[0]
+        print(message.mentions)
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("baka")
+        embed = discord.Embed(title="{} es piensa que eres un tonto (comando en desarrollo)".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.suicide") != -1:
-        victima = message.content.split()
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("suicide")
         embed = discord.Embed(title="{} se mató".format(autor))
         embed.set_image(url = imagen)
         embed.set_footer(text="Si realmente estas mal y necesitas ayuda visita http://www.asulac.org/necesitas-ayuda/")
+        await message.channel.send(content=None, embed=embed)
+    
+    if message.content.find("sh.spin") != -1:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("spin")
+        embed = discord.Embed(title="{} se puso a girar como pendejo".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.blush") != -1:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("blush")
+        embed = discord.Embed(title="{} se sonrojó".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+    
+    if message.content.find("sh.shy") != -1:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("shy")
+        embed = discord.Embed(title="{} se hace el tímido".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+
+    if message.content.find("sh.tsundere") != -1:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("tsundere")
+        embed = discord.Embed(title="{} es una tsundere".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+    
+    if message.content.find("sh.lewd") != -1:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("lewd")
+        embed = discord.Embed(title="{} está teniendo pensamientos cochinos".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+    
+    if message.content.find("sh.dance") != -1:
+        mensaje = message.content.split()
+        victima = message.mentions[0]
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("dance")
+        if mensaje[2].lower() == "caramelldansen":
+            imagen = Feels.reactionImage("caramelldansen")
+        if victima:
+            embed = discord.Embed(title="{} se puso a bailar con {}".format(autor,victima))
+        elif not victima:
+            embed = discord.Embed(title="{} se puso a bailar".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
 def exception_handler(loop,context):
