@@ -15,6 +15,8 @@ Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
 client = discord.Client()
 
+
+
     
 
 @client.event
@@ -346,4 +348,11 @@ async def on_message(message):
         embed.set_footer(text="Si realmente estas mal y necesitas ayuda visita http://www.asulac.org/necesitas-ayuda/")
         await message.channel.send(content=None, embed=embed)
 
+def exception_handler(loop,context):
+   print("Caught the following exception")
+   print(context['message'])
+
+client.loop.set_exception_handler(exception_handler)
 client.run(os.environ.get('DISCORD_TOKEN'))
+
+
