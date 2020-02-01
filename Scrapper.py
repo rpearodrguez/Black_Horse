@@ -49,37 +49,35 @@ def animeScrap(urlb=""):
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
             print(find)
             return find
-        except Exception as e:
-            print("Exception:")
-            print(e)
+        except KeyError:
             rand = random.randint(0,len(resultado["animes"])-1)
-            print("Numero de indice: "+ rand)
+            print(rand)
             titulo = resultado["animes"][rand]["title"]
-            print("Titulo: "+ titulo)
+            print(titulo)
             portada = resultado["animes"][rand]["poster"]
-            print("Portada: "+ portada)                
+            print(portada)                
             sinopsis = resultado["animes"][rand]["synopsis"]
-            print("Sinopsis: "+ sinopsis)
+            print(sinopsis)
             lanzamiento = resultado["animes"][rand]["debut"]
-            print("Lanzamiento: " + lanzamiento)
+            print(lanzamiento)
             tipo = resultado["animes"][rand]["type"]
-            print("Tipo: "+tipo)
+            print(tipo)
             rating = resultado["animes"][rand]["rating"]
-            print("Rating: "+ rating)
+            print(rating)
             generos =  ", ".join(resultado["animes"][rand]["genres"])
-            print("Generos: " + generos)
+            print(generos)
             episodios = resultado["animes"][rand]["episodes"]
             try:
                 episodios = resultado["animes"][rand]["episodes"][1]["episode"]
             except:
                 pass
-            print("Episodios: "+episodios)
+            print(episodios)
             find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
             print(find)
             return find
-        #except:
-        #    resultado[0] = "Anime o genero no encontrado"
-        #    return resultado
+        except:
+            resultado[0] = "Anime o genero no encontrado"
+            return resultado
 
             
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
