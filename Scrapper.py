@@ -82,8 +82,6 @@ def animeScrap(urlb=""):
             
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios
     
-    
-
 #Manga Scrapping
 def mangaScrap(urlb=""):
     # url = the target we want to open
