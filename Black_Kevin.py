@@ -255,7 +255,7 @@ async def on_message(message):
     
     if message.content.find("sh.hug ") != -1:
         victima = message.mentions[0]
-        print(message.mentions[0].split())
+        print(message.mentions[0].nick)
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("abrazo")
