@@ -43,7 +43,7 @@ def reactionImage(feel=""):
         search_term = "anime+smug"
 
     if feel == "spin":
-        search_term = "anime+spining"
+        search_term = "anime+spinning"
 
     if feel == "dance":
         search_term = "anime+dance"
