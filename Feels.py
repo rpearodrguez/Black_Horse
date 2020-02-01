@@ -73,6 +73,7 @@ def reactionImage(feel=""):
         # http_respone 200 means OK status
         if resp.status_code == 200:
             gifs = json.loads(resp.content)
+            print(gifs)
             imagenes[0] = gifs["results"][0]["media"][0]["gif"]["url"]
             print(imagenes[0])
         else:
