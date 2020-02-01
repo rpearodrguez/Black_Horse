@@ -419,8 +419,11 @@ async def on_message(message):
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("dance")
-        if mensaje[2].lower() == "caramelldansen":
-            imagen = Feels.reactionImage("caramelldansen")
+        try:
+            if mensaje[2].lower() == "caramelldansen":
+                imagen = Feels.reactionImage("caramelldansen")
+        except:
+            pass
         if victima:
             embed = discord.Embed(title="{} se puso a bailar con {}".format(autor,victima))
         elif not victima:
