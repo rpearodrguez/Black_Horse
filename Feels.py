@@ -49,7 +49,7 @@ def reactionImage(feel=""):
         search_term = "anime+dance"
     
     if feel == "caramelldansen":
-        search_term = "anime+dance+caramelldansen"
+        search_term = "caramelldansen"
 
     if feel == "baka":
         search_term = "anime+angry+girl+idiot"
