@@ -117,7 +117,7 @@ async def on_message(message):
             embed.add_field(name="Puntaje", value=resultado[5], inline=True)
             embed.add_field(name="Genero(s)", value=resultado[6], inline=False)
             embed.add_field(name="Episodios", value=resultado[7], inline=True)
-            embed.set_footer(text="Creditos a animeflv.net")
+            embed.set_footer(text="Creditos a https://github.com/ChrisMichaelPerezSantiago")
             await message.channel.send(content=None, embed=embed)
         except:
             await message.channel.send(resultado[0])
