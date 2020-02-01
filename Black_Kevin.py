@@ -415,7 +415,6 @@ async def on_message(message):
     
     if message.content.find("sh.dance") != -1:
         mensaje = message.content.split()
-        victima = message.mentions[0].name
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("dance")
@@ -425,6 +424,7 @@ async def on_message(message):
         except:
             pass
         try:
+            victima = message.mentions[0].name
             embed = discord.Embed(title="{} se puso a bailar con {}".format(autor,victima))
         except IndexError:
             embed = discord.Embed(title="{} se puso a bailar".format(autor))
