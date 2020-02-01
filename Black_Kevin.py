@@ -428,6 +428,7 @@ async def on_message(message):
             embed = discord.Embed(title="{} se puso a bailar con {}".format(autor,victima))
         except IndexError:
             embed = discord.Embed(title="{} se puso a bailar".format(autor))
+            pass
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
