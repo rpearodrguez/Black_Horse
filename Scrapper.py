@@ -50,7 +50,8 @@ def animeScrap(urlb=""):
             print(find)
             return find
         except Exception as e:
-            print("Exception" + e)
+            print("Exception:")
+            print(e)
             rand = random.randint(0,len(resultado["animes"])-1)
             print("Numero de indice: "+ rand)
             titulo = resultado["animes"][rand]["title"]
