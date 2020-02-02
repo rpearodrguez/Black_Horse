@@ -178,11 +178,11 @@ async def on_message(message):
             try:
                 victima = message.mentions[0].name
                 embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
-            except IndexError:
-                mensaje = message.content.split()         
+            except:
+                raise IndexError("Victima no existe")      
             embed.set_image(url = imagen)
             await message.channel.send(content=None, embed=embed)
-        except:
+        except IndexError:
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
     if message.content.find("sh.hug ") != -1:
