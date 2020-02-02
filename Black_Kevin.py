@@ -9,7 +9,7 @@ from boto.s3.connection import S3Connection
 
 '''
 Bot para Stick Horse
-Versión 1.0.1 - Versión Operativa, adición comandos adicionales.
+Versión 2.0.0 - Versión Operativa, adición comandos adicionales.
 Autor: Richard Peña (Vaalus)
 Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
@@ -168,48 +168,131 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
 
 #Reactions Module
+#Cooperative Reactions
 
     if message.content.find("sh.escobazo ") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("escobazo")
-        embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
-        embed.set_image(url = imagen)
-        await message.channel.send(content=None, embed=embed)
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("escobazo")
+            embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
+            embed.set_image(url = imagen)
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
     
     if message.content.find("sh.hug ") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions[0])
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("abrazo")
-        embed = discord.Embed(title="{} dio un abrazo a {}".format(autor,victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions[0])
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("abrazo")
+            embed = discord.Embed(title="{} dio un abrazo a {}".format(autor,victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
     
     if message.content.find("sh.lick ") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("lamer")
-        embed = discord.Embed(title="{} lamió a {}".format(autor,victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("lamer")
+            embed = discord.Embed(title="{} lamió a {}".format(autor,victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
 
     if message.content.find("sh.pat ") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)        
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("pat")
-        embed = discord.Embed(title="{} acarició la cabeza de {}".format(autor,victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)        
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("pat")
+            embed = discord.Embed(title="{} acarició la cabeza de {}".format(autor,victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
+
+    if message.content.find("sh.slap ") != -1:
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("slap")
+            embed = discord.Embed(title="{} cacheteó a {}".format(autor,victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
+
+    if message.content.find("sh.kiss ") != -1:
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("kiss")
+            embed = discord.Embed(title="{} besó a {}".format(autor,victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
+
+    if message.content.find("sh.feed ") != -1:
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("food")
+            embed = discord.Embed(title="{} alimentó a {}".format(autor,victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
+
+    if message.content.find("sh.kick ") != -1:
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("kickbutt")
+            embed = discord.Embed(title="{} pateó a {}".format(autor,victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
+
+    if message.content.find("sh.baka") != -1:
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("baka")
+            embed = discord.Embed(title="{} BAKA!! BAKA!! BAKAAAA!!".format(victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
 
     if message.content.find("sh.jojo") != -1:
         print(message.author)
@@ -220,49 +303,7 @@ async def on_message(message):
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
-    if message.content.find("sh.slap ") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("slap")
-        embed = discord.Embed(title="{} cacheteó a {}".format(autor,victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
-
-    if message.content.find("sh.kiss ") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("kiss")
-        embed = discord.Embed(title="{} besó a {}".format(autor,victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
-
-    if message.content.find("sh.feed ") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("food")
-        embed = discord.Embed(title="{} alimentó a {}".format(autor,victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
-
-    if message.content.find("sh.kick ") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("kickbutt")
-        embed = discord.Embed(title="{} pateó a {}".format(autor,victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
+#Self Reactions
 
     if message.content.find("sh.smug") != -1:
         print(message.author)
@@ -272,28 +313,20 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
-    
-    if message.content.find("sh.baka") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("baka")
-        embed = discord.Embed(title="{} BAKA!! BAKA!! BAKAAAA!!".format(victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
-    
+
     if message.content.find("sh.bite") != -1:
-        victima = message.mentions[0].name
-        print(message.mentions)
-        print(message.author)
-        autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("bite")
-        embed = discord.Embed(title="{} muerde a {}".format(autor, victima))
-        embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
-        await message.channel.send(content=None, embed=embed)
+        try:
+            victima = message.mentions[0].name
+            print(message.mentions)
+            print(message.author)
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("bite")
+            embed = discord.Embed(title="{} muerde a {}".format(autor, victima))
+            embed.set_image(url = imagen)
+            embed.set_footer(text="Creditos a tenor.com")
+            await message.channel.send(content=None, embed=embed)
+        except IndexError:
+            await message.channel.send("Usuario no existe")
 
     if message.content.find("sh.suicide") != -1:
         print(message.author)
@@ -348,7 +381,9 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
-    
+
+#Dual Reactions
+
     if message.content.find("sh.dance") != -1:
         mensaje = message.content.split()
         print(message.author)
@@ -371,11 +406,4 @@ async def on_message(message):
 
 
 
-a = 0
-while a == 0:
-    try:
-        client.run(os.environ.get('DISCORD_TOKEN'))
-        a = 1
-    except:
-        print("Se crasheó... revisa el log")
-        a = 0
+client.run(os.environ.get('DISCORD_TOKEN'))
