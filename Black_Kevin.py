@@ -22,7 +22,7 @@ client = discord.Client()
 @client.event
 async def on_message(message):
     #entrega información de comandos
-    print("{}:{}".format(str(message.author).split("#")[0],message.content)) # Now every message sent will be printed to the console
+    print("{} - {}:{}".format(str(message.author).split("#")[0],message.author.guild.name, message.content)) # Now every message sent will be printed to the console
 
 
 #General Module
