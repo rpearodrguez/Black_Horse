@@ -364,7 +364,16 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
-
+        
+    if message.content.find("sh.cry") != -1:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("cry")
+        embed = discord.Embed(title="{} está llorando".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+        
 #Dual Reactions
 
     if message.content.find("sh.dance") != -1:
