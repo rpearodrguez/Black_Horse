@@ -413,4 +413,18 @@ async def on_message(message):
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
 
+    if message.content.find("sh.sleep") != -1:
+        autor = str(message.author).split("#")[0]
+        try:
+            victima = message.mentions[0].name
+            imagen = Feels.reactionImage("sleep")
+            embed = discord.Embed(title="{} se fue a dormir con {}".format(autor,victima))
+        except IndexError:
+            imagen = Feels.reactionImage("sleepy")
+            embed = discord.Embed(title="{} tiene sueño".format(autor))
+            pass
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+        
 client.run(os.environ.get('DISCORD_TOKEN'))
