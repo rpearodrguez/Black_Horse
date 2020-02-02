@@ -185,20 +185,6 @@ async def on_message(message):
         except IndexError:
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
-    if message.content.find("sh.hug ") != -1:
-        try:
-            victima = message.mentions[0].name
-            print(message.mentions[0])
-            print(message.author)
-            autor = str(message.author).split("#")[0]
-            imagen = Feels.reactionImage("abrazo")
-            embed = discord.Embed(title="{} dio un abrazo a {}".format(autor,victima))
-            embed.set_image(url = imagen)
-            embed.set_footer(text="Creditos a tenor.com")
-            await message.channel.send(content=None, embed=embed)
-        except IndexError:
-            await message.channel.send("Usuario no existe")
-    
     if message.content.find("sh.lick ") != -1:
         try:
             victima = message.mentions[0].name
@@ -403,6 +389,20 @@ async def on_message(message):
         except IndexError:
             embed = discord.Embed(title="{} se puso a bailar".format(autor))
             pass
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+        
+    if message.content.find("sh.hug") != -1:
+        try:
+            autor = str(message.author).split("#")[0]
+            imagen = Feels.reactionImage("abrazo")
+            try:
+                victima = message.mentions[0].name
+                embed = discord.Embed(title="{} abrazó a {}".format(autor,victima))
+            except IndexError:
+                embed = discord.Embed(title="{} necesita un abrazo.".format(autor))
+                pass
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
