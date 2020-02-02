@@ -22,7 +22,7 @@ client = discord.Client()
 @client.event
 async def on_message(message):
     #entrega información de comandos
-    print(message.content) # Now every message sent will be printed to the console
+    print(message.author+":"+message.content) # Now every message sent will be printed to the console
 
 #General Module
 
@@ -171,9 +171,9 @@ async def on_message(message):
 #Cooperative Reactions
 
     if message.content.find("sh.escobazo ") != -1:
-        try:
-            mensaje = message.content.split()
-            print(mensaje[1])
+        mensaje = message.content.split()
+        print(mensaje[1])
+        try:            
             victima = message.mentions[0].name
             print(message.mentions)
             autor = str(message.author).split("#")[0]
