@@ -170,16 +170,15 @@ async def on_message(message):
 #Reactions Module
 #Cooperative Reactions
 
-    if message.content.find("sh.escobazo ") != -1:
+    if message.content.find("sh.escobazo") != -1:
         try:            
             print(message.mentions)
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("escobazo")
             try:
                 victima = message.mentions[0].name
-                print(victima)
                 embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
-            except:
+            except IndexError:
                 raise IndexError("Victima no existe")      
             embed.set_image(url = imagen)
             await message.channel.send(content=None, embed=embed)
