@@ -22,7 +22,7 @@ client = discord.Client()
 @client.event
 async def on_message(message):
     #entrega información de comandos
-    print("{}:{}".format(str(message.author).split("#")[0],message.content)) # Now every message sent will be printed to the console
+    print("{}: {}".format(str(message.author).split("#")[0],message.content)) # Now every message sent will be printed to the console
 
 #General Module
 
@@ -174,11 +174,14 @@ async def on_message(message):
         mensaje = message.content.split()
         print(mensaje[1])
         try:            
-            victima = message.mentions[0].name
             print(message.mentions)
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("escobazo")
-            embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
+            try:
+                victima = message.mentions[0].name
+                embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
+            except IndexError:
+                raise IndexError            
             embed.set_image(url = imagen)
             await message.channel.send(content=None, embed=embed)
         except IndexError:
