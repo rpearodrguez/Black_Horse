@@ -392,17 +392,16 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
-        
+
     if message.content.find("sh.hug") != -1:
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("abrazo")
         try:
-            autor = str(message.author).split("#")[0]
-            imagen = Feels.reactionImage("abrazo")
-            try:
-                victima = message.mentions[0].name
-                embed = discord.Embed(title="{} abrazó a {}".format(autor,victima))
-            except IndexError:
-                embed = discord.Embed(title="{} necesita un abrazo.".format(autor))
-                pass
+            victima = message.mentions[0].name
+            embed = discord.Embed(title="{} abrazó a {}".format(autor,victima))
+        except IndexError:
+            embed = discord.Embed(title="{} necesita un abrazo.".format(autor))
+            pass
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
