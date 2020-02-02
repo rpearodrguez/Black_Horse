@@ -9,7 +9,7 @@ from boto.s3.connection import S3Connection
 
 '''
 Bot para Stick Horse
-Versión 1.0.1 - Versión Operativa, adición comandos adicionales.
+Versión 2.0.0 - Versión Operativa, adición comandos adicionales.
 Autor: Richard Peña (Vaalus)
 Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
