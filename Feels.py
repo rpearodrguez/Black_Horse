@@ -75,6 +75,9 @@ def reactionImage(feel=""):
     if feel == "sleepy":
         search_term = "anime+sleepy"
         
+    if feel == "cry":
+        search_term = "anime+sad+cry"
+        
     if feel !=  "escobazo":
         url = "https://api.tenor.com/v1/random?key={}&q={}&locale=en_US&contentfilter=off&media_filter=minimal&ar_range=wide&limit=1".format(os.environ.get('TENOR_KEY'), search_term)
         # open with GET method
