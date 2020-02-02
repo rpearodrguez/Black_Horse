@@ -172,6 +172,8 @@ async def on_message(message):
 
     if message.content.find("sh.escobazo ") != -1:
         try:
+            mensaje = message.content.split()
+            print(mensaje[1])
             victima = message.mentions[0].name
             print(message.mentions)
             autor = str(message.author).split("#")[0]
@@ -180,7 +182,7 @@ async def on_message(message):
             embed.set_image(url = imagen)
             await message.channel.send(content=None, embed=embed)
         except IndexError:
-            await message.channel.send("Usuario no existe")
+            await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
     if message.content.find("sh.hug ") != -1:
         try:
