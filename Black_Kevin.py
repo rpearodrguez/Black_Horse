@@ -436,4 +436,18 @@ async def on_message(message):
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
         
+
+    if message.content.find("sh.happy") != -1:
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("happy")
+        try:
+            victima = message.mentions[0].name
+            embed = discord.Embed(title="{} está feliz por {}".format(autor,victima))
+        except IndexError:
+            embed = discord.Embed(title="{} está feliz".format(autor))
+            pass
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Creditos a tenor.com")
+        await message.channel.send(content=None, embed=embed)
+        
 client.run(os.environ.get('DISCORD_TOKEN'))
