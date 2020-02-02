@@ -171,8 +171,6 @@ async def on_message(message):
 #Cooperative Reactions
 
     if message.content.find("sh.escobazo ") != -1:
-        mensaje = message.content.split()
-        print(mensaje[1])
         try:            
             print(message.mentions)
             autor = str(message.author).split("#")[0]
@@ -181,10 +179,10 @@ async def on_message(message):
                 victima = message.mentions[0].name
                 embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
             except IndexError:
-                raise IndexError('Victima no existe')           
+                mensaje = message.content.split()         
             embed.set_image(url = imagen)
             await message.channel.send(content=None, embed=embed)
-        except IndexError:
+        except:
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
     if message.content.find("sh.hug ") != -1:
