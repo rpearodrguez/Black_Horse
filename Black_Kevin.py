@@ -55,28 +55,25 @@ async def on_message(message):
         await message.channel.send(mensaje2)
 
 #JOJO Module        
-    if message.content.find("TU SIGUES, JOTARO!") and not message.author.bot != -1:
-        print(message.author.id)
+    if message.content.find("TU SIGUES, JOTARO!") and message.author.id not 558102665695985674 != -1:
         await message.channel.send("BASTARDO... DIO")
         
-    if message.content.find("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD") != -1:
-        print(message.author.id)
+    if message.content.find("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD")and message.author.id not 558102665695985674 != -1:
         await message.channel.send("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI")
         
-    if message.content.find("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS") and not message.author.bot != -1:
+    if message.content.find("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS")and message.author.id not 558102665695985674 != -1:
         await message.channel.send("ORA!")
         
-    if message.content.find("DIO") and not message.author.bot != -1:
+    if message.content.find("DIO") and not message.author.botand message.author.id not 558102665695985674 != -1:
         await message.channel.send("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD")
         
-    if message.content.find("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI") != -1:
-        print(message.author.id)
+    if message.content.find("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI")and message.author.id not 558102665695985674 != -1:
         await message.channel.send("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS")
         
-    if message.content.find("ORA! ORA! ORA! ORA! ORA!") and not message.author.bot != -1:
+    if message.content.find("ORA! ORA! ORA! ORA! ORA!")and message.author.id not 558102665695985674 != -1:
         await message.channel.send("MUDA! MUDA! MUDA! MUDA! MUDA!")
 
-    if message.content.find("MUDA! MUDA! MUDA! MUDA! MUDA!") and not message.author.bot != -1:
+    if message.content.find("MUDA! MUDA! MUDA! MUDA! MUDA!")and message.author.id not 558102665695985674 != -1:
         await message.channel.send("ORA! ORA! ORA! ORA! ORA!")
         
 #NSFW Module
