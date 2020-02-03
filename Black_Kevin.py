@@ -53,6 +53,15 @@ async def on_message(message):
         mensaje2 = " ".join(mensaje[1:])
         await message.channel.send(mensaje2)
 
+#JOJO Module        
+    if message.content.find("TU SIGUES, JOTARO!") != -1:
+        await message.channel.send("BASTARDO... DIO")
+        
+    if message.content.find("OH? TE ME ESTAS ACERCANDO? EN VEZ DE ESCAPAR VIENES DIRECTO HACIA MI?") != -1:
+        await message.channel.send("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI")
+        
+    if message.content.find("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS") != -1:
+        await message.channel.send("ORA!")
 #NSFW Module
 
     #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
