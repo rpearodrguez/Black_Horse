@@ -57,11 +57,24 @@ async def on_message(message):
     if message.content.find("TU SIGUES, JOTARO!") != -1:
         await message.channel.send("BASTARDO... DIO")
         
-    if message.content.find("OH? TE ME ESTAS ACERCANDO? EN VEZ DE ESCAPAR VIENES DIRECTO HACIA MI?") != -1:
+    if message.content.find("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD") != -1:
         await message.channel.send("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI")
         
     if message.content.find("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS") != -1:
         await message.channel.send("ORA!")
+        
+    if message.content.find("DIO") != -1:
+        await message.channel.send("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD")
+        
+    if message.content.find("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI") != -1:
+        await message.channel.send("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS")
+        
+    if message.content.find("ORA! ORA! ORA! ORA! ORA!") != -1:
+        await message.channel.send("MUDA! MUDA! MUDA! MUDA! MUDA!")
+
+    if message.content.find("MUDA! MUDA! MUDA! MUDA! MUDA!") != -1:
+        await message.channel.send("ORA! ORA! ORA! ORA! ORA!")
+        
 #NSFW Module
 
     #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
