@@ -87,13 +87,17 @@ async def on_message(message):
             await message.channel.send(Scrapper.nhentaiRandomSearch())
         elif(nh_number[1]!="random" and not nh_number[1].isdigit()):
             busqueda = "+".join(nh_number[1:])
+            await message.delete()
             await message.channel.send(Scrapper.nhentaiTagSearch(busqueda))
         elif(int(nh_number[1])):
+            await message.delete()
             await message.channel.send("https://nhentai.net/g/{}".format(nh_number[1]))
         elif(not int(nh_number[1])):
+            await message.delete()
             await message.channel.send("Formato incorrecto, ingrese numero o escriba random como parametro")
     #En caso de que esté en un canal SFW da está respuesta
     elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw():
+        await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
 #Roleplay Module
@@ -116,12 +120,15 @@ async def on_message(message):
                     # Tira el dado
                     result = random.randint(1, caras) + bonificador
                     # Muestra el resultado como mensaje
+                    await message.delete()
                     await message.channel.send("Tiro de: {} dado {} de {} caras: {}, bonificador {} incluido".format(usuario[0], x, caras, result, bonificador))
             elif(cant_dados>10):
+                await message.delete()
                 await message.channel.send("Se quiere morir ese?")
 
 
         except:
+            await message.delete()
             await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
             pass
 
@@ -144,6 +151,7 @@ async def on_message(message):
             embed.set_footer(text="Creditos a https://github.com/ChrisMichaelPerezSantiago")
             await message.channel.send(content=None, embed=embed)
         except:
+            await message.delete()
             await message.channel.send(resultado[0])
 
     if message.content.find("sh.manga ") != -1:
@@ -156,6 +164,7 @@ async def on_message(message):
         embed.add_field(name="Puntaje", value=resultado[2])
         embed.add_field(name="Volumenes", value=resultado[3])
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
     if message.content.find("sh.steam ") != -1:
 
@@ -178,7 +187,9 @@ async def on_message(message):
                 embed.add_field(name="Metacritic", value=resultado[6])
                 embed.add_field(name="Precio", value=resultado[7])
                 await message.channel.send(content=None, embed=embed)
+                await message.delete()
             else:
+                await message.delete()
                 await message.channel.send("Juego no encontrado o con bloqueo de edad")
         except:
             pass
@@ -190,6 +201,7 @@ async def on_message(message):
         embed = discord.Embed(title="Imagen encontrada", description=" ".join(imageId[1:]))
         embed.set_image(url = resultado)
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
 #Reactions Module
 #Cooperative Reactions
@@ -205,7 +217,9 @@ async def on_message(message):
                 raise IndexError("Victima no existe")      
             embed.set_image(url = imagen)
             await message.channel.send(content=None, embed=embed)
+            await message.delete()
         except IndexError:
+            await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
     if message.content.find("sh.lick") != -1:
@@ -220,7 +234,9 @@ async def on_message(message):
             embed.set_image(url = imagen)
             embed.set_footer(text="Creditos a tenor.com")
             await message.channel.send(content=None, embed=embed)
+            await message.delete()
         except IndexError:
+            await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
     if message.content.find("sh.pat") != -1:
@@ -235,7 +251,9 @@ async def on_message(message):
             embed.set_image(url = imagen)
             embed.set_footer(text="Creditos a tenor.com")
             await message.channel.send(content=None, embed=embed)
+            await message.delete()
         except IndexError:
+            await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
     if message.content.find("sh.slap") != -1:
@@ -250,7 +268,9 @@ async def on_message(message):
             embed.set_image(url = imagen)
             embed.set_footer(text="Creditos a tenor.com")
             await message.channel.send(content=None, embed=embed)
+            await message.delete()
         except IndexError:
+            await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
     if message.content.find("sh.feed") != -1:
@@ -265,7 +285,9 @@ async def on_message(message):
             embed.set_image(url = imagen)
             embed.set_footer(text="Creditos a tenor.com")
             await message.channel.send(content=None, embed=embed)
+            await message.delete()
         except IndexError:
+            await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
     if message.content.find("sh.kick") != -1:
@@ -280,7 +302,9 @@ async def on_message(message):
             embed.set_image(url = imagen)
             embed.set_footer(text="Creditos a tenor.com")
             await message.channel.send(content=None, embed=embed)
+            await message.delete()
         except IndexError:
+            await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
     if message.content.find("sh.baka") != -1:
@@ -295,7 +319,9 @@ async def on_message(message):
             embed.set_image(url = imagen)
             embed.set_footer(text="Creditos a tenor.com")
             await message.channel.send(content=None, embed=embed)
+            await message.delete()
         except IndexError:
+            await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
     if message.content.find("sh.bite") != -1:
@@ -310,7 +336,9 @@ async def on_message(message):
             embed.set_image(url = imagen)
             embed.set_footer(text="Creditos a tenor.com")
             await message.channel.send(content=None, embed=embed)
+            await message.delete()
         except IndexError:
+            await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
 
@@ -324,6 +352,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
     if message.content.find("sh.suicide") != -1:
         print(message.author)
@@ -333,6 +362,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Si realmente estas mal y necesitas ayuda visita http://www.asulac.org/necesitas-ayuda/")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
     
     if message.content.find("sh.spin") != -1:
         print(message.author)
@@ -342,6 +372,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
     if message.content.find("sh.blush") != -1:
         print(message.author)
@@ -351,6 +382,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
     
     if message.content.find("sh.shy") != -1:
         print(message.author)
@@ -360,6 +392,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
     if message.content.find("sh.tsundere") != -1:
         print(message.author)
@@ -369,6 +402,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
     
     if message.content.find("sh.lewd") != -1:
         print(message.author)
@@ -378,6 +412,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
     if message.content.find("sh.jojo") != -1:
         print(message.author)
@@ -387,6 +422,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
         
     if message.content.find("sh.cry") != -1:
         print(message.author)
@@ -396,6 +432,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
         
 #Dual Reactions
 
@@ -418,6 +455,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
     if message.content.find("sh.hug") != -1:
         autor = str(message.author).split("#")[0]
@@ -431,6 +469,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
     if message.content.find("sh.kiss ") != -1:
         autor = str(message.author).split("#")[0]
@@ -444,6 +483,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
 
     if message.content.find("sh.sleep") != -1:
         autor = str(message.author).split("#")[0]
@@ -458,6 +498,7 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
         
 
     if message.content.find("sh.happy") != -1:
@@ -472,5 +513,6 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Creditos a tenor.com")
         await message.channel.send(content=None, embed=embed)
+        await message.delete()
         
 client.run(os.environ.get('DISCORD_TOKEN'))
