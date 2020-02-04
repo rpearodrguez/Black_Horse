@@ -1,6 +1,7 @@
 import discord
 import random
 import Scrapper
+import Roleplay
 import Feels
 import os
 from boto.s3.connection import S3Connection
@@ -146,6 +147,17 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
             pass
+    
+    if message.content.find("sh.fate") != -1:
+
+        dado = message.content.split()
+        dado2 = dado[1].split("df")
+        dados = dado2[0]
+        modificador = dado2[1]
+        usuario = str(message.author).split("#")
+        resultado = Roleplay.fateroll(dados,modificador,usuario)
+        await message.delete()
+        await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
 
 #Entertainment Module
 
