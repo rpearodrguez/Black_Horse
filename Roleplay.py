@@ -10,9 +10,9 @@ def fateroll (cant_dados=1, mod=0, authorName=""):
     positivos = 0
     negativos = 0
     modificador = ""
-    if mod > 0:
+    if int(mod) > 0:
         modificador = "+"
-    if mod < 0:
+    if int(mod) < 0:
         modificador = "-"
     for x in range(1, (1+cant_dados)):
         result = random.randint(1, 2)
