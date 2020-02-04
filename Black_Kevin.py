@@ -157,7 +157,7 @@ async def on_message(message):
         usuario = str(message.author).split("#")
         resultado = Roleplay.fateroll(dados,modificador,usuario)
         await message.delete()
-        await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
+        await message.channel.send(resultado)
 
 #Entertainment Module
 
