@@ -25,7 +25,7 @@ def fateroll (cant_dados=1, mod=0, authorName=""):
             textonegativo += "-"
             contador -= 1
             negativos += 1
-    resultado = contador+mod
+    resultado = contador+int(mod)
 
     finalRoll = "El roll de {} es ({}{}) ({}{}{}) ({})".format(authorName,textopositivo,textonegativo,contador,modificador,mod,resultado)
     return finalRoll
