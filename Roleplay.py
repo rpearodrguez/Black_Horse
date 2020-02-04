@@ -5,7 +5,7 @@ def roll (cant_dados = 1, cant_caras = 20):
 
 def fateroll (cant_dados=1, mod=0, authorName=""):
     try:
-        if cant_dados<20:
+        if int(cant_dados)<20:
             textopositivo = ""
             textonegativo = ""
             contador = 0
