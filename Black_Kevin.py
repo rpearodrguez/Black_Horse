@@ -54,7 +54,7 @@ async def on_message(message):
         await message.delete()
         await message.channel.send(mensaje2)
 
-#JOJO Module        
+#FRASES Module        
     if message.content.find("TU SIGUES, JOTARO!") != -1 and message.author.id != 558102665695985674:
         await message.channel.send("BASTARDO... DIO")
         
@@ -75,7 +75,22 @@ async def on_message(message):
 
     if message.content.find("MUDA! MUDA! MUDA! MUDA! MUDA!") != -1 and message.author.id != 558102665695985674:
         await message.channel.send("ORA! ORA! ORA! ORA! ORA!")
+
+    if message.content.find("TENGO MUCHO MIEDO MAGINER") != -1 and message.author.id != 558102665695985674:
+        await message.channel.send("TIENES QUE HACERLO POR MI, PIPO, POR MAGINER")
+
+    if message.content.find("TIENES QUE HACERLO POR MI, PIPO, POR MAGINER") != -1 and message.author.id != 558102665695985674:
+        await message.channel.send("ESTÁ BIEN, POR TI... MAGINER")
         
+    if message.content.find("ESTÁ BIEN, POR TI... MAGINER") != -1 and message.author.id != 558102665695985674:
+        await message.channel.send("BIEN MAGINER, PIPO ESTÁ MUERTO, LE CORTARON LA GARGANTA DE AQUI A ACÁ")
+    
+    if message.content.find("BIEN MAGINER, PIPO ESTÁ MUERTO, LE CORTARON LA GARGANTA DE AQUI A ACÁ") != -1 and message.author.id != 558102665695985674:
+        await message.channel.send("OIGA, ESTOY TRATANDO DE COMER MI ALMUERZO")
+    
+    if message.content.find("PIPO ESTÁ MUERTO") != -1 and message.author.id != 558102665695985674:
+        await message.channel.send("LE CORTARON LA GARGANTA DE AQUI A ACÁ")
+
 #NSFW Module
 
     #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
