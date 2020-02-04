@@ -27,7 +27,7 @@ def fateroll (cant_dados=1, mod=0, authorName=""):
             negativos += 1
     resultado = contador+int(mod)
 
-    finalRoll = "El roll de {} es ({}{}) ({}{}{}) ({})".format(authorName,textopositivo,textonegativo,contador,modificador,mod,resultado)
+    finalRoll = "El roll de {} es ({}{}) ({}{}) ({})".format(authorName,textopositivo,textonegativo,contador,mod,resultado)
     return finalRoll
     
     #return ("Ocurrio un error al intentar rolear")

@@ -155,7 +155,7 @@ async def on_message(message):
         dados = dado2[0]
         modificador = dado2[1]
         usuario = str(message.author).split("#")
-        resultado = Roleplay.fateroll(dados,modificador,usuario)
+        resultado = Roleplay.fateroll(dados,modificador,usuario[0])
         await message.delete()
         await message.channel.send(resultado)
 
