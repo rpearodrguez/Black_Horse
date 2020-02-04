@@ -12,6 +12,7 @@ def fateroll (cant_dados=1, mod=0, authorName=""):
             positivos = 0
             negativos = 0
             for x in range(1, (1+int(cant_dados))):
+                print(x)
                 result = random.randint(1, 2)
                 if result == 1:
                     textopositivo += "+"
