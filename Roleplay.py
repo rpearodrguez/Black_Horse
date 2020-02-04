@@ -14,7 +14,7 @@ def fateroll (cant_dados=1, mod=0, authorName=""):
         modificador = "+"
     if int(mod) < 0:
         modificador = "-"
-    for x in range(1, (1+cant_dados)):
+    for x in range(1, (1+int(cant_dados))):
         result = random.randint(1, 2)
         if result == 1:
             textopositivo += "+"
