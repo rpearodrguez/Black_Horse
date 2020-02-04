@@ -5,7 +5,7 @@ def roll (cant_dados = 1, cant_caras = 20):
 
 def fateroll (cant_dados=1, mod=0, authorName=""):
     try:
-        if int(cant_dados)<20:
+        if int(cant_dados)<21:
             textopositivo = ""
             textonegativo = ""
             contador = 0
@@ -27,6 +27,6 @@ def fateroll (cant_dados=1, mod=0, authorName=""):
             finalRoll = "El roll de {} es ({}{}) ({}{}) ({})".format(authorName,textopositivo,textonegativo,contador,mod,resultado)
             return finalRoll
         else:
-            return ("Intentas rolear una cantidad muy grande de dados")
+            return ("Intentas rolear una cantidad muy grande de dados: {}".format(cant_dados))
     except:
         return ("Ocurrio un error al intentar rolear")
