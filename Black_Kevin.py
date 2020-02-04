@@ -53,7 +53,10 @@ async def on_message(message):
         mensaje = message.content.split()
         mensaje2 = " ".join(mensaje[1:])
         await message.delete()
-        await message.channel.send(mensaje2)
+        if "sh." in mensaje2:
+            await message.channel.send("{} no tan rapido maquinola".format(message.author.name))
+        else:
+            await message.channel.send(mensaje2)
 
 #FRASES Module        
     if message.content.find("TU SIGUES, JOTARO!") != -1 and message.author.id != 558102665695985674:
