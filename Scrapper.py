@@ -360,4 +360,35 @@ def imgSearch(search_term="busqueda"):
         return imagenes[0]
     except:
         pass
-    
+
+def ccSearch():
+    url = "https://www.cuantocabron.com/aleatorio/p/1"
+    resp = requests.get(url)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Este es el sumario del meme solicitado :-\n")
+        find = ["Titulo","Imagen","Creditos a Cuantocabron.com"]
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        # l is the list which contains all the text i.e news
+        titulo = soup.find("h2", {"class": "storyTitle"})
+        find[0] = titulo.text
+        imagen = soup.find("a", {"class": "cclink"})
+        print(imagen)
+        # now we want to print only the text part of the anchor.
+        # find all the elements of a, i.e anchor
+        try:
+            for i in imagen.findAll("img", {"class": ""}, limit=1):
+                try:
+                    #Portada
+                    find[1] = i.get('src')
+                    print(find[1])
+                except:
+                    pass
+        except:
+            pass
+        print(find)
+        return find
