@@ -401,7 +401,7 @@ def feetSearch():
     root = resp.content.decode('UTF-8')
     # http_respone 200 means OK status
     if resp.status_code == 200:
-        random = random.randint(1, 100)
+        randpata = random.randint(1, 100)
         lista = root.split("file_url=")
         resultado = lista[100].split()[0]
         print (resultado)
