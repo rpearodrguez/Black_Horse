@@ -404,7 +404,6 @@ def feetSearch():
         randpata = random.randint(1, 100)
         lista = root.split("file_url=")
         resultado = lista[randpata].split()[0].split('"')[1]
-        print (resultado)
         return resultado
     else:
         return "No se pudo encontrar resultado"
