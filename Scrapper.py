@@ -403,8 +403,8 @@ def feetSearch():
     if resp.status_code == 200:
         random = random.randint(1, 100)
         lista = root.split("file_url=")
-        print(lista[100].split()[0])
         resultado = lista[100].split()[0]
+        print (resultado)
         return[resultado]
     else:
         return "No se pudo encontrar resultado"
