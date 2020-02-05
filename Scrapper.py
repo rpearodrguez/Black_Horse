@@ -405,6 +405,6 @@ def feetSearch():
         lista = root.split("file_url=")
         resultado = lista[100].split()[0].split('"')[1]
         print (resultado)
-        return[resultado]
+        return resultado
     else:
         return "No se pudo encontrar resultado"
