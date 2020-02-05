@@ -119,6 +119,13 @@ async def on_message(message):
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
+    elif message.content.find("sh.patas") != -1 and message.author.id != 558102665695985674:
+        busqueda = Scrapper.feetSearch()
+        embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
+        embed.set_image(url = busqueda)
+        await message.channel.send(content=None, embed=embed)
+        await message.delete()
+
 #Roleplay Module
 
     # Dados

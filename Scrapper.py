@@ -392,3 +392,19 @@ def ccSearch():
             pass
         print(find)
         return find
+
+def feetSearch():
+    busqueda = "feet"
+    url = "https://safebooru.org/index.php?page=dapi&s=post&q=index&limit=1&tags={}".format(busqueda)
+    # open with GET method
+    resp = requests.get(url)
+    root = resp.content.decode('UTF-8')
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        lista = root.split("file_url=")
+        resultado = lista[1].split()
+        print(resultado[0])
+        return resultado[0]
+
+    else:
+        return("Hubo problemas encontrando el resultado")
