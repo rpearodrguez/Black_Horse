@@ -262,7 +262,7 @@ async def on_message(message):
             except IndexError:
                 raise IndexError("Victima no existe")   
             embed.set_image(url = imagen)
-            embed.set_footer(text="Creditos a tenor.com")
+            embed.set_footer(text="Via Tenor")
             await message.channel.send(content=None, embed=embed)
             await message.delete()
         except IndexError:
@@ -279,7 +279,7 @@ async def on_message(message):
             except IndexError:
                 raise IndexError("Victima no existe")  
             embed.set_image(url = imagen)
-            embed.set_footer(text="Creditos a tenor.com")
+            embed.set_footer(text="Via Tenor")
             await message.channel.send(content=None, embed=embed)
             await message.delete()
         except IndexError:
@@ -296,7 +296,7 @@ async def on_message(message):
             except IndexError:
                 raise IndexError("Victima no existe")  
             embed.set_image(url = imagen)
-            embed.set_footer(text="Creditos a tenor.com")
+            embed.set_footer(text="Via Tenor")
             await message.channel.send(content=None, embed=embed)
             await message.delete()
         except IndexError:
@@ -313,7 +313,7 @@ async def on_message(message):
             except IndexError:
                 raise IndexError("Victima no existe")  
             embed.set_image(url = imagen)
-            embed.set_footer(text="Creditos a tenor.com")
+            embed.set_footer(text="Via Tenor")
             await message.channel.send(content=None, embed=embed)
             await message.delete()
         except IndexError:
@@ -330,7 +330,7 @@ async def on_message(message):
             except IndexError:
                 raise IndexError("Victima no existe")  
             embed.set_image(url = imagen)
-            embed.set_footer(text="Creditos a tenor.com")
+            embed.set_footer(text="Via Tenor")
             await message.channel.send(content=None, embed=embed)
             await message.delete()
         except IndexError:
@@ -347,7 +347,7 @@ async def on_message(message):
             except IndexError:
                 raise IndexError("Victima no existe") 
             embed.set_image(url = imagen)
-            embed.set_footer(text="Creditos a tenor.com")
+            embed.set_footer(text="Via Tenor")
             await message.channel.send(content=None, embed=embed)
             await message.delete()
         except IndexError:
@@ -364,7 +364,7 @@ async def on_message(message):
             except IndexError:
                 raise IndexError("Victima no existe") 
             embed.set_image(url = imagen)
-            embed.set_footer(text="Creditos a tenor.com")
+            embed.set_footer(text="Via Tenor")
             await message.channel.send(content=None, embed=embed)
             await message.delete()
         except IndexError:
@@ -380,7 +380,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("smug")
         embed = discord.Embed(title="{} es un(a) creido(a)".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
@@ -400,7 +400,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("spin")
         embed = discord.Embed(title="{} se puso a girar como pendejo".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
@@ -410,7 +410,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("blush")
         embed = discord.Embed(title="{} se sonrojó".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
     
@@ -420,7 +420,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("shy")
         embed = discord.Embed(title="{} se hace el tímido".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
@@ -430,7 +430,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("tsundere")
         embed = discord.Embed(title="{} es una tsundere".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
     
@@ -440,7 +440,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("lewd")
         embed = discord.Embed(title="{} está teniendo pensamientos cochinos".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
@@ -450,7 +450,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("jojo")
         embed = discord.Embed(title="{} hizo una Jojopose".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
         
@@ -460,7 +460,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("cry")
         embed = discord.Embed(title="{} está llorando".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
         
@@ -483,7 +483,7 @@ async def on_message(message):
             embed = discord.Embed(title="{} se puso a bailar".format(autor))
             pass
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
@@ -497,7 +497,7 @@ async def on_message(message):
             embed = discord.Embed(title="{} necesita un abrazo.".format(autor))
             pass
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
@@ -511,7 +511,7 @@ async def on_message(message):
             embed = discord.Embed(title="{} quiere un besito.".format(autor))
             pass
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
@@ -526,7 +526,7 @@ async def on_message(message):
             embed = discord.Embed(title="{} tiene sueño".format(autor))
             pass
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
@@ -540,7 +540,7 @@ async def on_message(message):
             embed = discord.Embed(title="{} está feliz".format(autor))
             pass
         embed.set_image(url = imagen)
-        embed.set_footer(text="Creditos a tenor.com")
+        embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         await message.delete()
         

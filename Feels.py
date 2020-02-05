@@ -13,73 +13,73 @@ def reactionImage(feel=""):
         imagenes = ["https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif", "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-2.gif", "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-3.gif"]
 
     if feel == "abrazo":
-        search_term = "anime+hug"
+        search_term = "anime hug"
 
     if feel == "lamer":
-        search_term = "anime+lick"
+        search_term = "anime lick"
 
     if feel == "pat":
-        search_term = "anime+head+pat"
+        search_term = "anime head pat"
 
     if feel == "jojo":
-        search_term = "jojo+pose"
+        search_term = "jojo pose"
 
     if feel == "suicide":
-        search_term = "anime+suicide"
+        search_term = "anime suicide"
     
     if feel == "slap":
-        search_term = "anime+slap"
+        search_term = "anime slap"
 
     if feel == "kiss":
-        search_term = "anime+kiss"
+        search_term = "anime kiss"
     
     if feel == "food":
-        search_term = "anime+feed"
+        search_term = "anime feed"
 
     if feel == "kickbutt":
-        search_term = "anime+kick"
+        search_term = "anime kick"
 
     if feel == "smug":
-        search_term = "anime+smug"
+        search_term = "anime smug"
 
     if feel == "spin":
-        search_term = "anime+spinning"
+        search_term = "anime spinning"
 
     if feel == "dance":
-        search_term = "anime+dance"
+        search_term = "anime dance"
     
     if feel == "caramelldansen":
         search_term = "caramelldansen"
 
     if feel == "baka":
-        search_term = "anime+angry+girl+idiot"
+        search_term = "anime angry girl idiot"
 
     if feel == "blush":
-        search_term = "anime+girl+blush"
+        search_term = "anime girl blush"
 
     if feel == "shy":
-        search_term = "anime+shy"
+        search_term = "anime shy"
 
     if feel == "tsundere":
         search_term = "tsundere"
 
     if feel == "lewd":
-        search_term = "anime+lewd"
+        search_term = "anime lewd"
     
     if feel == "bite":
-        search_term = "anime+bite"
+        search_term = "anime bite"
     
     if feel == "sleep":
-        search_term = "anime+sleep"
+        search_term = "anime sleep"
     
     if feel == "sleepy":
-        search_term = "anime+sleepy"
+        search_term = "anime sleepy"
         
     if feel == "cry":
-        search_term = "anime+sad+cry"
+        search_term = "anime sad cry"
         
     if feel == "happy":
-        search_term = "anime+happy"
+        search_term = "anime happy"
         
     if feel !=  "escobazo":
         url = "https://api.tenor.com/v1/random?key={}&q={}&locale=en_US&contentfilter=off&media_filter=minimal&ar_range=wide&limit=1".format(os.environ.get('TENOR_KEY'), search_term)
