@@ -121,6 +121,7 @@ async def on_message(message):
 
     elif message.content.find("sh.patas") != -1 and message.author.id != 558102665695985674:
         busqueda = Scrapper.feetSearch()
+        print(busqueda)
         if busqueda != "No se pudo encontrar resultado":
             embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
             embed.set_image(url = busqueda)
