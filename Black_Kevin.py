@@ -121,9 +121,12 @@ async def on_message(message):
 
     elif message.content.find("sh.patas") != -1 and message.author.id != 558102665695985674:
         busqueda = Scrapper.feetSearch()
-        embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
-        embed.set_image(url = busqueda)
-        await message.channel.send(content=None, embed=embed)
+        if busqueda != "No se pudo encontrar resultado":
+            embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
+            embed.set_image(url = busqueda)
+            await message.channel.send(content=None, embed=embed)
+        else:
+            await message.channel.send("No se pudo encontrar lo solicitado")
         await message.delete()
 
 #Roleplay Module
