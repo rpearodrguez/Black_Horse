@@ -233,7 +233,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.cc ") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.cc") != -1 and message.author.id != 558102665695985674:
         busqueda = Scrapper.ccSearch()
         embed = discord.Embed(title=busqueda[0], description=busqueda[2])
         embed.set_image(url = busqueda[1])
