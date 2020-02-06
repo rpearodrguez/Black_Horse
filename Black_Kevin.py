@@ -125,6 +125,7 @@ async def on_message(message):
         if busqueda != "No se pudo encontrar resultado":
             embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
             embed.set_image(url = busqueda)
+            embed.set_footer(text="Creditos a safebooru.org")
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("No se pudo encontrar lo solicitado")
