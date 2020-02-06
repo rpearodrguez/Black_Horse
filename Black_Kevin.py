@@ -119,7 +119,7 @@ async def on_message(message):
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
-    elif message.content.find("sh.patas") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.patas") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         busqueda = Scrapper.feetSearch()
         print(busqueda)
         if busqueda != "No se pudo encontrar resultado":
