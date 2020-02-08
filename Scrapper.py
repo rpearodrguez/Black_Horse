@@ -417,6 +417,7 @@ def piernasSearch():
     # http_respone 200 means OK status
     if resp.status_code == 200:
         randpata = random.randint(1, 100)
+        print(root[0])
         lista = root.split("file_url=")
         resultado = lista[randpata].split()[0].split('"')[1]
         return resultado
