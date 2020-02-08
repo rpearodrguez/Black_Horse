@@ -22,8 +22,9 @@ client = discord.Client()
 
 @client.event
 async def on_message(message):
-    #entrega información de comandos
-    print("{} - {}:{}".format(str(message.author).split("#")[0],message.author.guild.name, message.content)) # Now every message sent will be printed to the console
+    #print commands in console for logging purposes
+    if message.content.find("sh.") != -1:
+        print("{} - {}:{}".format(str(message.author).split("#")[0],message.author.guild.name, message.content)) # Now every message sent will be printed to the console
 
 
 #General Module
@@ -45,9 +46,9 @@ async def on_message(message):
     elif message.content.find("sh.invite") != -1 and message.author.id != 558102665695985674:
         await message.channel.send("https://discordapp.com/api/oauth2/authorize?client_id=558102665695985674&permissions=92160&scope=bot")
 
-    #saluda a quien lo salude
+    # If the user says !hello we will send you to eat dirt
     elif message.content.find("sh.hola") != -1 and message.author.id != 558102665695985674:
-        await message.channel.send("Come tierra") # If the user says !hello we will send back hi
+        await message.channel.send("Come tierra") # If the user says !hello we will send you to eat dirt
 
     elif message.content.find("sh.say") != -1 and message.author.id != 558102665695985674:
         mensaje = message.content.split()
@@ -121,6 +122,18 @@ async def on_message(message):
 
     elif message.content.find("sh.patas") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         busqueda = Scrapper.feetSearch()
+        print(busqueda)
+        if busqueda != "No se pudo encontrar resultado":
+            embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
+            embed.set_image(url = busqueda)
+            embed.set_footer(text="Creditos a safebooru.org")
+            await message.channel.send(content=None, embed=embed)
+        else:
+            await message.channel.send("No se pudo encontrar lo solicitado")
+        await message.delete()
+
+    elif message.content.find("sh.piernas") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+        busqueda = Scrapper.piernasSearch()
         print(busqueda)
         if busqueda != "No se pudo encontrar resultado":
             embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
