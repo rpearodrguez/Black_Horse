@@ -423,7 +423,7 @@ def piernasSearch():
         count3 = count2[1].split("=")
         print(count3)
         count4 = count3[1][1:len(count3) - 1]
-        print("count4 = {} len = {}".format(count4, len(count3)
+        print("count4 = {} len = {}".format(count4, len(count3)))
         #randpata = random.randint(1, int(count4))
         randpata = 21
         print("randpata: {}".format(randpata))
