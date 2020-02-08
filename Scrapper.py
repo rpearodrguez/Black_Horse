@@ -409,7 +409,7 @@ def feetSearch():
         return "No se pudo encontrar resultado"
 
 def piernasSearch():
-    busqueda = "thigh"
+    busqueda = "thighs"
     url = "https://safebooru.org/index.php?page=dapi&s=post&q=index&limit=100&tags={}".format(busqueda)
     # open with GET method
     resp = requests.get(url)
@@ -425,7 +425,7 @@ def piernasSearch():
         count4 = count3[1].split('"')
         print("count4 = {}".format(count4))
         #randpata = random.randint(1, int(count4))
-        randpata = 21
+        randpata = random.randint(1, count4[1])
         print("randpata: {}".format(randpata))
         lista = root.split("file_url=")
         resultado = lista[randpata].split()[0].split('"')[1]
