@@ -425,7 +425,7 @@ def piernasSearch():
         count4 = count3[1].split('"')
         print("count4 = {}".format(count4))
         #randpata = random.randint(1, int(count4))
-        if count4[1] > 100:
+        if int(count4[1]) > 100:
             count4[1] = 100
         randpata = random.randint(1, int(count4[1]))
         lista = root.split("file_url=")
