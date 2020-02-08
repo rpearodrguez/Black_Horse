@@ -418,9 +418,9 @@ def piernasSearch():
     # http_respone 200 means OK status
     if resp.status_code == 200:
         count = root[0].split("<")
-        print("Count 1 : ".format(count))
+        print("Count 1 : {}".format(count))
         count2 = count[1].split()
-        print("Count 2 : ".format(count2))
+        print("Count 2 : {}".format(count2))
         count3 = count2[0][:len(count2[0]-1)]
         print(count3)
         randpata = random.randint(1, count3)
