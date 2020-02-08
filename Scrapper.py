@@ -416,7 +416,7 @@ def piernasSearch():
     root = resp.content.decode('UTF-8')
     # http_respone 200 means OK status
     if resp.status_code == 200:
-        count = root[]
+        count = root.split("count=")
         print("Count 1 : ".format(count))
         count2 = count[1].split()
         print("Count 2 : ".format(count2))
