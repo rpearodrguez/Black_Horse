@@ -422,7 +422,7 @@ def piernasSearch():
         print("Count 2 : {}".format(count2))
         count3 = count2[1].split("=")
         print(count3)
-        randpata = random.randint(1, int(count3[1]))
+        randpata = random.randint(1, int(count3[1][1:len(count3) - 1]))
         print("randpata: {}".format(randpata))
         lista = root.split("file_url=")
         resultado = lista[randpata].split()[0].split('"')[1]
