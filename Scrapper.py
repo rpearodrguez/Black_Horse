@@ -420,7 +420,7 @@ def piernasSearch():
         #print("Count 1 : {}".format(count))
         count2 = count[2].split()
         print("Count 2 : {}".format(count2))
-        count3 = count2[0][:len(count2[0]-1)]
+        count3 = count2[1].split("=")
         print(count3)
         randpata = random.randint(1, count3)
         lista = root.split("file_url=")
