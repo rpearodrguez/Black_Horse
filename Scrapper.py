@@ -424,10 +424,10 @@ def piernasSearch():
         print(count3)
         count4 = count3[1][1:len(count3) - 1]
         print("count4 = {} len = {}".format(count4, len(count3)
-        randpata = random.randint(1, int(count4))
-        print("randpata: {}".format(randpata))
-        lista = root.split("file_url=")
-        resultado = lista[randpata].split()[0].split('"')[1]
-        return resultado
+        #randpata = random.randint(1, int(count4))
+        #print("randpata: {}".format(randpata))
+        #lista = root.split("file_url=")
+        #resultado = lista[randpata].split()[0].split('"')[1]
+        #return resultado
     else:
         return "No se pudo encontrar resultado"
