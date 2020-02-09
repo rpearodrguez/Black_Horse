@@ -393,22 +393,7 @@ def ccSearch():
         print(find)
         return find
 
-def feetSearch():
-    busqueda = "feet"
-    url = "https://safebooru.org/index.php?page=dapi&s=post&q=index&limit=100&tags={}".format(busqueda)
-    # open with GET method
-    resp = requests.get(url)
-    root = resp.content.decode('UTF-8')
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        randpata = random.randint(1, 100)
-        lista = root.split("file_url=")
-        resultado = lista[randpata].split()[0].split('"')[1]
-        return resultado
-    else:
-        return "No se pudo encontrar resultado"
-
-def piernasSearch():
+def safebooruSearch(busqueda=""):
     busqueda = "thighs"
     url = "https://safebooru.org/index.php?page=dapi&s=post&q=index&limit=100&tags={}".format(busqueda)
     # open with GET method
