@@ -140,20 +140,24 @@ async def on_message(message):
         busqueda = Scrapper.safebooruSearch("thighs")
         print(busqueda)
         if busqueda != "No se pudo encontrar resultado":
-            embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
+            embed = discord.Embed(title="Aquí está el resultado", description="Piernas")
             embed.set_image(url = busqueda)
             embed.set_footer(text="Creditos a safebooru.org")
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("No se pudo encontrar lo solicitado")
         await message.delete()
+    
+    elif message.content.find("sh.piernas") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+        await message.delete()
+        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
     elif message.content.find("sh.safebooru") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         search = message.content.split()
         busqueda = Scrapper.safebooruSearch("+".join(search[1:]))
         print(busqueda)
         if busqueda != "No se pudo encontrar resultado":
-            embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
+            embed = discord.Embed(title="Aquí está el resultado de la busqueda", description=" ".join(search[1:]))
             embed.set_image(url = busqueda)
             embed.set_footer(text="Creditos a safebooru.org")
             await message.channel.send(content=None, embed=embed)
@@ -161,7 +165,7 @@ async def on_message(message):
             await message.channel.send("No se pudo encontrar lo solicitado")
         await message.delete()
 
-    elif message.content.find("sh.piernas") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.safebooru") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 #Roleplay Module
