@@ -150,7 +150,7 @@ async def on_message(message):
 
     elif message.content.find("sh.safebooru") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         search = message.content.split()
-        busqueda = Scrapper.safebooruSearch(join(search[1:]))
+        busqueda = Scrapper.safebooruSearch("+".join(search[1:]))
         print(busqueda)
         if busqueda != "No se pudo encontrar resultado":
             embed = discord.Embed(title="Aquí está el resultado", description="Cochinón")
