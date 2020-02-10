@@ -168,6 +168,27 @@ async def on_message(message):
     elif message.content.find("sh.safebooru") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+
+    elif message.content.find("sh.hentai ") != -1 and message.author.id != 558102665695985674:
+        danId = message.content.split()
+        animeBusqueda = "+".join(danId[1:])
+        resultado = Scrapper.animeScrap(animeBusqueda)
+        try:
+            embed = discord.Embed(title="Búsqueda", description=" ".join(danId[1:]))
+            embed.set_image(url = resultado[1])
+            embed.add_field(name="Id en danbooru", value=resultado[0], inline=False)
+            embed.add_field(name="Artista", value=resultado[2], inline=True)
+            embed.add_field(name="Tags", value=resultado[3], inline=True)
+            embed.set_footer(text="Creditos a https://danbooru.donmai.us")
+            await message.channel.send(content=None, embed=embed)
+        except:
+            await message.delete()
+            await message.channel.send(resultado[0])
+    
+    elif message.content.find("sh.hentai ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+        await message.delete()
+        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+
 #Roleplay Module
 
     # Dados

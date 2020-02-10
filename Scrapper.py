@@ -419,3 +419,27 @@ def safebooruSearch(busqueda=""):
         
     else:
         return "No se pudo encontrar resultado"
+
+
+def hentaiTagSearch(busqueda=""):
+    url = "https://danbooru.donmai.us/posts.json?login={}&api_key={}&limit=1&tags={}&random=true".format(os.environ.get('DANBOORU_LOGIN'),os.environ.get('DANBOORU_KEY'),busqueda)
+    # open with GET method
+    resp = requests.get(url)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        
+        # we need a parser,Python built-in HTML parser is enough .
+        resultado = json.loads(resp.content)
+        try:
+            id_post = resultado[0]["id"]
+            imagen = resultado[0]["file_url"]
+            artista = resultado[0]["tag_string_artist"]
+            tags = resultado[0]["tag_string"]
+            find = [id_post, imagen, artista, tags]
+            print(find)
+            return find          
+            
+        except:
+            resultado[0] = "Tag no encontrado"
+            return resultado
