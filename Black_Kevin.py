@@ -130,7 +130,7 @@ async def on_message(message):
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("No se pudo encontrar lo solicitado")
-        await message.delete()
+        
     
     elif message.content.find("sh.patas") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
@@ -146,7 +146,7 @@ async def on_message(message):
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("No se pudo encontrar lo solicitado")
-        await message.delete()
+        
     
     elif message.content.find("sh.piernas") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
@@ -163,7 +163,7 @@ async def on_message(message):
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("No se pudo encontrar lo solicitado")
-        await message.delete()
+        
 
     elif message.content.find("sh.safebooru") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
@@ -182,7 +182,7 @@ async def on_message(message):
             embed.set_footer(text="Creditos a https://danbooru.donmai.us")
             await message.channel.send(content=None, embed=embed)
         except:
-            await message.delete()
+            
             await message.channel.send(resultado[0])
     
     elif message.content.find("sh.danbooru ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
@@ -318,7 +318,7 @@ async def on_message(message):
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("escobazo")
             try:
-                victima = message.mentions[0].name
+                victima = message.mentions[0]
                 embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
             except IndexError:
                 raise IndexError("Victima no existe")      
