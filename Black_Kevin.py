@@ -318,7 +318,7 @@ async def on_message(message):
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("escobazo")
             try:
-                victima = message.mentions[0]
+                victima = message.mentions[0].name
                 embed = discord.Embed(title="{} dio un escobazo a {}".format(autor,victima))
             except IndexError:
                 raise IndexError("Victima no existe")      
