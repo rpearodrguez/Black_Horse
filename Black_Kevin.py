@@ -169,7 +169,7 @@ async def on_message(message):
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
-    elif message.content.find("sh.hentai ") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.danbooru ") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         danId = message.content.split()
         danBusqueda = "_".join(danId[1:])
         resultado = Scrapper.hentaiTagSearch(danBusqueda)
