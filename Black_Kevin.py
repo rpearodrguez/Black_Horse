@@ -176,9 +176,9 @@ async def on_message(message):
         try:
             embed = discord.Embed(title="Búsqueda", description=" ".join(danId[1:]))
             embed.set_image(url = resultado[1])
-            embed.add_field(name="Id en danbooru", value=resultado[0], inline=False)
+            embed.add_field(name="Id en danbooru", value=resultado[0], inline=True)
             embed.add_field(name="Artista", value=resultado[2], inline=True)
-            embed.add_field(name="Tags", value=resultado[3], inline=True)
+            embed.add_field(name="Tags", value=resultado[3], inline=False)
             embed.set_footer(text="Creditos a https://danbooru.donmai.us")
             await message.channel.send(content=None, embed=embed)
         except:
