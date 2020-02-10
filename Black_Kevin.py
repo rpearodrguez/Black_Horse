@@ -171,7 +171,7 @@ async def on_message(message):
 
     elif message.content.find("sh.hentai ") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         danId = message.content.split()
-        danBusqueda = "+".join(danId[1:])
+        danBusqueda = "_".join(danId[1:])
         resultado = Scrapper.hentaiTagSearch(danBusqueda)
         try:
             embed = discord.Embed(title="Búsqueda", description=" ".join(danId[1:]))
