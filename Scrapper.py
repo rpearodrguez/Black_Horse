@@ -431,6 +431,7 @@ def hentaiTagSearch(busqueda=""):
         
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
+        print(resultado)
         try:
             id_post = resultado[0]["id"]
             imagen = resultado[0]["file_url"]
