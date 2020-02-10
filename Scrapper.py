@@ -76,7 +76,7 @@ def animeScrap(urlb=""):
             print(find)
             return find
         except:
-            resultado[0] = "Anime o genero no encontrado"
+            find = ["Anime o genero no encontrado"]
             return resultado
 
             
@@ -441,5 +441,5 @@ def hentaiTagSearch(busqueda=""):
             return find          
             
         except:
-            resultado[0] = "Tag no encontrado"
-            return resultado
+            find = ["Tag no encontrado"]
+            return find
