@@ -134,7 +134,7 @@ async def on_message(message):
     
     elif message.content.find("sh.patas") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
-        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+        await message.channel.send("Debido a que puede salir contenido NSFW haz la consulta en algun canal de ese tipo")
 
     elif message.content.find("sh.piernas") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         busqueda = Scrapper.safebooruSearch("thighs")
@@ -150,7 +150,7 @@ async def on_message(message):
     
     elif message.content.find("sh.piernas") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
-        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+        await message.channel.send("Debido a que puede salir contenido NSFW haz la consulta en algun canal de ese tipo")
 
     elif message.content.find("sh.safebooru") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         search = message.content.split()
@@ -167,7 +167,7 @@ async def on_message(message):
 
     elif message.content.find("sh.safebooru") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
-        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+        await message.channel.send("Debido a que puede salir contenido NSFW haz la consulta en algun canal de ese tipo")
 
     elif message.content.find("sh.danbooru ") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         danId = message.content.split()
@@ -185,7 +185,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send(resultado[0])
     
-    elif message.content.find("sh.hentai ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.danbooru ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
