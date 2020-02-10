@@ -173,6 +173,7 @@ async def on_message(message):
         danId = message.content.split()
         danBusqueda = "_".join(danId[1:]).split("/")
         danBusqueda2 = "%2".join(danBusqueda)
+        print(danBusqueda2)
         resultado = Scrapper.hentaiTagSearch(danBusqueda2)
         try:
             embed = discord.Embed(title="Búsqueda", description=" ".join(danId[1:]))
