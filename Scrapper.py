@@ -442,5 +442,5 @@ def hentaiTagSearch(busqueda=""):
             return find          
             
         except:
-            find = ["Tag no encontrado"]
+            find = ["Tag no encontrado, prueba utilizando paréntesis "]
             return find
