@@ -432,12 +432,19 @@ def hentaiTagSearch(busqueda=""):
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
         print(resultado)
-        find = ["id_post", "imagen", "artista", "tags"]
         try:
             id_post = resultado[0]["id"]
+            if id_post == "":
+                id_post = "id no identificada"
             imagen = resultado[0]["file_url"]
+            if imagen == "":
+                imagen = "imagen no identificada"
             artista = resultado[0]["tag_string_artist"]
+            if artista == "":
+                artista = "Artista no identificado"
             tags = resultado[0]["tag_string"]
+            if tags == "":
+                tags = "Tags no identificados"
             find = [id_post, imagen, artista, tags]
             print(find)
             return find          
