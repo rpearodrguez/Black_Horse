@@ -449,6 +449,7 @@ def hentaiTagSearch(busqueda=""):
             print(find)
             return find          
             
-        except:
+        except Exception as ex:
+            print(ex)
             find = ["Tag no encontrado, prueba utilizando paréntesis "]
             return find
