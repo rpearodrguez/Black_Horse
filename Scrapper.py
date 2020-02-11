@@ -155,12 +155,9 @@ def steamUrlSearch(urlb=""):
 
     # http_respone 200 means OK status
     if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Encontraron resultados :-\n")
-
-
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
+        print(soup)
         #busca el estilo del objeto con la clase .search_result_row
         #l = soup.find("div", {"class": "search_pagination"})
 
@@ -451,5 +448,5 @@ def hentaiTagSearch(busqueda=""):
             
         except Exception as ex:
             print(ex)
-            find = ["Tag no encontrado, prueba utilizando paréntesis "]
+            find[0] = "Tag no encontrado, prueba utilizando paréntesis"
             return find
