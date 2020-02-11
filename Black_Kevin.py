@@ -69,7 +69,7 @@ async def on_message(message):
     elif message.content.find("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS")!= -1 and message.author.id != 558102665695985674:
         await message.channel.send("ORA!")
         
-    elif message.content.find("DIO") != -1 and message.author.id != 558102665695985674:
+    elif message.content == "DIO" and message.author.id != 558102665695985674:
         await message.channel.send("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD")
         
     elif message.content.find("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI")!= -1 and message.author.id != 558102665695985674:
