@@ -417,8 +417,7 @@ def safebooruSearch(busqueda=""):
     else:
         return "No se pudo encontrar resultado"
 
-
-def hentaiTagSearch(busqueda=""):
+def danbooruSearch(busqueda=""):
     url = "https://danbooru.donmai.us/posts.json?login={}&api_key={}&limit=1&tags={}&random=true".format(os.environ.get('DANBOORU_LOGIN'),os.environ.get('DANBOORU_KEY'),busqueda)
     # open with GET method
     resp = requests.get(url)
@@ -450,5 +449,5 @@ def hentaiTagSearch(busqueda=""):
             
         except Exception as ex:
             print(ex)
-            find[0] = "Tag no encontrado, prueba utilizando paréntesis"
+            find[0] = "Tag no encontrado, prueba verificando parentesis, (ej: (series)) o barras (ej: /)"
             return find
