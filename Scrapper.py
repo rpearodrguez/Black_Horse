@@ -420,8 +420,10 @@ def safebooruSearch(busqueda=""):
 
 def hentaiTagSearch(busqueda=""):
     url = "https://danbooru.donmai.us/posts.json?login={}&api_key={}&limit=1&tags={}&random=true".format(os.environ.get('DANBOORU_LOGIN'),os.environ.get('DANBOORU_KEY'),busqueda)
+    print(url)
     # open with GET method
     resp = requests.get(url)
+    print(resp.status_doce)
 
     # http_respone 200 means OK status
     if resp.status_code == 200:
