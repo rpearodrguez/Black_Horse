@@ -423,7 +423,7 @@ def hentaiTagSearch(busqueda=""):
     print(url)
     # open with GET method
     resp = requests.get(url)
-    print(resp.status_doce)
+    print(resp.status_code)
 
     # http_respone 200 means OK status
     if resp.status_code == 200:
