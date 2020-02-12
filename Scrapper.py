@@ -441,7 +441,7 @@ def hentaiTagSearch(busqueda=""):
             if artista == "":
                 artista = "Artista no identificado"
             tags = resultado[0]["tag_string"]
-            tags2 = " ".join(tags.split()[:10])
+            tags2 = " ".join(tags.split()[:15])
             if tags == "":
                 tags2 = "Tags no identificados"
             find = [id_post, imagen, artista, tags2]
