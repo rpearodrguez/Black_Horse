@@ -183,8 +183,8 @@ async def on_message(message):
             embed.add_field(name="Tags", value=resultado[3], inline=False)
             embed.set_footer(text="Creditos a https://danbooru.donmai.us")
             await message.channel.send(content=None, embed=embed)
-        except:
-            
+        except Exception as ex:
+            print(ex)
             await message.channel.send(resultado[0])
     
     elif message.content.find("sh.danbooru ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
