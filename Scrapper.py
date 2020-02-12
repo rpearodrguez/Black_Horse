@@ -425,7 +425,7 @@ def hentaiTagSearch(busqueda=""):
 
     # http_respone 200 means OK status
     if resp.status_code == 200:
-        
+        find = ["id no identificada","imagen no identificada","Artista no identificado","Tags no identificados"]
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
         print(resultado)
