@@ -174,7 +174,7 @@ async def on_message(message):
         danBusqueda = "_".join(danId[1:]).split("/")
         danBusqueda2 = '{}2F'.format("%").join(danBusqueda)
         print(danBusqueda2)
-        resultado = Scrapper.hentaiTagSearch(danBusqueda2)
+        resultado = Scrapper.danbooruSearch(danBusqueda2)
         try:
             embed = discord.Embed(title="Búsqueda", description=" ".join(danId[1:]))
             embed.set_image(url = resultado[1])
