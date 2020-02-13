@@ -520,5 +520,5 @@ def hIdShow(busqueda="oni+chichi"):
             return tablaCompleta
     except Exception as ex:
         print(ex)
-        tablaCompleta[0] = "Tag no encontrado, prueba verificando parentesis, (ej: (series)) o barras (ej: /)"
+        tablaCompleta = ["Serie no encontrada, soy un inutil, castígame ( ͡° ͜ʖ ͡°)"]
         return tablaCompleta
