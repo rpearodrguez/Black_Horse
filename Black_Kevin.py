@@ -199,39 +199,39 @@ async def on_message(message):
             embed = discord.Embed(title="Búsqueda", description=" ".join(danId[1:]))
             embed.set_image(url = resultado[0][1])
             try:
-                embed.add_field(name=resultado[1][0], value=resultado[1][0], inline=True)
+                embed.add_field(name=resultado[1][0], value=resultado[2][0], inline=True)
             except:
                 pass
             try:
-                embed.add_field(name=resultado[1][1], value=resultado[1][1], inline=True)
+                embed.add_field(name=resultado[1][1], value=resultado[2][1], inline=True)
             except:
                 pass
             try:
-                embed.add_field(name=resultado[1][2], value=resultado[1][2], inline=True)
+                embed.add_field(name=resultado[1][2], value=resultado[2][2], inline=True)
             except:
                 pass
             try:
-                embed.add_field(name=resultado[1][3], value=resultado[1][3], inline=True)
+                embed.add_field(name=resultado[1][3], value=resultado[2][3], inline=True)
             except:
                 pass
             try:
-                embed.add_field(name=resultado[1][4], value=resultado[1][4], inline=True)
+                embed.add_field(name=resultado[1][4], value=resultado[2][4], inline=True)
             except:
                 pass
             try:
-                embed.add_field(name=resultado[1][5], value=resultado[1][5], inline=True)
+                embed.add_field(name=resultado[1][5], value=resultado[2][5], inline=True)
             except:
                 pass
             try:
-                embed.add_field(name=resultado[1][6], value=resultado[1][6], inline=True)
+                embed.add_field(name=resultado[1][6], value=resultado[2][6], inline=True)
             except:
                 pass
             try:
-                embed.add_field(name=resultado[1][7], value=resultado[1][7], inline=True)
+                embed.add_field(name=resultado[1][7], value=resultado[2][7], inline=True)
             except:
                 pass
             try:
-                embed.add_field(name=resultado[1][8], value=resultado[1][8], inline=True)
+                embed.add_field(name=resultado[1][8], value=resultado[2][8], inline=True)
             except:
                 pass
             embed.set_footer(text="Puedes encontrarlo en: {}".format(resultado[0][0]))
