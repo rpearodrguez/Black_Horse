@@ -196,12 +196,8 @@ async def on_message(message):
         print(danBusqueda)
         resultado = Scrapper.hIdShow(danBusqueda)
         try:
-            embed = discord.Embed(title="Búsqueda", description=" ".join(danId[1:]))
+            embed = discord.Embed(title=resultado[1][0], description=resultado[2][0].join(danId[1:]))
             embed.set_image(url = resultado[0][1])
-            try:
-                embed.add_field(name=resultado[1][0], value=resultado[2][0], inline=False)
-            except:
-                pass
             try:
                 embed.add_field(name=resultado[1][1], value=resultado[2][1], inline=False)
             except:
