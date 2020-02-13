@@ -163,7 +163,6 @@ async def on_message(message):
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("No se pudo encontrar lo solicitado")
-        
 
     elif message.content.find("sh.safebooru") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
         await message.delete()
@@ -191,6 +190,59 @@ async def on_message(message):
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
+    elif message.content.find("sh.hanime ") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+        danId = message.content.split()
+        danBusqueda = "+".join(danId[1:])
+        print(danBusqueda)
+        resultado = Scrapper.hIdShow(danBusqueda)
+        try:
+            embed = discord.Embed(title="Búsqueda", description=" ".join(danId[1:]))
+            embed.set_image(url = resultado[0][1])
+            try:
+                embed.add_field(name=resultado[1][0], value=resultado[1][0], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1][1], value=resultado[1][1], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1][2], value=resultado[1][2], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1][3], value=resultado[1][3], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1][4], value=resultado[1][4], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1][5], value=resultado[1][5], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1][6], value=resultado[1][6], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1][7], value=resultado[1][7], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1][8], value=resultado[1][8], inline=True)
+            except:
+                pass
+            embed.set_footer(text="Puedes encontrarlo en: {}".format(resultado[0][0]))
+            await message.channel.send(content=None, embed=embed)
+        except Exception as ex:
+            print(ex)
+            await message.channel.send(resultado[0])
+
+    elif message.content.find("sh.hanime ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+        await message.delete()
+        await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 #Roleplay Module
 
     # Dados

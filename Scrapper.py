@@ -451,3 +451,74 @@ def danbooruSearch(busqueda=""):
             print(ex)
             find[0] = "Tag no encontrado, prueba verificando parentesis, (ej: (series)) o barras (ej: /)"
             return find
+
+def hIdSearch(busqueda="oni+chichi"):
+    url = "https://hentai-id.tv/?s={}".format(busqueda)
+    resp = requests.get(url)
+    print (resp)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Este es el sumario del meme solicitado :-\n")
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        # l is the list which contains all the text i.e news
+        imagen = soup.find("div", {"class": "col-xs-12 col-md-12 col-lg-9 px-3"})
+        # now we want to print only the text part of the anchor.
+        # find all the elements of a, i.e anchor
+        salsa = []
+        try:
+            for i in imagen.findAll("a", {"class": ""}, limit=10):
+                try:
+                    #Portada
+                    salsa.append(i.get('href'))
+                    
+                except:
+                    pass
+        except:
+            pass
+        print(salsa)
+        salsaFinal = salsa[random.randint(0,len(salsa)-1)]
+        print(salsaFinal)
+        return salsaFinal
+
+def hIdShow(busqueda="oni+chichi"):
+    try:
+        url = hIdSearch(busqueda)
+        resp = requests.get(url)
+        print (resp)
+
+        # http_respone 200 means OK status
+        if resp.status_code == 200:
+            print("Successfully opened the web page")
+            print("Este es el sumario del meme solicitado :-\n")
+
+            # we need a parser,Python built-in HTML parser is enough .
+            soup = BeautifulSoup(resp.text, 'html.parser')
+            # l is the list which contains all the text i.e news
+            imagen = soup.find("img", {"class": "img-thumbnail"})
+            imagen = imagen.get("src")
+            contenido = soup.find("table", {"class": "table table-striped"})
+            #el orden del contenido de la tabla es el siguiente: url, imagen, nombre, tags, Fansub, Extra, Secuela, Estudio, Estado, Sinopsis
+            contenidoTabla = [url,imagen]
+            keys = []
+            values = []
+            for i in contenido.findAll("td", {"class": "w30"}, limit=10):
+                try:
+                    keys.append("".join(("".join(i.text.split("\n"))).split("\r")))
+                except:
+                    pass
+            for i in contenido.findAll("td", {"class": "w70"}, limit=10):
+                try:
+                    values.append("".join(("".join(i.text.split("\n"))).split("\r")))
+                except:
+                    pass
+            
+            tablaCompleta = [contenidoTabla,keys,values]
+            return tablaCompleta
+    except Exception as ex:
+        print(ex)
+        tablaCompleta[0] = "Tag no encontrado, prueba verificando parentesis, (ej: (series)) o barras (ej: /)"
+        return tablaCompleta
