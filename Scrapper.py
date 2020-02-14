@@ -453,7 +453,10 @@ def danbooruSearch(busqueda=""):
             return find
 
 def hIdSearch(busqueda="oni+chichi"):
-    url = "https://hentai-id.tv/?s={}".format(busqueda)
+    if busqueda in ["Ahegao","Anal","Ashikoki","Bakunyuu","Bukkake","Bestiality","Bondage","Chikan","Comedia","Degeneracion-Mental","Escolar","Fantasia","Futanari","Gangbang","Harem","Hipnosis","Incesto","Milf","Lolicon","Nakadashi","Netorare","Netorase","Netori","Orgia","Paizuri","Romance","Shota","Tentaculos","Terror","Trap","Virgenes","Violacion","Yuri","Yaoi"]:
+        url = "https://hentai-id.tv/category/{}/?archivos=h1".format(busqueda)
+    else:
+        url = "https://hentai-id.tv/?s={}".format(busqueda)
     resp = requests.get(url)
     print (resp)
 
