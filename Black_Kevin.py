@@ -38,7 +38,7 @@ async def on_message(message):
 
     if message.content.find("sh.help") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         embed = discord.Embed(title="Ayuda", description="Comandos NSFW")
-        embed.set_image(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/black_horse.png")
+        embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/black_horse.png")
         embed.add_field(name="<3", value="Debido a la limitación de carateres, puedes encontrar el listado de comandos en https://www.stickhorse.cl/18-bot-de-stick-horse-listado-de-comandos-nsfwprefijo-sh/", inline=True)
         embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
