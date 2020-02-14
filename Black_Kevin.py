@@ -36,21 +36,21 @@ async def on_message(message):
         embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
 
-    elif message.content.find("sh.help") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    if message.content.find("sh.help") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         embed = discord.Embed(title="Ayuda", description="Comandos NSFW")
         embed.set_image(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/black_horse.png")
         embed.add_field(name="<3", value="Debido a la limitación de palabras, puedes encontrar el listado de comandos en https://www.stickhorse.cl/18-bot-de-stick-horse-listado-de-comandos-nsfwprefijo-sh/", inline=True)
         embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
 
-    elif message.content.find("sh.invite") != -1 and message.author.id != 558102665695985674:
+    if message.content.find("sh.invite") != -1 and message.author.id != 558102665695985674:
         await message.channel.send("https://discordapp.com/api/oauth2/authorize?client_id=558102665695985674&permissions=92160&scope=bot")
 
     # If the user says !hello we will send you to eat dirt
-    elif message.content.find("sh.hola") != -1 and message.author.id != 558102665695985674:
+    if message.content.find("sh.hola") != -1 and message.author.id != 558102665695985674:
         await message.channel.send("Come tierra") # If the user says !hello we will send you to eat dirt
 
-    elif message.content.find("sh.say") != -1 and message.author.id != 558102665695985674:
+    if message.content.find("sh.say") != -1 and message.author.id != 558102665695985674:
         mensaje = message.content.split()
         mensaje2 = " ".join(mensaje[1:])
         await message.delete()
