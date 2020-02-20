@@ -38,7 +38,7 @@ async def on_message(message):
 
     if message.content.find("sh.help") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
         embed = discord.Embed(title="Ayuda", description="Comandos NSFW")
-        embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/black_horse.png")
+        embed.set_thumbnails(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/black_horse.png")
         embed.add_field(name="<3", value="Debido a la limitación de carateres, puedes encontrar el listado de comandos en https://www.stickhorse.cl/18-bot-de-stick-horse-listado-de-comandos-nsfwprefijo-sh/", inline=True)
         embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
@@ -95,6 +95,19 @@ async def on_message(message):
     
     elif message.content.find("PIPO ESTÁ MUERTO") != -1 and message.author.id != 558102665695985674:
         await message.channel.send("LE CORTARON LA GARGANTA DE AQUI A ACÁ")
+
+    elif message.content == "ORA!" and message.author.id != 558102665695985674:
+        await message.channel.send("MUDA!")
+    
+    elif message.content == "MUDA!" and message.author.id != 558102665695985674:
+        await message.channel.send("ORA!")
+    
+    elif message.content == "KAZUMA! KAZUMA!" and message.author.id != 558102665695985674:
+        randNum = random.randint(1, 2)
+        if randNum == 1:
+            await message.channel.send("KAZUMA DESU")
+        if randNum == 2:
+            await message.channel.send("KAZUMA DA YO")
 
 #NSFW Module
 
