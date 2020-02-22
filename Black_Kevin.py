@@ -109,6 +109,10 @@ async def on_message(message):
         if randNum == 2:
             await message.channel.send("KAZUMA DA YO")
 
+    elif message.content == "omae wa mo shindeiru" and message.author.id != 558102665695985674:
+        await message.channel.send("NANI!")
+
+
 #NSFW Module
 
     #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
