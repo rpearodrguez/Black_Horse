@@ -35,7 +35,7 @@ def animeScrap(urlb=""):
         try:
             rand = random.randint(0,len(resultado["search"])-1)
             titulo = resultado["search"][rand]["title"]                
-            portada = resultado["search"][rand]["poster"]
+            portada = ("covers").join(resultado["search"][rand]["banner"].split("banners"))
             sinopsis = resultado["search"][rand]["synopsis"]
             lanzamiento = resultado["search"][rand]["debut"]
             tipo = resultado["search"][rand]["type"]
