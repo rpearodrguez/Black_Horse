@@ -29,28 +29,28 @@ async def on_message(message):
 
 #General Module
 
-    if message.content.find("sh.help") != -1 and message.author.id != 558102665695985674:
+    if message.content.find("sh.help") != -1 and not message.author.bot:
         embed = embed=discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
         embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png")
         embed.add_field(name="<3", value="Debido a la limitación de carateres, puedes encontrar el listado de comandos en https://www.stickhorse.cl/bot-de-stick-horse-listado-de-comandos-prefijo-sh/", inline=True)
         embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
 
-    if message.content.find("sh.help") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    if message.content.find("sh.help") != -1 and message.channel.is_nsfw() and not message.author.bot:
         embed = discord.Embed(title="Ayuda", description="Comandos NSFW")
         embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/black_horse.png")
         embed.add_field(name="<3", value="Debido a la limitación de carateres, puedes encontrar el listado de comandos en https://www.stickhorse.cl/18-bot-de-stick-horse-listado-de-comandos-nsfwprefijo-sh/", inline=True)
         embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
         await message.channel.send(content=None, embed=embed)
 
-    if message.content.find("sh.invite") != -1 and message.author.id != 558102665695985674:
+    if message.content.find("sh.invite") != -1 and not message.author.bot:
         await message.channel.send("https://discordapp.com/api/oauth2/authorize?client_id=558102665695985674&permissions=92160&scope=bot")
 
     # If the user says !hello we will send you to eat dirt
-    if message.content.find("sh.hola") != -1 and message.author.id != 558102665695985674:
+    if message.content.find("sh.hola") != -1 and not message.author.bot:
         await message.channel.send("Come tierra") # If the user says !hello we will send you to eat dirt
 
-    if message.content.find("sh.say") != -1 and message.author.id != 558102665695985674:
+    if message.content.find("sh.say") != -1 and not message.author.bot:
         mensaje = message.content.split()
         mensaje2 = " ".join(mensaje[1:])
         await message.delete()
@@ -60,63 +60,63 @@ async def on_message(message):
             await message.channel.send(mensaje2)
 
 #FRASES Module        
-    elif message.content.find("TU SIGUES, JOTARO!") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("TU SIGUES, JOTARO!") != -1 and not message.author.bot:
         await message.channel.send("BASTARDO... DIO")
         
-    elif message.content.find("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD") != -1 and not message.author.bot:
         await message.channel.send("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI")
         
-    elif message.content.find("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS")!= -1 and message.author.id != 558102665695985674:
+    elif message.content.find("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS")!= -1 and not message.author.bot:
         await message.channel.send("ORA!")
         
-    elif message.content == "DIO" and message.author.id != 558102665695985674:
+    elif message.content == "DIO" and not message.author.bot:
         await message.channel.send("OH? TE ESTÁS ACERCANDO? EN LUGAR DE CORRER, VIENES DIRECTO A MÍ? AÚN CUANDO TU ABUELO JOSEPH, TE DIJO EL SECRETO DE THE WORLD")
         
-    elif message.content.find("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI")!= -1 and message.author.id != 558102665695985674:
+    elif message.content.find("NO PUEDO PARTIRTE LA MADRE SIN ACERCARME A TI")!= -1 and not message.author.bot:
         await message.channel.send("OH HO! ENTONCES ACERCATE TODO LO QUE QUIERAS")
         
-    elif message.content.find("ORA! ORA! ORA! ORA! ORA!") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("ORA! ORA! ORA! ORA! ORA!") != -1 and not message.author.bot:
         await message.channel.send("MUDA! MUDA! MUDA! MUDA! MUDA!")
 
-    elif message.content.find("MUDA! MUDA! MUDA! MUDA! MUDA!") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("MUDA! MUDA! MUDA! MUDA! MUDA!") != -1 and not message.author.bot:
         await message.channel.send("ORA! ORA! ORA! ORA! ORA!")
 
-    elif message.content.find("TENGO MUCHO MIEDO MAGINER") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("TENGO MUCHO MIEDO MAGINER") != -1 and not message.author.bot:
         await message.channel.send("TIENES QUE HACERLO POR MI, PIPO, POR MAGINER")
 
-    elif message.content.find("TIENES QUE HACERLO POR MI, PIPO, POR MAGINER") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("TIENES QUE HACERLO POR MI, PIPO, POR MAGINER") != -1 and not message.author.bot:
         await message.channel.send("ESTÁ BIEN, POR TI... MAGINER")
         
-    elif message.content.find("ESTÁ BIEN, POR TI... MAGINER") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("ESTÁ BIEN, POR TI... MAGINER") != -1 and not message.author.bot:
         await message.channel.send("BIEN MAGINER, PIPO ESTÁ MUERTO, LE CORTARON LA GARGANTA DE AQUI A ACÁ")
     
-    elif message.content.find("BIEN MAGINER, PIPO ESTÁ MUERTO, LE CORTARON LA GARGANTA DE AQUI A ACÁ") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("BIEN MAGINER, PIPO ESTÁ MUERTO, LE CORTARON LA GARGANTA DE AQUI A ACÁ") != -1 and not message.author.bot:
         await message.channel.send("OIGA, ESTOY TRATANDO DE COMER MI ALMUERZO")
     
-    elif message.content.find("PIPO ESTÁ MUERTO") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("PIPO ESTÁ MUERTO") != -1 and not message.author.bot:
         await message.channel.send("LE CORTARON LA GARGANTA DE AQUI A ACÁ")
 
-    elif message.content == "ORA!" and message.author.id != 558102665695985674:
+    elif message.content == "ORA!" and not message.author.bot:
         await message.channel.send("MUDA!")
     
-    elif message.content == "MUDA!" and message.author.id != 558102665695985674:
+    elif message.content == "MUDA!" and not message.author.bot:
         await message.channel.send("ORA!")
     
-    elif message.content == "KAZUMA! KAZUMA!" and message.author.id != 558102665695985674:
+    elif message.content == "KAZUMA! KAZUMA!" and not message.author.bot:
         randNum = random.randint(1, 2)
         if randNum == 1:
             await message.channel.send("KAZUMA DESU")
         if randNum == 2:
             await message.channel.send("KAZUMA DA YO")
 
-    elif message.content == "omae wa mo shindeiru" and message.author.id != 558102665695985674:
+    elif message.content == "omae wa mo shindeiru" and not message.author.bot:
         await message.channel.send("NANI!")
 
 
 #NSFW Module
 
     #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
-    elif message.content.find("sh.nh ") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.nh ") != -1 and message.channel.is_nsfw() and not message.author.bot:
 
         #Recibe información del manga, rescata el codigo y genera el enlace al manga.
         nh_number = message.content.split()
@@ -133,11 +133,11 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Formato incorrecto, ingrese numero o escriba random como parametro")
     #En caso de que esté en un canal SFW da está respuesta
-    elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.nh ") != -1 and not message.channel.is_nsfw() and not message.author.bot:
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
-    elif message.content.find("sh.patas") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.patas") != -1 and message.channel.is_nsfw() and not message.author.bot:
         busqueda = Scrapper.safebooruSearch("feet")
         print(busqueda)
         if busqueda != "No se pudo encontrar resultado":
@@ -149,11 +149,11 @@ async def on_message(message):
             await message.channel.send("No se pudo encontrar lo solicitado")
         
     
-    elif message.content.find("sh.patas") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.patas") != -1 and not message.channel.is_nsfw() and not message.author.bot:
         await message.delete()
         await message.channel.send("Debido a que puede salir contenido NSFW haz la consulta en algun canal de ese tipo")
 
-    elif message.content.find("sh.piernas") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.piernas") != -1 and message.channel.is_nsfw() and not message.author.bot:
         busqueda = Scrapper.safebooruSearch("thighs")
         print(busqueda)
         if busqueda != "No se pudo encontrar resultado":
@@ -165,11 +165,11 @@ async def on_message(message):
             await message.channel.send("No se pudo encontrar lo solicitado")
         
     
-    elif message.content.find("sh.piernas") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.piernas") != -1 and not message.channel.is_nsfw() and not message.author.bot:
         await message.delete()
         await message.channel.send("Debido a que puede salir contenido NSFW haz la consulta en algun canal de ese tipo")
 
-    elif message.content.find("sh.safebooru") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.safebooru") != -1 and message.channel.is_nsfw() and not message.author.bot:
         search = message.content.split()
         busqueda = Scrapper.safebooruSearch("+".join(search[1:]))
         print(busqueda)
@@ -181,11 +181,11 @@ async def on_message(message):
         else:
             await message.channel.send("No se pudo encontrar lo solicitado")
 
-    elif message.content.find("sh.safebooru") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.safebooru") != -1 and not message.channel.is_nsfw() and not message.author.bot:
         await message.delete()
         await message.channel.send("Debido a que puede salir contenido NSFW haz la consulta en algun canal de ese tipo")
 
-    elif message.content.find("sh.danbooru ") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.danbooru ") != -1 and message.channel.is_nsfw() and not message.author.bot:
         danId = message.content.split()
         danBusqueda = "_".join(danId[1:]).split("/")
         danBusqueda2 = '{}2F'.format("%").join(danBusqueda)
@@ -203,11 +203,11 @@ async def on_message(message):
             print(ex)
             await message.channel.send(resultado[0])
     
-    elif message.content.find("sh.danbooru ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.danbooru ") != -1 and not message.channel.is_nsfw() and not message.author.bot:
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 
-    elif message.content.find("sh.hanime ") != -1 and message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.hanime ") != -1 and message.channel.is_nsfw() and not message.author.bot:
         danId = message.content.split()
         danBusqueda = "+".join(danId[1:])
         print(danBusqueda)
@@ -257,13 +257,13 @@ async def on_message(message):
             print(ex)
             await message.channel.send(resultado[0])
 
-    elif message.content.find("sh.hanime ") != -1 and not message.channel.is_nsfw() and message.author.id != 558102665695985674:
+    elif message.content.find("sh.hanime ") != -1 and not message.channel.is_nsfw() and not message.author.bot:
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
 #Roleplay Module
 
     # Dados
-    elif message.content.find("sh.roll") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.roll") != -1 and not message.author.bot:
         # Separa la cantidad de dados y de caras del mensaje.
         dado = message.content.split()
         usuario = str(message.author).split("#")
@@ -292,7 +292,7 @@ async def on_message(message):
             await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
             pass
     
-    elif message.content.find("sh.fate") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.fate") != -1 and not message.author.bot:
 
         dado = message.content.split()
         dado2 = dado[1].split("df")
@@ -305,7 +305,7 @@ async def on_message(message):
 
 #Entertainment Module
 
-    elif message.content.find("sh.anime ") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.anime ") != -1 and not message.author.bot:
         animeId = message.content.split()
         animeBusqueda = "+".join(animeId[1:])
         resultado = Scrapper.animeScrap(animeBusqueda)
@@ -325,7 +325,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send(resultado[0])
 
-    elif message.content.find("sh.manga ") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.manga ") != -1 and not message.author.bot:
         mangaId = message.content.split()
         mangaBusqueda = "+".join(mangaId[1:])
         resultado = Scrapper.mangaScrap(mangaBusqueda)
@@ -337,7 +337,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.steam ") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.steam ") != -1 and not message.author.bot:
 
         juegoID = message.content.split()
         juegoBusqueda = "+".join(juegoID[1:])
@@ -365,7 +365,7 @@ async def on_message(message):
         except:
             pass
 
-    elif message.content.find("sh.img ") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.img ") != -1 and not message.author.bot:
         imageId = message.content.split()
         imageBusqueda = "+".join(imageId[1:])
         resultado = Scrapper.imgSearch(imageBusqueda)
@@ -374,7 +374,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.cc") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.cc") != -1 and not message.author.bot:
         busqueda = Scrapper.ccSearch()
         embed = discord.Embed(title=busqueda[0], description=busqueda[2])
         embed.set_image(url = busqueda[1])
@@ -384,7 +384,7 @@ async def on_message(message):
 #Reactions Module
 #Cooperative Reactions
 
-    elif message.content.find("sh.escobazo") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.escobazo") != -1 and not message.author.bot:
         try:            
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("escobazo")
@@ -400,7 +400,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
-    elif message.content.find("sh.lick") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.lick") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("lamer")
@@ -417,7 +417,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.pat") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.pat") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("pat")
@@ -434,7 +434,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.slap") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.slap") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("slap")
@@ -451,7 +451,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.feed") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.feed") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("food")
@@ -468,7 +468,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.kick") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.kick") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("kickbutt")
@@ -485,7 +485,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.baka") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.baka") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("baka")
@@ -502,7 +502,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.bite") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.bite") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("bite")
@@ -522,7 +522,7 @@ async def on_message(message):
 
 #Self Reactions
 
-    elif message.content.find("sh.smug") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.smug") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("smug")
@@ -532,7 +532,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.suicide") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.suicide") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("suicide")
@@ -542,7 +542,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
     
-    elif message.content.find("sh.spin") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.spin") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("spin")
@@ -552,7 +552,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.blush") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.blush") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("blush")
@@ -562,7 +562,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
     
-    elif message.content.find("sh.shy") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.shy") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("shy")
@@ -572,7 +572,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.tsundere") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.tsundere") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("tsundere")
@@ -582,7 +582,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
     
-    elif message.content.find("sh.lewd") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.lewd") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("lewd")
@@ -592,7 +592,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.jojo") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.jojo") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("jojo")
@@ -602,7 +602,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
         
-    elif message.content.find("sh.cry") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.cry") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("cry")
@@ -614,7 +614,7 @@ async def on_message(message):
         
 #Dual Reactions
 
-    elif message.content.find("sh.dance") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.dance") != -1 and not message.author.bot:
         mensaje = message.content.split()
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -635,7 +635,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.hug") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.hug") != -1 and not message.author.bot:
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("abrazo")
         try:
@@ -649,7 +649,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.kiss ") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.kiss ") != -1 and not message.author.bot:
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("kiss")
         try:
@@ -663,7 +663,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.sleep") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.sleep") != -1 and not message.author.bot:
         autor = str(message.author).split("#")[0]
         try:
             victima = message.mentions[0].name
@@ -678,7 +678,7 @@ async def on_message(message):
         await message.channel.send(content=None, embed=embed)
         await message.delete()
 
-    elif message.content.find("sh.happy") != -1 and message.author.id != 558102665695985674:
+    elif message.content.find("sh.happy") != -1 and not message.author.bot:
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("happy")
         try:
