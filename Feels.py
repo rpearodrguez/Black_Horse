@@ -10,7 +10,12 @@ def reactionImage(feel=""):
 
     imagenes = [""]
     if feel == "escobazo":
-        imagenes = ["https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif", "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-2.gif", "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-3.gif"]
+        imagenes = ["https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif", 
+                    "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-2.gif",
+                    "https://www.stickhorse.cl/wp-content/uploads/2020/01/SH-Escobazo-3.gif", 
+                    "https://media.discordapp.net/attachments/476576031315066880/676602221571473418/tenor.gif",
+                    "https://www.stickhorse.cl/wp-content/uploads/2020/05/doom-escobazos.gif",
+                    "https://www.stickhorse.cl/wp-content/uploads/2020/04/neo-escobazo.gif"]
 
     if feel == "abrazo":
         search_term = "anime hug"
