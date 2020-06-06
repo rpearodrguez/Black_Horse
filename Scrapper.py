@@ -98,7 +98,7 @@ def mangaScrap(urlb=""):
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
         style = soup.find("a", {"class": "unit"})['style']
-        print(soup.contents)
+        #print(soup.contents)
 
         # l is the list which contains all the text i.e news
         l = soup.find("div", {"class": "anime-list-2"})
@@ -158,7 +158,7 @@ def steamUrlSearch(urlb=""):
     if resp.status_code == 200:
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
-        print(soup)
+        #print(soup.contents)
         #busca el estilo del objeto con la clase .search_result_row
         #l = soup.find("div", {"class": "search_pagination"})
 
@@ -188,6 +188,7 @@ def steamDataSearch(busqueda):
 
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
+        #print(soup.contents)
         # l is the list which contains all the text i.e news
         glance = soup.find("div", {"class": "glance_ctn"})
         meta = soup.find("div", {"class": "game_meta_data"})
