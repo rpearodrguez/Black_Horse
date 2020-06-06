@@ -92,12 +92,13 @@ def mangaScrap(urlb=""):
     # http_respone 200 means OK status
     if resp.status_code == 200:
         print("Successfully opened the web page")
-        print("Este es el sumario del manga solicitado :-\n")
+        print("Este es el sumario del juego solicitado :-\n")
         find = ["N/E", "N/E", "Ni idea", "Un Chingo", "N/E"]
 
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
         style = soup.find("a", {"class": "unit"})['style']
+        print(soup.contents)
 
         # l is the list which contains all the text i.e news
         l = soup.find("div", {"class": "anime-list-2"})
