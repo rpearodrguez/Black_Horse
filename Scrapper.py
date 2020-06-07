@@ -150,7 +150,7 @@ def mangaScrap(urlb=""):
 #Game Scrapping
 def steamUrlSearch(urlb=""):
     # url = the target we want to open
-    url = "https://store.steampowered.com/search/?term=" + urlb + "&category1=998"
+    url = "https://store.steampowered.com/search/?term=" + urlb + "&category1=998&ignore_preferences=1"
     # open with GET method
     resp = requests.get(url)
 
@@ -162,6 +162,7 @@ def steamUrlSearch(urlb=""):
         #l = soup.find("div", {"class": "search_pagination"})
         #style = soup.find("a", {"class": "search_pagination"})['style']
         print("Contenido de la pagina: {}".format(soup.contents))
+        
         for i in soup.findAll("a", {"class": "search_result_row"}, limit=1):
             print("objeto de la clase search_result_row: {}".format(i))
             try:
