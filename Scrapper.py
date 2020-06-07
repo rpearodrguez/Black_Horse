@@ -158,14 +158,13 @@ def steamUrlSearch(urlb=""):
     if resp.status_code == 200:
         # we need a parser,Python built-in HTML parser is enough .
         soup = BeautifulSoup(resp.text, 'html.parser')
-        #print(soup.contents)
         #busca el estilo del objeto con la clase .search_result_row
         #l = soup.find("div", {"class": "search_pagination"})
-
         #style = soup.find("a", {"class": "search_pagination"})['style']
+        print("Contenido de la pagina: {}".format(soup.contents))
         for i in soup.findAll("a", {"class": "search_result_row"}, limit=1):
+            print("objeto de la clase search_result_row: {}".format(i))
             try:
-                print(i)
                 urla = i.get('href')
                 print(urla)
                 return urla
