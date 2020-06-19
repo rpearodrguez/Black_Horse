@@ -374,6 +374,50 @@ async def on_message(message):
         embed.set_image(url = busqueda[1])
         await message.channel.send(content=None, embed=embed)
 
+    elif message.content.find("sh.scp") != -1 and not message.author.bot:
+        scpId = message.content.split()
+        scpBusqueda = scpId[1:]
+        print(scpBusqueda)
+        resultado = Scrapper.SCP_Search(scpBusqueda)
+        try:
+            embed = discord.Embed(title="Búsqueda: SCP-", description=" ".join(scpId[1:]))
+            try:
+                embed.set_image(url = resultado[0])
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[1].split(":")[0], value=resultado[1].split(":")[1], inline=False)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[2].split(":")[0], value=resultado[2].split(":")[1], inline=False)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[3].split(":")[0], value=resultado[3].split(":")[1], inline=False)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[4].split(":")[0], value=resultado[4].split(":")[1], inline=False)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[5].split(":")[0], value=resultado[5].split(":")[1], inline=False)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[6].split(":")[0], value=resultado[6].split(":")[1], inline=False)
+            except:
+                pass
+            try:
+                embed.add_field(name=resultado[7].split(":")[0], value=resultado[7].split(":")[1], inline=False)
+            except:
+                pass
+            await message.channel.send(content=None, embed=embed)
+        except Exception as ex:
+            print(ex)
+            await message.channel.send(resultado[0])
+
 #Reactions Module
 #Cooperative Reactions
 
