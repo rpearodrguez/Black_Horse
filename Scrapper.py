@@ -557,6 +557,7 @@ def SCP_Search(busqueda="5998"):
         # find all the elements of a, i.e anchor
         scpResult = []
         try:
+            print("inicia busqueda de contenido")
             for i in scpImage.findAll("a", {"class": ""}, limit=10):
                 try:
                     #Portada
