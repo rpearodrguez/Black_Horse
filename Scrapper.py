@@ -566,7 +566,8 @@ def SCP_Search(busqueda="5998"):
                 except:
                     try: 
                         for i in scpImage.findAll("img", {"class": "image"}):
-                            scpResult.append(i.get('src'))
+                            print(i)
+                            scpResult.append(i['src'])
                             print(scpResult[0])
                     except:
                         pass
