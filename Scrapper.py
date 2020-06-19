@@ -253,7 +253,7 @@ def steamDataSearch(busqueda):
                     if titulo[8] != "":
                         #Descripcion
                         
-                        find[2] = translator.translate(titulo[8],dest='es')
+                        find[2] = translator.translate(titulo[8],dest='es').text
                         print(find[2])
 
                 except:
