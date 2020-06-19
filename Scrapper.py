@@ -573,7 +573,7 @@ def SCP_Search(busqueda="5998"):
                         print(scpResult[0])
                 except:
                     pass
-
+            print("Revisión 2: Imagen encontrada {}".format(scpResult))
             for i in scpText.findAll("p", {"class": ""}, limit=5):
                 try:
                     if "\n" in i.text:
@@ -584,7 +584,7 @@ def SCP_Search(busqueda="5998"):
                         scpResult.append(i.text)
                 except:
                     pass
-            
+            print("Revisión 3: Contenido encontrado {}".format(scpResult))
         except:
             pass
         
