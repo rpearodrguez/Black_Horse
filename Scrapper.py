@@ -564,13 +564,15 @@ def SCP_Search(busqueda="5998"):
                     print(scpResult[0])
                     
                 except:
-                    try: 
-                        for i in scpImage.findAll("img", {"class": "image"}):
-                            print(i)
-                            scpResult.append(i['src'])
-                            print(scpResult[0])
-                    except:
-                        pass
+                    pass
+            print("Revisión 1: Imagen encontrada {}".format(scpResult))
+            if scpResult == []:
+                try: 
+                    for i in scpImage.findAll("img", {"class": "image"}):
+                        scpResult.append(i['src'])
+                        print(scpResult[0])
+                except:
+                    pass
 
             for i in scpText.findAll("p", {"class": ""}, limit=5):
                 try:
