@@ -536,3 +536,49 @@ def hIdShow(busqueda="oni+chichi"):
         print(ex)
         tablaCompleta = ["Serie no encontrada, soy un inutil, castígame ( ͡° ͜ʖ ͡°)"]
         return tablaCompleta
+
+def SCP_Search(busqueda="5998"):
+    url = "http://www.scp-wiki.net/scp-{}".format(busqueda)
+    resp = requests.get(url)
+    print (resp)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        print("Successfully opened the web page")
+        print("Este es el sumario del meme solicitado :-\n")
+
+        # we need a parser,Python built-in HTML parser is enough .
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        # l is the list which contains all the text i.e news
+        scpImage = soup.find("div", {"class": "scp-image-block"})
+        scpText = soup.find("div", {"id": "page-content"})
+        # now we want to print only the text part of the anchor.
+        # find all the elements of a, i.e anchor
+        scpResult = []
+        try:
+            for i in scpImage.findAll("a", {"class": ""}, limit=10):
+                try:
+                    #Portada
+                    scpResult.append(i.get('href'))
+                    print(scpResult[0])
+                    
+                except:
+                    pass
+            for i in scpText.findAll("p", {"class": ""}, limit=5):
+                try:
+                    if "\n" in i.text:
+                        contenido = i.text.split("\n")
+                        scpResult.append(contenido[0])
+                        scpResult.append(contenido[2])
+                    else:
+                        scpResult.append(i.text)
+                except:
+                    pass
+            
+        except:
+            pass
+        
+        return scpResult
+    
+    elif resp.status_code == 404:
+        return ["[DATA EXPUNGED]","[DATA EXPUNGED]:[DATA EXPUNGED]","[DATA EXPUNGED]:PARA UNA VERSION ACTUALIZADA DEL INFORME CONTACTA CON EL DOCTOR [REDACTED]"]
