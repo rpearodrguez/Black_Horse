@@ -572,6 +572,7 @@ def SCP_Search(busqueda="5998"):
                         scpResult.append(i['src'])
                         print(scpResult[0])
                 except:
+                    scpResult.append("http://scp-wiki.wdfiles.com/local--files/component%3Atheme/logo.png")
                     pass
             print("Revisión 2: Imagen encontrada {}".format(scpResult))
             for i in scpText.findAll("p", {"class": ""}, limit=5):
