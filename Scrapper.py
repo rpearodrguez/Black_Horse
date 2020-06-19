@@ -558,23 +558,27 @@ def SCP_Search(busqueda="5998"):
         scpResult = []
         try:
             print("inicia busqueda de contenido")
-            for i in scpImage.findAll("a", {"class": ""}, limit=10):
-                try:
-                    #Portada
-                    scpResult.append(i.get('href'))
-                    print(scpResult[0])
-                    
-                except:
-                    pass
-            print("Revisión 1: Imagen encontrada {}".format(scpResult))
-            if scpResult == []:
-                try: 
-                    for i in scpImage.findAll("img", {"class": "image"}):
-                        scpResult.append(i['src'])
+            try:
+                for i in scpImage.findAll("a", {"class": ""}, limit=10):
+                    try:
+                        #Portada
+                        scpResult.append(i.get('href'))
                         print(scpResult[0])
-                except:
-                    scpResult.append("http://scp-wiki.wdfiles.com/local--files/component%3Atheme/logo.png")
-                    pass
+                        
+                    except:
+                        pass
+                print("Revisión 1: Imagen encontrada {}".format(scpResult))
+                if scpResult == []:
+                    try: 
+                        for i in scpImage.findAll("img", {"class": "image"}):
+                            scpResult.append(i['src'])
+                            print(scpResult[0])
+                    except:
+                        pass
+            except:
+                scpResult.append("http://scp-wiki.wdfiles.com/local--files/component%3Atheme/logo.png")
+                pass
+            
             print("Revisión 2: Imagen encontrada {}".format(scpResult))
             for i in scpText.findAll("p", {"class": ""}, limit=5):
                 try:
