@@ -346,12 +346,12 @@ async def on_message(message):
             elif resultado[1] != "Nombre" or resultado[2] != "Descripcion" or resultado[3] != "Desarrollador" or resultado[4] != "Lanzamiento" or resultado[5] != "Genero" or resultado[6] != "Metacritic" or resultado[7] != "Precio":
                 embed = discord.Embed(title="Nombre", description=resultado[1])
                 embed.set_image(url = resultado[0])
-                embed.add_field(name="Descripción", value=resultado[2])
-                embed.add_field(name="Desarrollador", value=resultado[3])
-                embed.add_field(name="Fecha de lanzamiento", value=resultado[4])
-                embed.add_field(name="Género", value=resultado[5])
-                embed.add_field(name="Metacritic", value=resultado[6])
-                embed.add_field(name="Precio", value=resultado[7])
+                embed.add_field(name="Descripción", value=resultado[2], inline=False)
+                embed.add_field(name="Desarrollador", value=resultado[3], inline=True)
+                embed.add_field(name="Fecha de lanzamiento", value=resultado[4], inline=True)
+                embed.add_field(name="Género", value=resultado[5], inline=False)
+                embed.add_field(name="Metacritic", value=resultado[6], inline=True)
+                embed.add_field(name="Precio", value=resultado[7], inline=True)
                 await message.channel.send(content=None, embed=embed)
     
             else:
