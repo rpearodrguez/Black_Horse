@@ -1,10 +1,15 @@
+import json
+import os
 import random
+import re
+from googletrans import Translator
+
 import requests
 from boto.s3.connection import S3Connection
 from bs4 import BeautifulSoup
-import re
-import json
-import os
+
+translator = Translator()
+
 
 #Anime Scrapping
 def animeScrap(urlb=""):
@@ -247,7 +252,9 @@ def steamDataSearch(busqueda):
                     print(titulo)
                     if titulo[8] != "":
                         #Descripcion
-                        find[2] = titulo[8]
+                        
+                        find[2] = translator.translate(titulo[8],dest='es')
+                        print(find[2])
 
                 except:
                     pass
