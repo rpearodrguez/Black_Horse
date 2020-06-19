@@ -538,7 +538,7 @@ def hIdShow(busqueda="oni+chichi"):
         return tablaCompleta
 
 def SCP_Search(busqueda="5998"):
-    url = "http://www.scp-wiki.net/scp-{}".format(str(busqueda))
+    url = "http://www.scp-wiki.net/scp-{}".format(str(busqueda[0]))
     print(str(url))
     resp = requests.get(str(url))
     print (resp)
