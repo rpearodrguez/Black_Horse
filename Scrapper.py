@@ -155,7 +155,7 @@ def mangaScrap(urlb=""):
 #Game Scrapping
 def steamUrlSearch(urlb=""):
     # url = the target we want to open
-    url = "https://store.steampowered.com/search/?term=" + urlb + "&category1=998&ignore_preferences=1"
+    url = "https://store.steampowered.com/search/?term=" + urlb + "&category1=998&ignore_preferences=1&l=latam"
     # open with GET method
     resp = requests.get(url)
 
