@@ -378,7 +378,7 @@ async def on_message(message):
         scpId = message.content.split()
         scpBusqueda = scpId[1:]
         print(scpBusqueda)
-        resultado = Scrapper.SCP_Search(scpBusqueda)
+        resultado = Scrapper.SCP_Search(scpBusqueda[0])
         try:
             embed = discord.Embed(title="Búsqueda: SCP-", description=" ".join(scpId[1:]))
             try:
