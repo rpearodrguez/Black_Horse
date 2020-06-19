@@ -578,10 +578,10 @@ def SCP_Search(busqueda="5998"):
                 try:
                     if "\n" in i.text:
                         contenido = i.text.split("\n")
-                        scpResult.append(contenido[0])
-                        scpResult.append(contenido[2])
+                        scpResult.append(translator.translate(contenido[0],dest='es').text)
+                        scpResult.append(translator.translate(contenido[2],dest='es').text)
                     else:
-                        scpResult.append(i.text)
+                        scpResult.append(translator.translate(i.text,dest='es').text)
                 except:
                     pass
             print("Revisión 3: Contenido encontrado {}".format(scpResult))
