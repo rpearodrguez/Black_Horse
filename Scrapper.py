@@ -29,6 +29,7 @@ def animeScrap(urlb=""):
         if cantidad_resultados > 3:
             cantidad_resultados = 3
         resultado_elegido = random.randint(0,cantidad_resultados-1)
+        find = ["titulo", "portada", "sinopsis", "lanzamiento","termino","terminado", "tipo", "rating" ,"episodios", "generos"]
         
         try:
             titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
@@ -51,8 +52,10 @@ def animeScrap(urlb=""):
             except:
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios]
                 print(find)
-            return find             
-            
+            for contenido in find:
+                if contenido == "":
+                    contenido = "No encontrado"
+            return find
         except:
             resultado = "Anime o genero no encontrado"
             return resultado
