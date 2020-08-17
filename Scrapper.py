@@ -29,18 +29,44 @@ def animeScrap(urlb=""):
         if cantidad_resultados > 3:
             cantidad_resultados = 3
         resultado_elegido = random.randint(0,cantidad_resultados-1)
-        find = ["titulo", "portada", "sinopsis", "lanzamiento","termino","terminado", "tipo", "rating" ,"episodios", "generos"]
         
         try:
-            titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
-            portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
-            sinopsis = " ".join(" ".join((translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
-            lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
-            termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
-            terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
-            tipo = resultado["data"][resultado_elegido]["attributes"]["showType"]
-            rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
-            episodios = resultado["data"][resultado_elegido]["attributes"]["episodeCount"]
+            try:
+                titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
+            except:
+                pass
+            try:
+                portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
+            except:
+                pass
+            try:
+                sinopsis = " ".join(" ".join((translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
+            except:
+                pass
+            try:
+                lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
+            except:
+                pass
+            try:
+                termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
+            except:
+                pass
+            try:
+                terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
+            except:
+                pass
+            try:
+                tipo = resultado["data"][resultado_elegido]["attributes"]["showType"]
+            except:
+                pass
+            try:
+                rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
+            except:
+                pass
+            try:
+                episodios = resultado["data"][resultado_elegido]["attributes"]["episodeCount"]
+            except:
+                pass
             try:
                 generos = ""
                 link_generos =  resultado["data"][resultado_elegido]["relationships"]["genres"]["links"]["related"]
@@ -50,11 +76,8 @@ def animeScrap(urlb=""):
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, generos]
                 print(find)
             except:
-                find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios]
+                find = {titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios]
                 print(find)
-            for contenido in find:
-                if contenido == "":
-                    contenido = "No encontrado"
             return find
         except:
             resultado = "Anime o genero no encontrado"
