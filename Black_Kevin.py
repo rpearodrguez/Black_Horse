@@ -577,7 +577,7 @@ async def on_message(message):
         imagen = Feels.reactionImage("suicide")
         embed = discord.Embed(title="{} se mató".format(autor))
         embed.set_image(url = imagen)
-        embed.set_footer(text="Si realmente estas mal y necesitas ayuda visita http://www.asulac.org/necesitas-ayuda/")
+        embed.set_footer(text="Si realmente estas mal y necesitas ayuda visita https://www.stickhorse.cl/lineas-de-ayuda-psicologica-o-lineas-de-suicidio-en-hispano-america/")
         await message.channel.send(content=None, embed=embed)
     
     elif message.content.find("sh.spin") != -1 and not message.author.bot:
