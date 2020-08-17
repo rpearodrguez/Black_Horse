@@ -33,9 +33,7 @@ def animeScrap(urlb=""):
         try:
             titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
             portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
-            print(portada)
             sinopsis = translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text
-            print(sinopsis)
             lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
             termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
             terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
