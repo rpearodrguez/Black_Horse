@@ -31,42 +31,33 @@ def animeScrap(urlb=""):
         resultado_elegido = random.randint(0,cantidad_resultados-1)
         
         try:
-            try:
-                titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
-            except:
-                pass
-            try:
-                portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
-            except:
-                pass
-            try:
-                sinopsis = " ".join(" ".join((translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
-            except:
-                pass
-            try:
-                lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
-            except:
-                pass
-            try:
-                termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
-            except:
-                pass
-            try:
-                terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
-            except:
-                pass
-            try:
-                tipo = resultado["data"][resultado_elegido]["attributes"]["showType"]
-            except:
-                pass
-            try:
-                rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
-            except:
-                pass
-            try:
-                episodios = resultado["data"][resultado_elegido]["attributes"]["episodeCount"]
-            except:
-                pass
+            titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
+            if titulo == "":
+                titulo = "Titulo no encontrado"
+            portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
+            if portada == "":
+                portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
+            sinopsis = " ".join(" ".join((translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
+            if sinopsis == "":
+                sinopsis == "No se encontró sinopsis"
+            lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
+            if lanzamiento == "":
+                lanzamiento = "No hay fecha de lanzamiento"
+            termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
+            if termino == "":
+                termino = "No hay fecha de termino"
+            terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
+            if terminado == "":
+                terminado = "No se encontro estado de termino"
+            tipo = resultado["data"][resultado_elegido]["attributes"]["showType"]
+            if tipo == "":
+                tipo = "No se encontró tipo"
+            rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
+            if rating == "":
+                rating = "No se encontro rating de edad"
+            episodios = resultado["data"][resultado_elegido]["attributes"]["episodeCount"]
+            if episodios == "":
+                episodios = "No se encontró cantidad de episodios"
             try:
                 generos = ""
                 link_generos =  resultado["data"][resultado_elegido]["relationships"]["genres"]["links"]["related"]
