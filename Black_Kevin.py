@@ -316,8 +316,8 @@ async def on_message(message):
             embed.add_field(name="Tipo", value=resultado[6], inline=True)
             embed.add_field(name="Rating", value=resultado[7], inline=True)
             embed.add_field(name="Episodios", value=resultado[8], inline=True)
-            if resultado[9]:
-                embed.add_field(name="Genero(s)", value=resultado[9], inline=False)
+            if resultado[9] != "":
+                embed.add_field(name="Generos", value=resultado[9], inline=True)
             embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
             await message.channel.send(content=None, embed=embed)
         except:
