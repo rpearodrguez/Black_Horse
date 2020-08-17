@@ -2,6 +2,7 @@ import json
 import os
 import random
 import re
+import urllib.parse
 from googletrans import Translator
 
 import requests
@@ -14,21 +15,8 @@ translator = Translator()
 #Anime Scrapping
 def animeScrap(urlb=""):
     # url = the target we want to open
-    if urlb in "accion , infantil , sobrenatural , josei , superpoderes , aventura , juegos , suspenso , carreras , magia , terror , mecha , vampiros , comedia , militar , yaoi , demencia , misterio , yuri , demonios , musica , deportes , parodia , drama , psicologico , ecchi , escolares , romance , espacial , samurai , fantasia , seinen , harem , shoujo , historico , shounen ":
-        url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/{}/rating/1".format(urlb)
-        print(url)
-    elif urlb == "artes+marciales":
-        url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/artes-marciales/rating/1"
-        print(url)
-    elif urlb == "ciencia+ficcion":
-        url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/ciencia-ficcion/rating/1"
-        print(url)
-    elif urlb == "recuentos+de+la+vida,":
-        url = "https://animeflv.chrismichael.now.sh/api/v1/Genres/recuentos-de-la-vida/rating/1"
-        print(url)
-    else:
-        url = "https://animeflv.chrismichael.now.sh/api/v1/Search/:{}".format(urlb)
-        print(url)
+    url = 'https://kitsu.io/api/edge/anime?filter[text]={}'.format(urllib.parse.quote(urlb))
+    print(url)
     # open with GET method
     resp = requests.get(url)
 
@@ -37,51 +25,34 @@ def animeScrap(urlb=""):
         
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
+        cantidad_resultados = len(resultado["data"])
+        if cantidad_resultados > 3:
+            cantidad_resultados = 3
+        resultado_elegido = random.randint(0,cantidad_resultados-1)
+        
         try:
-            rand = random.randint(0,len(resultado["search"])-1)
-            titulo = resultado["search"][rand]["title"]                
-            portada = ("covers").join(resultado["search"][rand]["banner"].split("banners"))
-            sinopsis = resultado["search"][rand]["synopsis"]
-            lanzamiento = resultado["search"][rand]["debut"]
-            tipo = resultado["search"][rand]["type"]
-            rating = resultado["search"][rand]["rating"]
-            generos =  ", ".join(resultado["search"][rand]["genres"])
-            episodios = resultado["search"][rand]["episodes"]
+            titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
+            portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
+            sinopsis = translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text
+            lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
+            termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
+            terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
+            tipo = resultado["data"][resultado_elegido]["attributes"]["showType"]
+            rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
+            episodios = resultado["data"][resultado_elegido]["attributes"]["episodeCount"]
             try:
-                episodios = resultado["search"][rand]["episodes"][1]["episode"]
+                generos = ""
+                link_generos =  resultado["data"][resultado_elegido]["relationships"]["genres"]["links"]["related"]
+                generos_content = json.loads(requests.get(link_generos).content)
+                for genero in generos_content["data"]:
+                    generos += translator.translate(genero["attributes"]["name"]+", ",dest='es').text
+                find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, generos]
             except:
-                pass
-            find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
-            print(find)
-            return find
-        except KeyError:
-            rand = random.randint(0,len(resultado["animes"])-1)
-            print(rand)
-            titulo = resultado["animes"][rand]["title"]
-            print(titulo)
-            portada = ("covers").join(resultado["animes"][rand]["banner"].split("banners"))
-            print(portada)                
-            sinopsis = resultado["animes"][rand]["synopsis"]
-            print(sinopsis)
-            lanzamiento = resultado["animes"][rand]["debut"]
-            print(lanzamiento)
-            tipo = resultado["animes"][rand]["type"]
-            print(tipo)
-            rating = resultado["animes"][rand]["rating"]
-            print(rating)
-            generos =  ", ".join(resultado["animes"][rand]["genres"])
-            print(generos)
-            episodios = resultado["animes"][rand]["episodes"]
-            try:
-                episodios = resultado["animes"][rand]["episodes"][1]["episode"]
-            except:
-                pass
-            print(episodios)
-            find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
-            print(find)
-            return find
+                find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios]
+            return find             
+            
         except:
-            find = ["Anime o genero no encontrado"]
+            resultado = "Anime o genero no encontrado"
             return resultado
 
             

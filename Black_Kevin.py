@@ -305,17 +305,20 @@ async def on_message(message):
         animeId = message.content.split()
         animeBusqueda = "+".join(animeId[1:])
         resultado = Scrapper.animeScrap(animeBusqueda)
-        #find = [titulo, portada, sinopsis, lanzamiento, tipo, rating, generos, episodios]
+        #find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, generos]
         try:
             embed = discord.Embed(title="Titulo", description=resultado[0])
             embed.set_image(url = resultado[1])
             embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
             embed.add_field(name="Lanzamiento", value=resultado[3], inline=True)
-            embed.add_field(name="Tipo", value=resultado[4], inline=True)
-            embed.add_field(name="Puntaje", value=resultado[5], inline=True)
-            embed.add_field(name="Genero(s)", value=resultado[6], inline=False)
-            embed.add_field(name="Episodios", value=resultado[7], inline=True)
-            embed.set_footer(text="Creditos a https://github.com/ChrisMichaelPerezSantiago")
+            embed.add_field(name="Finalizacion", value=resultado[4], inline=True)
+            embed.add_field(name="Estado", value=resultado[5], inline=True)
+            embed.add_field(name="Tipo", value=resultado[6], inline=True)
+            embed.add_field(name="Rating", value=resultado[7], inline=True)
+            embed.add_field(name="Episodios", value=resultado[8], inline=True)
+            if resultado[9]:
+                embed.add_field(name="Genero(s)", value=resultado[9], inline=False)
+            embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
             await message.channel.send(content=None, embed=embed)
         except:
 
