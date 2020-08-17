@@ -76,7 +76,7 @@ def animeScrap(urlb=""):
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, generos]
                 print(find)
             except:
-                find = {titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios]
+                find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios]
                 print(find)
             return find
         except:
