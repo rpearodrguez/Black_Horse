@@ -327,13 +327,26 @@ async def on_message(message):
     elif message.content.find("sh.manga ") != -1 and not message.author.bot:
         mangaId = message.content.split()
         mangaBusqueda = "+".join(mangaId[1:])
-        resultado = Scrapper.mangaScrap(mangaBusqueda)
-        embed = discord.Embed(title="Titulo", description=resultado[0])
-        embed.set_image(url = resultado[4])
-        embed.add_field(name="Sumario", value=resultado[1])
-        embed.add_field(name="Puntaje", value=resultado[2])
-        embed.add_field(name="Volumenes", value=resultado[3])
-        await message.channel.send(content=None, embed=embed)
+        resultado = Scrapper.animeScrap(mangaBusqueda)
+        #find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, serializacion, generos]
+        try:
+            embed = discord.Embed(title="Titulo", description=resultado[0])
+            embed.set_image(url = resultado[1])
+            embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
+            embed.add_field(name="Lanzamiento", value=resultado[3], inline=True)
+            embed.add_field(name="Finalizacion", value=resultado[4], inline=True)
+            embed.add_field(name="Estado", value=resultado[5], inline=True)
+            embed.add_field(name="Tipo", value=resultado[6], inline=True)
+            embed.add_field(name="Rating", value=resultado[7], inline=True)
+            embed.add_field(name="Capitulos", value=resultado[8], inline=True)
+            embed.add_field(name="Serializacion", value=resultado[8], inline=True)
+            if resultado[9] != "":
+                embed.add_field(name="Generos", value=resultado[9], inline=True)
+            embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
+            await message.channel.send(content=None, embed=embed)
+        except:
+
+            await message.channel.send(resultado[0])
 
     elif message.content.find("sh.steam ") != -1 and not message.author.bot:
 
