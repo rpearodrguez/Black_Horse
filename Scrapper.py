@@ -63,7 +63,7 @@ def animeScrap(urlb=""):
                 link_generos =  resultado["data"][resultado_elegido]["relationships"]["genres"]["links"]["related"]
                 generos_content = json.loads(requests.get(link_generos).content)
                 for genero in generos_content["data"]:
-                    generos += translator.translate(genero["attributes"]["name"]+", ",dest='es').text
+                    generos += translator.translate(genero["attributes"]["name"],dest='es').text+", " 
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, generos]
                 print(find)
             except:
@@ -131,7 +131,7 @@ def mangaScrap(urlb=""):
                 link_generos =  resultado["data"][resultado_elegido]["relationships"]["genres"]["links"]["related"]
                 generos_content = json.loads(requests.get(link_generos).content)
                 for genero in generos_content["data"]:
-                    generos += translator.translate(genero["attributes"]["name"]+", ",dest='es').text
+                    generos += translator.translate(genero["attributes"]["name"],dest='es').text+", "
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, serializacion, generos]
             except:
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios, serializacion]
