@@ -80,67 +80,69 @@ def animeScrap(urlb=""):
 #Manga Scrapping
 def mangaScrap(urlb=""):
     # url = the target we want to open
-    url = "https://animaifu.com/manga/search?q=" + urlb
+    url = 'https://kitsu.io/api/edge/manga?filter[text]={}'.format(urllib.parse.quote(urlb))
     # open with GET method
     resp = requests.get(url)
-
+    #print(url)
+    #print(resp.status_code)
+    
     # http_respone 200 means OK status
     if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Este es el sumario del juego solicitado :-\n")
-        find = ["N/E", "N/E", "Ni idea", "Un Chingo", "N/E"]
-
         # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        style = soup.find("a", {"class": "unit"})['style']
-        #print(soup.contents)
-
-        # l is the list which contains all the text i.e news
-        l = soup.find("div", {"class": "anime-list-2"})
-        ptr = re.search("http.*[)]", style)
-        # now we want to print only the text part of the anchor.
-        # find all the elements of a, i.e anchor
-        find[4] = style[ptr.start():ptr.end() - 13]
-        print(find[4])
-
-        for i in l.findAll("p", {"class": "summary"}, limit=1):
+        resultado = json.loads(resp.content)
+        cantidad_resultados = len(resultado["data"])
+        if cantidad_resultados > 3:
+            cantidad_resultados = 3
+        resultado_elegido = random.randint(0,cantidad_resultados-1)
+        
+        try:
+            titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
+            if titulo == "":
+                titulo = "Titulo no encontrado"
+            portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
+            if portada == "":
+                portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
+            sinopsis = " ".join(" ".join((translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
+            if sinopsis == "":
+                sinopsis = "Sinopsis no encontrada"
+            lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
+            if lanzamiento == "":
+                lanzamiento = "Lanzamiento no encontrado"
+            termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
+            if termino == "":
+                termino = "Fecha de termino no encontrada"
+            terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
+            if terminado == "":
+                terminado = "Estado de termino no encontrado"
+            tipo = resultado["data"][resultado_elegido]["attributes"]["subtype"]
+            if tipo == "":
+                tipo = "Tipo de producción no encontrado"
+            rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
+            if rating == "":
+                rating = "Rating no encontrado"
+            episodios = resultado["data"][resultado_elegido]["attributes"]["chapterCount"]
+            if episodios == "":
+                episodios = "Cantidad de capitulos no encontrado"
+            serializacion = resultado["data"][resultado_elegido]["attributes"]["serialization"]
+            if serializacion == "":
+                serializacion = "Revista de serializacion no encontrado"
             try:
-                summary = i.text
-                find[1] = summary[1:]
-                print(find[1])
+                generos = ""
+                link_generos =  resultado["data"][resultado_elegido]["relationships"]["genres"]["links"]["related"]
+                generos_content = json.loads(requests.get(link_generos).content)
+                for genero in generos_content["data"]:
+                    generos += translator.translate(genero["attributes"]["name"]+", ",dest='es').text
+                find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, serializacion, generos]
             except:
-                pass
+                find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios, serializacion]
+            return find             
+            
+        except:
+            resultado = "Anime o genero no encontrado"
+            return resultado
 
-        for i in l.findAll("h3", {"class": "title"}, limit=1):
-            try:
-                title = i.text
-                find[0] = title
-                print(find[0])
-            except:
-                pass
-
-        for i in l.findAll("p", {"class": "meta"}, limit=1):
-            meta = i.text
-            meta = meta.split()
-            try:
-                if len(meta[0]) == 3:
-                    print(meta)
-                    find[2] = meta[0]
-                    print(find[2])
-            except:
-                pass
-
-            try:
-                episodes = meta[meta.index("Episodios") - 1]
-                if (episodes):
-                    find[3] = episodes
-                    print("Espisodios" + find[3])
-            except:
-                pass
-
-    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
-    print(find)
-    return find
+    else:
+        print(resp.content)
 
 #Game Scrapping
 def steamUrlSearch(urlb=""):
