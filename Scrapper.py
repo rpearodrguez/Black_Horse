@@ -107,7 +107,7 @@ def mangaScrap(urlb=""):
             if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.':
                 sinopsis = "Sinopsis no encontrada"
             else:
-                translator.translate(sinopsis,dest='es').text
+                sinopsis = translator.translate(sinopsis,dest='es').text
             lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
             if str(lanzamiento) == "" or str(lanzamiento) == "None":
                 lanzamiento = "Lanzamiento no encontrado"
