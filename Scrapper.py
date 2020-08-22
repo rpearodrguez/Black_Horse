@@ -24,43 +24,38 @@ def animeScrap(urlb=""):
     if resp.status_code == 200:
         
         # we need a parser,Python built-in HTML parser is enough .
-        resultado = json.loads(resp.content)
-        cantidad_resultados = len(resultado["data"])
-        if cantidad_resultados > 3:
-            cantidad_resultados = 3
-        resultado_elegido = random.randint(0,cantidad_resultados-1)
-        
+        resultado = json.loads(resp.content)        
         try:
-            titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
+            titulo = resultado["data"][0]["attributes"]["canonicalTitle"]
             if titulo == "":
                 titulo = "Titulo no encontrado"
-            portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
+            portada = resultado["data"][0]["attributes"]["posterImage"]["large"]
             if portada == "":
                 portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
-            sinopsis = " ".join(" ".join((translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
+            sinopsis = " ".join(" ".join((translator.translate(resultado["data"][0]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
             if sinopsis == "":
                 sinopsis == "No se encontró sinopsis"
-            lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
+            lanzamiento = resultado["data"][0]["attributes"]["startDate"]
             if lanzamiento == "":
                 lanzamiento = "No hay fecha de lanzamiento"
-            termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
+            termino = resultado["data"][0]["attributes"]["endDate"]
             if termino == "":
                 termino = "No hay fecha de termino"
-            terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
+            terminado = translator.translate(resultado["data"][0]["attributes"]["status"],dest='es').text
             if terminado == "":
                 terminado = "No se encontro estado de termino"
-            tipo = resultado["data"][resultado_elegido]["attributes"]["showType"]
+            tipo = resultado["data"][0]["attributes"]["showType"]
             if tipo == "":
                 tipo = "No se encontró tipo"
-            rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
+            rating = resultado["data"][0]["attributes"]["ageRatingGuide"]
             if rating == "":
                 rating = "No se encontro rating de edad"
-            episodios = resultado["data"][resultado_elegido]["attributes"]["episodeCount"]
+            episodios = resultado["data"][0]["attributes"]["episodeCount"]
             if episodios == "":
                 episodios = "No se encontró cantidad de episodios"
             try:
                 generos = ""
-                link_generos =  resultado["data"][resultado_elegido]["relationships"]["genres"]["links"]["related"]
+                link_generos =  resultado["data"][0]["relationships"]["genres"]["links"]["related"]
                 generos_content = json.loads(requests.get(link_generos).content)
                 for genero in generos_content["data"]:
                     generos += translator.translate(genero["attributes"]["name"],dest='es').text+", " 
@@ -91,47 +86,42 @@ def mangaScrap(urlb=""):
     if resp.status_code == 200:
         # we need a parser,Python built-in HTML parser is enough .
         resultado = json.loads(resp.content)
-        cantidad_resultados = len(resultado["data"])
-        if cantidad_resultados > 3:
-            cantidad_resultados = 3
-        resultado_elegido = random.randint(0,cantidad_resultados-1)
-        
         try:
-            titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
+            titulo = resultado["data"][0]["attributes"]["canonicalTitle"]
             if str(titulo) == "" or str(titulo) == "None":
                 titulo = "Titulo no encontrado"
-            portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
+            portada = resultado["data"][0]["attributes"]["posterImage"]["large"]
             if portada == "" or portada == "None":
                 portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
-            sinopsis = " ".join(" ".join((resultado["data"][resultado_elegido]["attributes"]["synopsis"]).split("\n")).split("\r"))
+            sinopsis = " ".join(" ".join((resultado["data"][0]["attributes"]["synopsis"]).split("\n")).split("\r"))
             if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.':
                 sinopsis = "Sinopsis no encontrada"
             else:
                 sinopsis = translator.translate(sinopsis,dest='es').text
-            lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
+            lanzamiento = resultado["data"][0]["attributes"]["startDate"]
             if str(lanzamiento) == "" or str(lanzamiento) == "None":
                 lanzamiento = "Lanzamiento no encontrado"
-            termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
+            termino = resultado["data"][0]["attributes"]["endDate"]
             if str(termino) == "" or str(termino) == "None":
                 termino = "Fecha de termino no encontrada"
-            terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
+            terminado = translator.translate(resultado["data"][0]["attributes"]["status"],dest='es').text
             if str(terminado) == "" or str(terminado) == "None":
                 terminado = "Estado de termino no encontrado"
-            tipo = resultado["data"][resultado_elegido]["attributes"]["subtype"]
+            tipo = resultado["data"][0]["attributes"]["subtype"]
             if str(tipo) == "" or str(tipo) == "None":
                 tipo = "Tipo de producción no encontrado"
-            rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
+            rating = resultado["data"][0]["attributes"]["ageRatingGuide"]
             if str(rating) == "" or str(rating) == "None":
                 rating = "Rating no encontrado"
-            episodios = resultado["data"][resultado_elegido]["attributes"]["chapterCount"]
+            episodios = resultado["data"][0]["attributes"]["chapterCount"]
             if str(episodios) == "" or str(episodios) == "None":
                 episodios = "Cantidad de capitulos no encontrado"
-            serializacion = resultado["data"][resultado_elegido]["attributes"]["serialization"]
+            serializacion = resultado["data"][0]["attributes"]["serialization"]
             if str(serializacion) == "" or str(serializacion) == "None":
                 serializacion = "Revista de serializacion no encontrado"
             try:
                 generos = ""
-                link_generos =  resultado["data"][resultado_elegido]["relationships"]["genres"]["links"]["related"]
+                link_generos =  resultado["data"][0]["relationships"]["genres"]["links"]["related"]
                 generos_content = json.loads(requests.get(link_generos).content)
                 for genero in generos_content["data"]:
                     generos += translator.translate(genero["attributes"]["name"],dest='es').text+", "
