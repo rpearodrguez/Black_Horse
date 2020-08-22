@@ -98,34 +98,36 @@ def mangaScrap(urlb=""):
         
         try:
             titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
-            if titulo == "" or titulo == "None":
+            if str(titulo) == "" or str(titulo) == "None":
                 titulo = "Titulo no encontrado"
             portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
             if portada == "" or portada == "None":
                 portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
-            sinopsis = " ".join(" ".join((translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
-            if sinopsis == "" or sinopsis == "None":
+            sinopsis = " ".join(" ".join((resultado["data"][resultado_elegido]["attributes"]["synopsis"]).split("\n")).split("\r"))
+            if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.':
                 sinopsis = "Sinopsis no encontrada"
+            else:
+                translator.translate(sinopsis,dest='es').text
             lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
-            if lanzamiento == "" or lanzamiento == "None":
+            if str(lanzamiento) == "" or str(lanzamiento) == "None":
                 lanzamiento = "Lanzamiento no encontrado"
             termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
-            if termino == "" or termino == "None":
+            if str(termino) == "" or str(termino) == "None":
                 termino = "Fecha de termino no encontrada"
             terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
-            if terminado == "" or terminado == "None":
+            if str(terminado) == "" or str(terminado) == "None":
                 terminado = "Estado de termino no encontrado"
             tipo = resultado["data"][resultado_elegido]["attributes"]["subtype"]
-            if tipo == "" or tipo == "None":
+            if str(tipo) == "" or str(tipo) == "None":
                 tipo = "Tipo de producción no encontrado"
             rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
-            if rating == "" or rating == "None":
+            if str(rating) == "" or str(rating) == "None":
                 rating = "Rating no encontrado"
             episodios = resultado["data"][resultado_elegido]["attributes"]["chapterCount"]
-            if episodios == "" or episodios == "None":
+            if str(episodios) == "" or str(episodios) == "None":
                 episodios = "Cantidad de capitulos no encontrado"
             serializacion = resultado["data"][resultado_elegido]["attributes"]["serialization"]
-            if serializacion == "" or serializacion == "None":
+            if str(serializacion) == "" or str(serializacion) == "None":
                 serializacion = "Revista de serializacion no encontrado"
             try:
                 generos = ""
