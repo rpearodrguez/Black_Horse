@@ -81,6 +81,7 @@ def animeScrap(urlb=""):
 def mangaScrap(urlb=""):
     # url = the target we want to open
     url = 'https://kitsu.io/api/edge/manga?filter[text]={}'.format(urllib.parse.quote(urlb))
+    print(url)
     # open with GET method
     resp = requests.get(url)
     #print(url)
@@ -97,34 +98,34 @@ def mangaScrap(urlb=""):
         
         try:
             titulo = resultado["data"][resultado_elegido]["attributes"]["canonicalTitle"]
-            if titulo == "":
+            if titulo == "" or titulo == "None":
                 titulo = "Titulo no encontrado"
             portada = resultado["data"][resultado_elegido]["attributes"]["posterImage"]["large"]
-            if portada == "":
+            if portada == "" or portada == "None":
                 portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
             sinopsis = " ".join(" ".join((translator.translate(resultado["data"][resultado_elegido]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
-            if sinopsis == "":
+            if sinopsis == "" or sinopsis == "None":
                 sinopsis = "Sinopsis no encontrada"
             lanzamiento = resultado["data"][resultado_elegido]["attributes"]["startDate"]
-            if lanzamiento == "":
+            if lanzamiento == "" or lanzamiento == "None":
                 lanzamiento = "Lanzamiento no encontrado"
             termino = resultado["data"][resultado_elegido]["attributes"]["endDate"]
-            if termino == "":
+            if termino == "" or termino == "None":
                 termino = "Fecha de termino no encontrada"
             terminado = translator.translate(resultado["data"][resultado_elegido]["attributes"]["status"],dest='es').text
-            if terminado == "":
+            if terminado == "" or terminado == "None":
                 terminado = "Estado de termino no encontrado"
             tipo = resultado["data"][resultado_elegido]["attributes"]["subtype"]
-            if tipo == "":
+            if tipo == "" or tipo == "None":
                 tipo = "Tipo de producción no encontrado"
             rating = resultado["data"][resultado_elegido]["attributes"]["ageRatingGuide"]
-            if rating == "":
+            if rating == "" or rating == "None":
                 rating = "Rating no encontrado"
             episodios = resultado["data"][resultado_elegido]["attributes"]["chapterCount"]
-            if episodios == "":
+            if episodios == "" or episodios == "None":
                 episodios = "Cantidad de capitulos no encontrado"
             serializacion = resultado["data"][resultado_elegido]["attributes"]["serialization"]
-            if serializacion == "":
+            if serializacion == "" or serializacion == "None":
                 serializacion = "Revista de serializacion no encontrado"
             try:
                 generos = ""
