@@ -327,7 +327,8 @@ async def on_message(message):
     elif message.content.find("sh.manga ") != -1 and not message.author.bot:
         mangaId = message.content.split()
         mangaBusqueda = "+".join(mangaId[1:])
-        resultado = Scrapper.animeScrap(mangaBusqueda)
+        resultado = Scrapper.mangaScrap(mangaBusqueda)
+        print(resultado)
         #find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, serializacion, generos]
         try:
             embed = discord.Embed(title="Titulo", description=resultado[0])
