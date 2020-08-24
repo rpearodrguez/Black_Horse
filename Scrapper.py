@@ -27,31 +27,33 @@ def animeScrap(urlb=""):
         resultado = json.loads(resp.content)        
         try:
             titulo = resultado["data"][0]["attributes"]["canonicalTitle"]
-            if titulo == "":
+            if str(titulo) == "" or str(titulo) == "None":
                 titulo = "Titulo no encontrado"
             portada = resultado["data"][0]["attributes"]["posterImage"]["large"]
-            if portada == "":
+            if portada == "" or portada == "None":
                 portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
             sinopsis = " ".join(" ".join((translator.translate(resultado["data"][0]["attributes"]["synopsis"],dest='es').text).split("\n")).split("\r"))
-            if sinopsis == "":
-                sinopsis == "No se encontró sinopsis"
+            if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.':
+                sinopsis = "Sinopsis no encontrada"
+            else:
+                sinopsis = translator.translate(sinopsis,dest='es').text
             lanzamiento = resultado["data"][0]["attributes"]["startDate"]
-            if lanzamiento == "":
+            if str(lanzamiento) == "" or str(lanzamiento) == "None":
                 lanzamiento = "No hay fecha de lanzamiento"
             termino = resultado["data"][0]["attributes"]["endDate"]
-            if termino == "":
+            if str(termino) == "" or str(termino) == "None":
                 termino = "No hay fecha de termino"
             terminado = translator.translate(resultado["data"][0]["attributes"]["status"],dest='es').text
-            if terminado == "":
+            if str(terminado) == "" or str(terminado) == "None":
                 terminado = "No se encontro estado de termino"
             tipo = resultado["data"][0]["attributes"]["showType"]
-            if tipo == "":
+            if str(tipo) == "" or str(tipo) == "None":
                 tipo = "No se encontró tipo"
             rating = resultado["data"][0]["attributes"]["ageRatingGuide"]
-            if rating == "":
+            if str(rating) == "" or str(rating) == "None":
                 rating = "No se encontro rating de edad"
             episodios = resultado["data"][0]["attributes"]["episodeCount"]
-            if episodios == "":
+            if str(episodios) == "" or str(episodios) == "None":
                 episodios = "No se encontró cantidad de episodios"
             try:
                 generos = ""
