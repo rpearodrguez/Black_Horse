@@ -62,7 +62,7 @@ async def on_message(message):
         dia = datetime.datetime.today().weekday()
         if dia == 3:
             embed = embed=discord.Embed(title="Feliz jueves", description="hoy es jueves <3")
-            embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2020/08/Feliz-jueves.gif")
+            embed.set_image(url="https://www.stickhorse.cl/wp-content/uploads/2020/08/Feliz-jueves.gif")
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("Hoy no es jueves")
