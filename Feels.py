@@ -20,6 +20,12 @@ def reactionImage(feel=""):
     if feel == "abrazo":
         search_term = "anime hug"
 
+    if feel == "run":
+        search_term = "anime run"
+
+    if feel == "smile":
+        search_term = "anime smile"
+
     if feel == "lamer":
         search_term = "anime lick"
 
