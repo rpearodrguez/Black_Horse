@@ -62,7 +62,7 @@ async def on_message(message):
         dia = datetime.datetime.today().weekday()
         if dia == 3:
             embed = embed=discord.Embed(title="Feliz jueves", description="hoy es jueves <3")
-            embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2020/08/FELIZ-JUEVES-YouTube.mp4")
+            embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2020/08/Feliz-jueves.gif")
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("Hoy no es jueves")
@@ -720,11 +720,12 @@ async def on_message(message):
 
     elif message.content.find("sh.run") != -1 and not message.author.bot:
         autor = str(message.author).split("#")[0]
-        imagen = Feels.reactionImage("run")
         try:
+            imagen = Feels.reactionImage("run")
             victima = message.mentions[0].name
             embed = discord.Embed(title="{} escapó de {}".format(autor,victima))
         except IndexError:
+            imagen = Feels.reactionImage("escapar")
             embed = discord.Embed(title="{} se echó a correr.".format(autor))
             pass
         embed.set_image(url = imagen)
