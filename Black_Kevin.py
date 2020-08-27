@@ -4,6 +4,7 @@ import Scrapper
 import Roleplay
 import Feels
 import os
+import datetime
 from boto.s3.connection import S3Connection
 
 
@@ -49,6 +50,22 @@ async def on_message(message):
     # If the user says !hello we will send you to eat dirt
     if message.content.find("sh.hola") != -1 and not message.author.bot:
         await message.channel.send("Come tierra") # If the user says !hello we will send you to eat dirt
+
+    if message.content.find("sh.help") != -1 and not message.author.bot:
+        embed = embed=discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
+        embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png")
+        embed.add_field(name="<3", value="Debido a la limitación de carateres, puedes encontrar el listado de comandos en https://www.stickhorse.cl/bot-de-stick-horse-listado-de-comandos-prefijo-sh/", inline=True)
+        embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
+        await message.channel.send(content=None, embed=embed)
+    
+    if message.content.find("sh.jueves") != -1 and not message.author.bot:
+        dia = datetime.datetime.today().weekday()
+        if dia == 3:
+            embed = embed=discord.Embed(title="Feliz jueves", description="hoy es jueves <3")
+            embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2020/08/FELIZ-JUEVES-YouTube.mp4")
+            await message.channel.send(content=None, embed=embed)
+        else:
+            await message.channel.send("Hoy no es jueves")
 
     if message.content.find("sh.say") != -1 and not message.author.bot:
         mensaje = message.content.split()
@@ -656,6 +673,15 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
+
+    elif message.content.find("sh.smile") != -1 and not message.author.bot:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("smile")
+        embed = discord.Embed(title="{} se puso a sonreir".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Via Tenor")
+        await message.channel.send(content=None, embed=embed)
         
 #Dual Reactions
 
@@ -687,6 +713,19 @@ async def on_message(message):
             embed = discord.Embed(title="{} abrazó a {}".format(autor,victima))
         except IndexError:
             embed = discord.Embed(title="{} necesita un abrazo.".format(autor))
+            pass
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Via Tenor")
+        await message.channel.send(content=None, embed=embed)
+
+    elif message.content.find("sh.run") != -1 and not message.author.bot:
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("run")
+        try:
+            victima = message.mentions[0].name
+            embed = discord.Embed(title="{} escapó de {}".format(autor,victima))
+        except IndexError:
+            embed = discord.Embed(title="{} se echó a correr.".format(autor))
             pass
         embed.set_image(url = imagen)
         embed.set_footer(text="Via Tenor")
