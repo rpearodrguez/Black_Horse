@@ -126,8 +126,10 @@ async def on_message(message):
         if randNum == 2:
             await message.channel.send("KAZUMA DA YO")
 
-    elif message.content == "omae wa mo shindeiru" and not message.author.bot:
-        await message.channel.send("NANI!")
+    elif message.content == "OMAE WA MO SHINDEIRU" and not message.author.bot:
+        embed = embed=discord.Embed(title="NANI!!", description="O-O")
+        embed.set_image(url="https://media1.tenor.com/images/009d9801cc81b561927001cecb313d59/tenor.gif")
+        await message.channel.send(content=None, embed=embed)
 
 
 #NSFW Module
