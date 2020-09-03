@@ -67,6 +67,8 @@ async def on_message(message):
         else:
             await message.channel.send("Hoy no es jueves")
 
+    
+
     if message.content.find("sh.say") != -1 and not message.author.bot:
         mensaje = message.content.split()
         mensaje2 = " ".join(mensaje[1:])
@@ -410,7 +412,7 @@ async def on_message(message):
         embed.set_image(url = busqueda[1])
         await message.channel.send(content=None, embed=embed)
 
-    elif message.content.find("sh.scp") != -1 and not message.author.bot:
+    elif message.content.find("sh.scp ") != -1 and not message.author.bot:
         scpId = message.content.split()
         scpBusqueda = scpId[1:]
         print(scpBusqueda)
@@ -453,6 +455,23 @@ async def on_message(message):
         except Exception as ex:
             print(ex)
             await message.channel.send(resultado[0])
+
+    if message.content.find("sh.convert ") != -1 and not message.author.bot:
+        consulta = message.content.split()
+        monto = consulta[1]
+        desde = consulta[2]
+        hasta = consulta[3]
+        resultado = Scrapper.reporteDivisa(monto, desde, hasta)
+        #find = [rate_desde,rate_hasta,resultado]
+        try:
+            embed = discord.Embed(title="Conversion", description="{} a {}".format(desde, hasta))
+            embed.add_field(name="Relacion {} a 1 dolar".format(desde), value=resultado[0], inline=False)
+            embed.add_field(name="Relacion {} a 1 dolar".format(hasta), value=resultado[1], inline=True)
+            embed.add_field(name="Valor {} {} a {}".format(desde, monto, hasta), value=resultado[2], inline=True)
+            embed.set_footer(text="Fuente: https://openexchangerates.org")
+            await message.channel.send(content=None, embed=embed)
+        except:
+            await message.channel.send(resultado[2])
 
 #Reactions Module
 #Cooperative Reactions
