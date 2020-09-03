@@ -458,9 +458,9 @@ async def on_message(message):
 
     if message.content.find("sh.convert ") != -1 and not message.author.bot:
         consulta = message.content.split()
-        monto = consulta[1]
-        desde = consulta[2]
-        hasta = consulta[3]
+        monto = float(consulta[1])
+        desde = consulta[2].upper()
+        hasta = consulta[4].upper()
         resultado = Scrapper.reporteDivisa(monto, desde, hasta)
         #find = [rate_desde,rate_hasta,resultado]
         try:
