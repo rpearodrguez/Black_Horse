@@ -464,7 +464,7 @@ async def on_message(message):
             hasta = consulta[4].upper()
             resultado = Scrapper.reporteDivisa(monto, desde, hasta)
         except:
-            await message.channel.send('Formato incorrecto, conversión debe ser en el siguiente formato:\nsh.convert [monto] [divisa base(ej: CLP)] to [divisa destino(ej: USD)]')
+            await message.channel.send('Formato incorrecto, conversión debe ser en el siguiente formato:\nsh.convert [monto] [divisa base(ej: CLP)] to [divisa destino(ej: USD)] ')
         #find = [rate_desde,rate_hasta,resultado]
         try:
             embed = discord.Embed(title="Conversion", description="{} a {}".format(desde, hasta))
