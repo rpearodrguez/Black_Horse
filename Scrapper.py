@@ -3,6 +3,7 @@ import os
 import random
 import re
 import urllib.parse
+import conversion
 from googletrans import Translator
 
 import requests
@@ -585,3 +586,30 @@ def SCP_Search(busqueda="5998"):
     
     elif resp.status_code == 404:
         return ["[DATA EXPUNGED]","[DATA EXPUNGED]:[DATA EXPUNGED]","[DATA EXPUNGED]:PARA UNA VERSION ACTUALIZADA DEL INFORME CONTACTA CON EL DOCTOR [REDACTED]"]
+
+def reporteDivisa(monto = 1, desde = "USD", hasta = "CLP"):
+    url = "https://openexchangerates.org/api/latest.json?app_id={}".format(os.environ.get('OPEN_EXCHANGE'))
+    resp = requests.get(url)
+    print(resp.status_code)
+
+    # http_respone 200 means OK status
+    if resp.status_code == 200:
+        resultado = json.loads(resp.content)
+        try:
+            if desde == "USD":
+                rate_desde = 1
+            else:
+                rate_desde = resultado["rates"][desde]
+            if hasta == "USD":
+                rate_hasta = 1
+            else:
+                rate_hasta = resultado["rates"][hasta]
+            
+            resultado = conversion.divisa(monto,float(rate_desde),float(rate_hasta))
+            find = [rate_desde,rate_hasta,resultado]
+            return find
+        except:
+            find = [desde,hasta,"No se encontró moneda consultada"]
+            return find
+    else:
+        return [desde,hasta,"No se pudo acceder al conversor"]
