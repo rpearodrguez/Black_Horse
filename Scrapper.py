@@ -607,9 +607,12 @@ def reporteDivisa(monto = 1, desde = "USD", hasta = "CLP"):
             
             resultado = conversion.divisa(monto,float(rate_desde),float(rate_hasta))
             find = [rate_desde,rate_hasta,resultado]
+            print(find)
             return find
         except:
             find = [desde,hasta,"No se encontró moneda consultada"]
+            print(find)
             return find
     else:
+        print(find)
         return [desde,hasta,"No se pudo acceder al conversor"]
