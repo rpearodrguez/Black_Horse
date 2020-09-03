@@ -458,16 +458,19 @@ async def on_message(message):
 
     if message.content.find("sh.convert ") != -1 and not message.author.bot:
         consulta = message.content.split()
-        monto = float(consulta[1])
-        desde = consulta[2].upper()
-        hasta = consulta[4].upper()
-        resultado = Scrapper.reporteDivisa(monto, desde, hasta)
+        try:
+            monto = float(consulta[1])
+            desde = consulta[2].upper()
+            hasta = consulta[4].upper()
+            resultado = Scrapper.reporteDivisa(monto, desde, hasta)
+        except:
+            await message.channel.send('Formato incorrecto, conversión debe ser en el siguiente formato:\nsh.convert [monto] [divisa base(ej: CLP)] to [divisa destino(ej: USD)]')
         #find = [rate_desde,rate_hasta,resultado]
         try:
             embed = discord.Embed(title="Conversion", description="{} a {}".format(desde, hasta))
-            embed.add_field(name="Relacion {} a 1 dolar".format(desde), value=resultado[0], inline=False)
+            embed.add_field(name="Relacion {} a 1 dolar".format(desde), value=resultado[0], inline=True)
             embed.add_field(name="Relacion {} a 1 dolar".format(hasta), value=resultado[1], inline=True)
-            embed.add_field(name="Valor {} {} a {}".format(desde, monto, hasta), value=resultado[2], inline=True)
+            embed.add_field(name="Valor {} {} a {}".format(desde, monto, hasta), value=resultado[2], inline=False)
             embed.set_footer(text="Fuente: https://openexchangerates.org")
             await message.channel.send(content=None, embed=embed)
         except:
