@@ -614,5 +614,6 @@ def reporteDivisa(monto = 1, desde = "USD", hasta = "CLP"):
             print(find)
             return find
     else:
+        find = [desde,hasta,"No se pudo acceder al conversor"]
         print(find)
-        return [desde,hasta,"No se pudo acceder al conversor"]
+        return find
