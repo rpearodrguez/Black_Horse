@@ -606,7 +606,7 @@ def reporteDivisa(monto = 1, desde = "USD", hasta = "CLP"):
                 rate_hasta = resultado["rates"][hasta]
             
             resultado = conversion.divisa(monto,float(rate_desde),float(rate_hasta))
-            find = [rate_desde,rate_hasta,resultado]
+            find = [round(rate_desde,2),round(rate_hasta,2),resultado]
             print(find)
             return find
         except:

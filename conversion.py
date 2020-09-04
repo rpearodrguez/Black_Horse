@@ -1,3 +1,3 @@
 def divisa(monto, de="", para=""):
-    resultado = monto*para/de
+    resultado = round(monto*para/de,2)
     return resultado
