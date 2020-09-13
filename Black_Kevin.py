@@ -795,5 +795,18 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
+
+    elif message.content.find("sh.cookie ") != -1 and not message.author.bot:
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("cookie")
+        try:
+            victima = message.mentions[0].name
+            embed = discord.Embed(title="{} le dio una galleta a {}".format(autor,victima))
+        except IndexError:
+            embed = discord.Embed(title="{} se comió una galleta".format(autor))
+            pass
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Via Tenor")
+        await message.channel.send(content=None, embed=embed)
         
 client.run(os.environ.get('DISCORD_TOKEN'))
