@@ -796,7 +796,7 @@ async def on_message(message):
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
 
-    elif message.content.find("sh.cookie ") != -1 and not message.author.bot:
+    elif message.content.find("sh.cookie") != -1 and not message.author.bot:
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("cookie")
         try:
