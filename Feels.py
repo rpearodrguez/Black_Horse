@@ -95,7 +95,7 @@ def reactionImage(feel=""):
     if feel == "happy":
         search_term = "anime happy"
 
-    if feel == "happy":
+    if feel == "cookie":
         search_term = "anime cookie"
         
     if feel !=  "escobazo":
