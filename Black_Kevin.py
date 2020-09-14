@@ -479,7 +479,7 @@ async def on_message(message):
 #Reactions Module
 #Cooperative Reactions
 
-    elif message.content.find("sh.escobazo") != -1 and not message.author.bot:
+    elif message.content.find("sh.escobazo ") != -1 and not message.author.bot:
         try:            
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("escobazo")
@@ -495,7 +495,7 @@ async def on_message(message):
 
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
-    elif message.content.find("sh.lick") != -1 and not message.author.bot:
+    elif message.content.find("sh.lick ") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("lamer")
@@ -512,7 +512,7 @@ async def on_message(message):
 
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.pat") != -1 and not message.author.bot:
+    elif message.content.find("sh.pat ") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("pat")
@@ -529,7 +529,7 @@ async def on_message(message):
 
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.slap") != -1 and not message.author.bot:
+    elif message.content.find("sh.slap ") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("slap")
@@ -546,7 +546,7 @@ async def on_message(message):
 
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.feed") != -1 and not message.author.bot:
+    elif message.content.find("sh.feed ") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("food")
@@ -563,7 +563,7 @@ async def on_message(message):
 
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.kick") != -1 and not message.author.bot:
+    elif message.content.find("sh.kick ") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("kickbutt")
@@ -580,7 +580,7 @@ async def on_message(message):
 
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.baka") != -1 and not message.author.bot:
+    elif message.content.find("sh.baka ") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("baka")
@@ -597,7 +597,7 @@ async def on_message(message):
 
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
 
-    elif message.content.find("sh.bite") != -1 and not message.author.bot:
+    elif message.content.find("sh.bite ") != -1 and not message.author.bot:
         try:
             autor = str(message.author).split("#")[0]
             imagen = Feels.reactionImage("bite")
@@ -756,7 +756,7 @@ async def on_message(message):
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
 
-    elif message.content.find("sh.kiss ") != -1 and not message.author.bot:
+    elif message.content.find("sh.kiss") != -1 and not message.author.bot:
         autor = str(message.author).split("#")[0]
         imagen = Feels.reactionImage("kiss")
         try:

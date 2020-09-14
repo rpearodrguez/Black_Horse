@@ -388,7 +388,7 @@ def ccSearch():
         return find
 
 def safebooruSearch(busqueda=""):
-    busqueda = "thighs"
+    #busqueda = "thighs"
     url = "https://safebooru.org/index.php?page=dapi&s=post&q=index&limit=100&tags={}".format(busqueda)
     # open with GET method
     resp = requests.get(url)
