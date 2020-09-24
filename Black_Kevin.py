@@ -69,25 +69,26 @@ async def on_message(message):
 
     if message.content.find("sh.cyberpunk") != -1 and not message.author.bot:
         dia = datetime.datetime.today().date()
+        print(dia)
         estreno = datetime.date(2020,11,19)
         delta = (dia - estreno).days
         if delta < 0:
             deltasupp = str(delta)
             embed = embed=discord.Embed(title="Contador de días", description="Quedan {} día(s) para Cyberpunk".format(deltasupp[1::]))
             embed.set_image(url="https://purepng.com/public/uploads/thumbnail/purepng.com-cyberpunk-2077-logologosgame-logogame-logosgameslogocyberpunk-2077-1271528996132viits.png")
-            await message.channel.send(content=None, embed=embed)
-        if delta == 0:
+            
+        elif delta == 0:
             deltasupp = str(delta)
             embed = embed=discord.Embed(title="Contador de días", description="Hoy sale cyberpunk!!")
             embed.set_image(url="https://purepng.com/public/uploads/thumbnail/purepng.com-cyberpunk-2077-logologosgame-logogame-logosgameslogocyberpunk-2077-1271528996132viits.png")
-            await message.channel.send(content=None, embed=embed)
-        if delta > 0:
+        elif delta > 0:
             deltasupp = str(delta)
             embed = embed=discord.Embed(title="Contador de días", description="Cyberpunk 2077 salió hace {} días".format(deltasupp))
             embed.set_image(url="https://purepng.com/public/uploads/thumbnail/purepng.com-cyberpunk-2077-logologosgame-logogame-logosgameslogocyberpunk-2077-1271528996132viits.png")
-            await message.channel.send(content=None, embed=embed)
-        else:
-            await message.channel.send("Cyberpunk se canceló")
+        embed.add_field(name="Estreno", value=estreno, inline=True)
+        embed.add_field(name="Hoy es", value=dia, inline=True)
+        embed.set_footer(text="Fuente de fecha: https://www.cyberpunk.net")
+        await message.channel.send(content=None, embed=embed)
 
     if message.content.find("sh.say") != -1 and not message.author.bot:
         mensaje = message.content.split()
