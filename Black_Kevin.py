@@ -71,6 +71,8 @@ async def on_message(message):
         dia = datetime.datetime.today().date()
         print(dia)
         estreno = datetime.date(2020,11,19)
+        if message.author.id == 264624758279110656:
+            estreno = datetime.date(2021,11,19)
         delta = (dia - estreno).days
         if delta < 0:
             deltasupp = str(delta)
