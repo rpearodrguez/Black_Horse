@@ -71,12 +71,11 @@ async def on_message(message):
         dia = datetime.datetime.today().date()
         print(dia)
         estreno = datetime.date(2020,11,19)
-        if message.author.id == 264624758279110656:
-            estreno = datetime.date(2021,11,19)
         delta = (dia - estreno).days
         randNum = random.randint(1, 10)
         if randNum == 1:
             delta = 10000
+            estreno = "Cancelado"
         if delta == 10000:
             embed = embed=discord.Embed(title="Contador de días", description="Se canceló el juego")
             embed.set_image(url="https://purepng.com/public/uploads/thumbnail/purepng.com-cyberpunk-2077-logologosgame-logogame-logosgameslogocyberpunk-2077-1271528996132viits.png")
