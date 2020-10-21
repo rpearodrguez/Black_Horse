@@ -51,13 +51,6 @@ async def on_message(message):
     if message.content.find("sh.hola") != -1 and not message.author.bot:
         await message.channel.send("Come tierra") # If the user says !hello we will send you to eat dirt
 
-    if message.content.find("sh.help") != -1 and not message.author.bot:
-        embed = embed=discord.Embed(title="Ayuda", description="Prefijo sh. - Comandos basicos")
-        embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png")
-        embed.add_field(name="<3", value="Debido a la limitación de carateres, puedes encontrar el listado de comandos en https://www.stickhorse.cl/bot-de-stick-horse-listado-de-comandos-prefijo-sh/", inline=True)
-        embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
-        await message.channel.send(content=None, embed=embed)
-    
     if message.content.find("sh.jueves") != -1 and not message.author.bot:
         dia = datetime.datetime.today().weekday()
         if dia == 3:
