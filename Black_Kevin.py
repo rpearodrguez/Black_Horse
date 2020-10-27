@@ -63,7 +63,7 @@ async def on_message(message):
     if message.content.find("sh.cyberpunk") != -1 and not message.author.bot:
         dia = datetime.datetime.today().date()
         print(dia)
-        estreno = datetime.date(2020,11,19)
+        estreno = datetime.date(2020,12,10)
         delta = (dia - estreno).days
         randNum = random.randint(1, 10)
         if randNum == 1:
