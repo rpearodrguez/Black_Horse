@@ -96,8 +96,8 @@ def mangaScrap(urlb=""):
             portada = resultado["data"][0]["attributes"]["posterImage"]["large"]
             if portada == "" or portada == "None":
                 portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
-            sinopsis = " ".join(" ".join((resultado["data"][0]["attributes"]["synopsis"]).split("\n")).split("\r"))
-            if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.':
+            sinopsis = ' '.join(' '.join((resultado["data"][0]["attributes"]["synopsis"]).split("\n")).split("\r"))
+            if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.' or sinopsis == '':
                 sinopsis = "Sinopsis no encontrada"
             else:
                 sinopsis = translator.translate(sinopsis,dest='es').text
