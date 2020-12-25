@@ -423,14 +423,13 @@ async def on_message(message):
     elif message.content.find("sh.img ") != -1 and not message.author.bot and not message.channel.is_nsfw():
         imageId = message.content.split()
         imageBusqueda = "+".join(imageId[1:])
-        resultado = Scrapper.imgSearch(imageBusqueda)
-        embed = discord.Embed(title="Imagen encontrada", description=" ".join(imageId[1:]))
-        try: 
+        if "loli" in imageBusqueda:
+            await message.channel.send("Se solicitó la búsqueda de un término ilegal, se procedió a enviar su IP a las autoridades correspondientes. Feliz navidad uwu")
+        else:
+            resultado = Scrapper.imgSearch(imageBusqueda)
+            embed = discord.Embed(title="Imagen encontrada", description=" ".join(imageId[1:]))
             embed.set_image(url = resultado)
-        except:
-            embed.add_field(name="Resultado", value= resultado)
-            pass
-        await message.channel.send(content=None, embed=embed)
+            await message.channel.send(content=None, embed=embed)
 
     elif message.content.find("sh.img ") != -1 and not message.author.bot and message.channel.is_nsfw():
         await message.channel.send("comando exclusivo para uso en canales safe for work")

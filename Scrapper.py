@@ -340,23 +340,19 @@ def nhentaiTagSearch(tag="https://nhentai.net"):
     # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
 
 def imgSearch(search_term="busqueda"):
-    if "loli" in search_term.lower() or "nsfw" in search_term.lower():
-        imagenes = ["Se ha registrado la consulta por un término ilegal, su IP ha sido enviada a las autoridades correspondientes, feliz navidad"]
+    try:
+        imagenes = ["resultado no encontrado"]
+        url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}&searchType=image&safe=active".format(os.environ.get('ID_BUSCADOR_GOOGLE'),os.environ.get('GOOGLE_CUSTOM_SEARCH'), search_term)
+        # open with GET method
+        resp = requests.get(url)
+        # http_respone 200 means OK status
+        if resp.status_code == 200:
+            gifs = json.loads(resp.content)
+            imagenes[0] = gifs["items"][0]["link"]
+            print(imagenes[0])
         return imagenes[0]
-    else:
-        try:
-            imagenes = ["resultado no encontrado"]
-            url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}&searchType=image&safe=active".format(os.environ.get('ID_BUSCADOR_GOOGLE'),os.environ.get('GOOGLE_CUSTOM_SEARCH'), search_term)
-            # open with GET method
-            resp = requests.get(url)
-            # http_respone 200 means OK status
-            if resp.status_code == 200:
-                gifs = json.loads(resp.content)
-                imagenes[0] = gifs["items"][0]["link"]
-                print(imagenes[0])
-            return imagenes[0]
-        except:
-            pass
+    except:
+        pass
 
 def ccSearch():
     url = "https://www.cuantocabron.com/aleatorio/p/1"
