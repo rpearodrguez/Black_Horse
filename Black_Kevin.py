@@ -60,6 +60,7 @@ async def on_message(message):
         else:
             await message.channel.send("Hoy no es jueves")
 
+    '''
     if message.content.find("sh.cyberpunk") != -1 and not message.author.bot:
         dia = datetime.datetime.today().date()
         print(dia)
@@ -89,7 +90,7 @@ async def on_message(message):
         embed.add_field(name="Hoy es", value=dia, inline=True)
         embed.set_footer(text="Fuente de fecha: https://www.cyberpunk.net")
         await message.channel.send(content=None, embed=embed)
-
+    '''
     if message.content.find("sh.say") != -1 and not message.author.bot:
         mensaje = message.content.split()
         mensaje2 = " ".join(mensaje[1:])
@@ -419,13 +420,16 @@ async def on_message(message):
         except:
             pass
 
-    elif message.content.find("sh.img ") != -1 and not message.author.bot:
+    elif message.content.find("sh.img ") != -1 and not message.author.bot and not message.channel.is_nsfw():
         imageId = message.content.split()
         imageBusqueda = "+".join(imageId[1:])
         resultado = Scrapper.imgSearch(imageBusqueda)
         embed = discord.Embed(title="Imagen encontrada", description=" ".join(imageId[1:]))
         embed.set_image(url = resultado)
         await message.channel.send(content=None, embed=embed)
+
+    elif message.content.find("sh.img ") != -1 and not message.author.bot and message.channel.is_nsfw():
+        await message.channel.send("comando exclusivo para uso en canales safe for work")
 
     elif message.content.find("sh.cc") != -1 and not message.author.bot:
         busqueda = Scrapper.ccSearch()
