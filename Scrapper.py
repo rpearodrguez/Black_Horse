@@ -343,7 +343,7 @@ def imgSearch(search_term="busqueda"):
 
     try:
         imagenes = ["resultado no encontrado"]
-        url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}&searchType=image".format(os.environ.get('ID_BUSCADOR_GOOGLE'),os.environ.get('GOOGLE_CUSTOM_SEARCH'), search_term)
+        url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}&searchType=image&safe=active".format(os.environ.get('ID_BUSCADOR_GOOGLE'),os.environ.get('GOOGLE_CUSTOM_SEARCH'), search_term)
         # open with GET method
         resp = requests.get(url)
         # http_respone 200 means OK status
