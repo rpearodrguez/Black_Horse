@@ -423,7 +423,7 @@ async def on_message(message):
     elif message.content.find("sh.img ") != -1 and not message.author.bot and not message.channel.is_nsfw():
         imageId = message.content.split()
         imageBusqueda = "+".join(imageId[1:])
-        if "loli" in imageId[1:] or "rape" in imageId[1:]:
+        if "loli" in imageId[1:].lower() or "rape" in imageId[1:].lower() or "lolicon" in imageId[1:].lower() or "violacion" in imageId[1:].lower() or "violación" in imageId[1:].lower():
             await message.channel.send("Se solicitó la búsqueda de un término ilegal, se procedió a enviar su IP a las autoridades correspondientes. Feliz navidad uwu")
         else:
             resultado = Scrapper.imgSearch(imageBusqueda)
