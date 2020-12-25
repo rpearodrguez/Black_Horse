@@ -425,7 +425,11 @@ async def on_message(message):
         imageBusqueda = "+".join(imageId[1:])
         resultado = Scrapper.imgSearch(imageBusqueda)
         embed = discord.Embed(title="Imagen encontrada", description=" ".join(imageId[1:]))
-        embed.set_image(url = resultado)
+        try: 
+            embed.set_image(url = resultado)
+        except:
+            embed.add_field(name="Resultado", value= resultado)
+            pass
         await message.channel.send(content=None, embed=embed)
 
     elif message.content.find("sh.img ") != -1 and not message.author.bot and message.channel.is_nsfw():
