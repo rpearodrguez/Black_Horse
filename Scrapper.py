@@ -341,7 +341,8 @@ def nhentaiTagSearch(tag="https://nhentai.net"):
 
 def imgSearch(search_term="busqueda"):
     if "loli" in search_term.lower() or "nsfw" in search_term.lower():
-        return "Se ha registrado la consulta por un término ilegal, su IP ha sido enviado a las autoridades correspondientes, feliz navidad"
+        imagenes = ["Se ha registrado la consulta por un término ilegal, su IP ha sido enviada a las autoridades correspondientes, feliz navidad"]
+        return imagenes[0]
     else:
         try:
             imagenes = ["resultado no encontrado"]
