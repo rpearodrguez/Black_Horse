@@ -760,6 +760,24 @@ async def on_message(message):
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
 
+    elif message.content.find("sh.pout") != -1 and not message.author.bot:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("pout")
+        embed = discord.Embed(title="{} está haciendo pucheros".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Via Tenor")
+        await message.channel.send(content=None, embed=embed)
+
+    elif message.content.find("sh.plaf") != -1 and not message.author.bot:
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = "https://www.stickhorse.cl/wp-content/uploads/2021/02/unknown.png"
+        embed = discord.Embed(title="{} hizo plaf".format(autor))
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Via Stick Horse")
+        await message.channel.send(content=None, embed=embed)
+
     elif message.content.find("sh.suicide") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
@@ -859,6 +877,21 @@ async def on_message(message):
             embed = discord.Embed(title="{} se puso a bailar con {}".format(autor,victima))
         except IndexError:
             embed = discord.Embed(title="{} se puso a bailar".format(autor))
+            pass
+        embed.set_image(url = imagen)
+        embed.set_footer(text="Via Tenor")
+        await message.channel.send(content=None, embed=embed)
+
+    elif message.content.find("sh.angry") != -1 and not message.author.bot:
+        mensaje = message.content.split()
+        print(message.author)
+        autor = str(message.author).split("#")[0]
+        imagen = Feels.reactionImage("angry")
+        try:
+            victima = message.mentions[0].name
+            embed = discord.Embed(title="{} está molesto(a) con {}".format(autor,victima))
+        except IndexError:
+            embed = discord.Embed(title="{} está molesto(a)".format(autor))
             pass
         embed.set_image(url = imagen)
         embed.set_footer(text="Via Tenor")

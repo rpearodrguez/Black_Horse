@@ -20,6 +20,12 @@ def reactionImage(feel=""):
     if feel == "abrazo":
         search_term = "anime hug"
 
+    if feel == "angry":
+        search_term = "Angry Anime Girl"
+
+    if feel == "pout":
+        search_term = "Angry Anime Girl"
+
     if feel == "escapar":
         search_term = "anime run away"
 
