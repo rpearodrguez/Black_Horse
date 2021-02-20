@@ -350,15 +350,42 @@ async def on_message(message):
         resultado = Scrapper.animeScrap(animeBusqueda)
         #find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, generos]
         try:
-            embed = discord.Embed(title="Titulo", description=resultado[0])
-            embed.set_image(url = resultado[1])
-            embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
-            embed.add_field(name="Lanzamiento", value=resultado[3], inline=True)
-            embed.add_field(name="Finalizacion", value=resultado[4], inline=True)
-            embed.add_field(name="Estado", value=resultado[5], inline=True)
-            embed.add_field(name="Tipo", value=resultado[6], inline=True)
-            embed.add_field(name="Rating", value=resultado[7], inline=True)
-            embed.add_field(name="Episodios", value=resultado[8], inline=True)
+            try:
+                embed = discord.Embed(title="Titulo", description=resultado[0])
+            except:
+                pass
+            try:
+                embed.set_image(url = resultado[1])
+            except:
+                pass
+            try:
+                embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
+            except:
+                pass
+            try:
+                embed.add_field(name="Lanzamiento", value=resultado[3], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Finalizacion", value=resultado[4], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Estado", value=resultado[5], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Tipo", value=resultado[6], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Rating", value=resultado[7], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Episodios", value=resultado[8], inline=True)
+            except:
+                pass
             if resultado[9] != "":
                 embed.add_field(name="Generos", value=resultado[9], inline=True)
             embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
@@ -374,16 +401,46 @@ async def on_message(message):
         print(resultado)
         #find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, serializacion, generos]
         try:
-            embed = discord.Embed(title="Titulo", description=resultado[0])
-            embed.set_image(url = resultado[1])
-            embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
-            embed.add_field(name="Lanzamiento", value=resultado[3], inline=True)
-            embed.add_field(name="Finalizacion", value=resultado[4], inline=True)
-            embed.add_field(name="Estado", value=resultado[5], inline=True)
-            embed.add_field(name="Tipo", value=resultado[6], inline=True)
-            embed.add_field(name="Rating", value=resultado[7], inline=True)
-            embed.add_field(name="Capitulos", value=resultado[8], inline=True)
-            embed.add_field(name="Serializacion", value=resultado[9], inline=True)
+            try:
+                embed = discord.Embed(title="Titulo", description=resultado[0])
+            except:
+                pass
+            try:
+                embed.set_image(url = resultado[1])
+            except:
+                pass
+            try:
+                embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
+            except:
+                pass
+            try:
+                embed.add_field(name="Lanzamiento", value=resultado[3], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Finalizacion", value=resultado[4], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Estado", value=resultado[5], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Tipo", value=resultado[6], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Rating", value=resultado[7], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Capitulos", value=resultado[8], inline=True)
+            except:
+                pass
+            try:
+                embed.add_field(name="Serializacion", value=resultado[9], inline=True)
+            except:
+                pass
             if resultado[10] != "":
                 embed.add_field(name="Generos", value=resultado[10], inline=True)
             embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
