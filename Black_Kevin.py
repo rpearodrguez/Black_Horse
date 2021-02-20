@@ -386,9 +386,12 @@ async def on_message(message):
                 embed.add_field(name="Episodios", value=resultado[8], inline=True)
             except:
                 pass
-            if resultado[9] != "":
-                embed.add_field(name="Generos", value=resultado[9], inline=True)
-            embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
+            try:
+                if resultado[9] != "":
+                    embed.add_field(name="Generos", value=resultado[9], inline=True)
+                embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
+            except:
+                pass
             await message.channel.send(content=None, embed=embed)
         except:
 
@@ -441,9 +444,12 @@ async def on_message(message):
                 embed.add_field(name="Serializacion", value=resultado[9], inline=True)
             except:
                 pass
-            if resultado[10] != "":
-                embed.add_field(name="Generos", value=resultado[10], inline=True)
-            embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
+            try:
+                if resultado[10] != "":
+                    embed.add_field(name="Generos", value=resultado[10], inline=True)
+                embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
+            except:
+                pass
             await message.channel.send(content=None, embed=embed)
         except:
 
