@@ -256,39 +256,48 @@ async def on_message(message):
             embed.set_image(url = resultado[0][1])
             try:
                 embed.add_field(name=resultado[1][0], value=resultado[2][0], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1][1], value=resultado[2][1], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1][2], value=resultado[2][2], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1][3], value=resultado[2][3], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1][4], value=resultado[2][4], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1][5], value=resultado[2][5], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1][6], value=resultado[2][6], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1][7], value=resultado[2][7], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1][8], value=resultado[2][8], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             embed.set_footer(text="Puedes encontrarlo en: {}".format(resultado[0][0]))
             await message.channel.send(content=None, embed=embed)
@@ -327,7 +336,8 @@ async def on_message(message):
                 await message.channel.send("Se quiere morir ese?")
 
 
-        except:
+        except Exception as e:
+            print(e)
 
             await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
             pass
@@ -352,48 +362,59 @@ async def on_message(message):
         try:
             try:
                 embed = discord.Embed(title="Titulo", description=resultado[0])
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.set_image(url = resultado[1])
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Lanzamiento", value=resultado[3], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Finalizacion", value=resultado[4], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Estado", value=resultado[5], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Tipo", value=resultado[6], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Rating", value=resultado[7], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Episodios", value=resultado[8], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 if resultado[9] != "":
                     embed.add_field(name="Generos", value=resultado[9], inline=True)
                 embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
-            except:
+            except Exception as e:
+                print(e)
                 pass
             await message.channel.send(content=None, embed=embed)
-        except:
+        except Exception as e:
+            print(e)
 
             await message.channel.send(resultado[0])
 
@@ -406,52 +427,64 @@ async def on_message(message):
         try:
             try:
                 embed = discord.Embed(title="Titulo", description=resultado[0])
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.set_image(url = resultado[1])
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Sinopsis", value=resultado[2], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Lanzamiento", value=resultado[3], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Finalizacion", value=resultado[4], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Estado", value=resultado[5], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Tipo", value=resultado[6], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Rating", value=resultado[7], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Capitulos", value=resultado[8], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name="Serializacion", value=resultado[9], inline=True)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 if resultado[10] != "":
                     embed.add_field(name="Generos", value=resultado[10], inline=True)
                 embed.set_footer(text="Obtenido de kitsu.io, traduccion con googletrans")
-            except:
+            except Exception as e:
+                print(e)
                 pass
             await message.channel.send(content=None, embed=embed)
-        except:
+        except Exception as e:
+            print(e)
 
             await message.channel.send(resultado[0])
 
@@ -480,7 +513,8 @@ async def on_message(message):
             else:
     
                 await message.channel.send("Juego no encontrado o con bloqueo de edad")
-        except:
+        except Exception as e:
+            print(e)
             pass
 
     elif message.content.find("sh.img ") != -1 and not message.author.bot and not message.channel.is_nsfw():
@@ -512,35 +546,43 @@ async def on_message(message):
             embed = discord.Embed(title="Búsqueda: SCP-", description=" ".join(scpId[1:]))
             try:
                 embed.set_image(url = resultado[0])
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[1].split(":")[0], value=resultado[1].split(":")[1], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[2].split(":")[0], value=resultado[2].split(":")[1], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[3].split(":")[0], value=resultado[3].split(":")[1], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[4].split(":")[0], value=resultado[4].split(":")[1], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[5].split(":")[0], value=resultado[5].split(":")[1], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[6].split(":")[0], value=resultado[6].split(":")[1], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             try:
                 embed.add_field(name=resultado[7].split(":")[0], value=resultado[7].split(":")[1], inline=False)
-            except:
+            except Exception as e:
+                print(e)
                 pass
             await message.channel.send(content=None, embed=embed)
         except Exception as ex:
@@ -554,7 +596,8 @@ async def on_message(message):
             desde = consulta[2].upper()
             hasta = consulta[4].upper()
             resultado = Scrapper.reporteDivisa(monto, desde, hasta)
-        except:
+        except Exception as e:
+            print(e)
             await message.channel.send('Formato incorrecto, conversión debe ser en el siguiente formato:\nsh.convert [monto] [divisa base(ej: CLP)] to [divisa destino(ej: USD)] ')
         #find = [rate_desde,rate_hasta,resultado]
         try:
@@ -564,7 +607,8 @@ async def on_message(message):
             embed.add_field(name="Valor {} {} a {}".format(desde, monto, hasta), value=resultado[2], inline=False)
             embed.set_footer(text="Fuente: https://openexchangerates.org")
             await message.channel.send(content=None, embed=embed)
-        except:
+        except Exception as e:
+            print(e)
             await message.channel.send(resultado[2])
 
 #Reactions Module
@@ -807,7 +851,8 @@ async def on_message(message):
         try:
             if mensaje[1].lower() == "caramelldansen":
                 imagen = Feels.reactionImage("caramelldansen")
-        except:
+        except Exception as e:
+            print(e)
             pass
         try:
             victima = message.mentions[0].name
