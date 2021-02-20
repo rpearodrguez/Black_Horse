@@ -155,7 +155,6 @@ async def on_message(message):
         embed.set_image(url="https://media1.tenor.com/images/009d9801cc81b561927001cecb313d59/tenor.gif")
         await message.channel.send(content=None, embed=embed)
 
-
 #NSFW Module
 
     #Si está en un canal NSFW, recibe codigo de nhentai y devuelve link a pagina (no es mucho más lo que se puede hacer, ya que murió su API
@@ -300,6 +299,7 @@ async def on_message(message):
     elif message.content.find("sh.hanime ") != -1 and not message.channel.is_nsfw() and not message.author.bot:
         await message.delete()
         await message.channel.send("No sea marrano y pregunte en un canal NSFW")
+
 #Roleplay Module
 
     # Dados
@@ -705,7 +705,6 @@ async def on_message(message):
 
             await message.channel.send("Debes mencionar un usuario para poder usar este comando")
     
-
 #Self Reactions
 
     elif message.content.find("sh.smug") != -1 and not message.author.bot:
