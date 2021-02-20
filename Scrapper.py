@@ -39,7 +39,7 @@ def animeScrap(urlb=""):
             if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.':
                 sinopsis = "Sinopsis no encontrada"
             else:
-                sinopsis = translator.translate(sinopsis,dest='es').text
+                sinopsis = translator.translate(sinopsis,dest='es').text[:1020]+"..."
             lanzamiento = resultado["data"][0]["attributes"]["startDate"]
             if str(lanzamiento) == "" or str(lanzamiento) == "None":
                 lanzamiento = "No hay fecha de lanzamiento"
