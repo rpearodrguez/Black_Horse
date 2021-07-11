@@ -772,7 +772,7 @@ async def on_message(message):
     elif message.content.find("sh.plaf") != -1 and not message.author.bot:
         print(message.author)
         autor = str(message.author).split("#")[0]
-        imagen = "https://www.stickhorse.cl/wp-content/uploads/2021/02/unknown.png"
+        imagen = Feels.reactionImage("plaf")
         embed = discord.Embed(title="{} hizo plaf".format(autor))
         embed.set_image(url = imagen)
         embed.set_footer(text="Via Stick Horse")
