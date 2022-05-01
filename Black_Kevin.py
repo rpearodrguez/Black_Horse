@@ -321,13 +321,14 @@ async def on_message(message):
             cant_dados = int(dado[1])
             caras = int(dado[2])
             bonificador = int(dado[3])
+            usuario = str(message.author).split("#")
             #Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
-            resultado = Roleplay.roll(cant_dados,caras,bonificador)
+            resultado = Roleplay.roll(cant_dados,caras,bonificador,usuario[0])
             await message.channel.send(resultado)
 
         except Exception as e:
             print(e)
-            await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y el bonificador")
+            await message.channel.send("Formato invalido, debes ingresar dos valores cantidad-de-dados, caras y bonificador")
             pass
     
     elif message.content.find("sh.fate") != -1 and not message.author.bot:
