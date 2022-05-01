@@ -18,7 +18,8 @@ def roll(cant_dados=1, cant_caras=20, bonificador=0, authorName=""):
             
     elif(cant_dados > 10):
         return ("Ocurrio un error al intentar rolear")
-    respuesta = "El roll de {}: {} - ({})+{}".format(authorName,resultado,stringDados,bonificador)
+    #Respuesta se compone de nombre de usuario, total = suma de tiros + bonificador
+    respuesta = "El roll de {}: {} = ({})+{}".format(authorName,resultado,stringDados,bonificador)
     return respuesta
 
 def fateroll(cant_dados=1, mod=0, authorName=""):
