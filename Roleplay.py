@@ -9,7 +9,7 @@ def roll(cant_dados=1, cant_caras=20, bonificador=0, authorName=""):
         for x in range(1, (1+cant_dados)):
             # Tira el dado
             dado = random.randint(1, cant_caras)
-            resultado = resultado + random.randint(1, cant_caras)
+            resultado = resultado + dado
             if(stringDados == ""):
                 stringDados = "{}".format(str(dado))
             elif(stringDados != ""):
