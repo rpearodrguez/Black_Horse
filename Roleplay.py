@@ -10,7 +10,7 @@ def roll(cant_dados=1, cant_caras=20, bonificador=0, authorName=""):
             # Tira el dado
             dado = random.randint(1, cant_caras)
             resultado = resultado + random.randint(1, cant_caras)
-            stringDados = "{}+{}".format(stringDados + str(dado))
+            stringDados = "{} + {}".format(stringDados, str(dado))
     elif(cant_dados > 10):
         return ("Ocurrio un error al intentar rolear")
     respuesta = "El roll de {}: {} - {}".format(authorName,resultado,stringDados)
