@@ -320,7 +320,11 @@ async def on_message(message):
         try:
             cant_dados = int(dado[1])
             caras = int(dado[2])
-            bonificador = int(dado[3])
+            try:
+                bonificador = int(dado[3])
+            except:
+                bonificador = 0
+                pass
             usuario = str(message.author).split("#")
             #Limita la cantidad de dados para no abusar del spam, la cantidad de dados simultaneos es una condición arbitraria.
             resultado = Roleplay.roll(cant_dados,caras,bonificador,usuario[0])
