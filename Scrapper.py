@@ -7,7 +7,7 @@ import conversion
 from googletrans import Translator
 
 import requests
-from boto.s3.connection import S3Connection
+from Black_Kevin import get_secret
 from bs4 import BeautifulSoup
 
 translator = Translator()
@@ -346,7 +346,7 @@ def nhentaiTagSearch(tag="https://nhentai.net"):
 def imgSearch(search_term="busqueda"):
     try:
         imagenes = ["resultado no encontrado"]
-        url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}&searchType=image&safe=active".format(os.environ.get('ID_BUSCADOR_GOOGLE'),os.environ.get('GOOGLE_CUSTOM_SEARCH'), search_term)
+        url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}&searchType=image&safe=active".format(get_secret('ID_BUSCADOR_GOOGLE'),get_secret('GOOGLE_CUSTOM_SEARCH'), search_term)
         # open with GET method
         resp = requests.get(url)
         # http_respone 200 means OK status
@@ -418,7 +418,7 @@ def safebooruSearch(busqueda=""):
         return "No se pudo encontrar resultado"
 
 def danbooruSearch(busqueda=""):
-    url = "https://danbooru.donmai.us/posts.json?login={}&api_key={}&limit=1&tags={}&random=true".format(os.environ.get('DANBOORU_LOGIN'),os.environ.get('DANBOORU_KEY'),busqueda)
+    url = "https://danbooru.donmai.us/posts.json?login={}&api_key={}&limit=1&tags={}&random=true".format(get_secret('DANBOORU_LOGIN'),get_secret('DANBOORU_KEY'),busqueda)
     # open with GET method
     resp = requests.get(url)
     print(resp.status_code)
@@ -591,7 +591,7 @@ def SCP_Search(busqueda="5998"):
         return ["[DATA EXPUNGED]","[DATA EXPUNGED]:[DATA EXPUNGED]","[DATA EXPUNGED]:PARA UNA VERSION ACTUALIZADA DEL INFORME CONTACTA CON EL DOCTOR [REDACTED]"]
 
 def reporteDivisa(monto = 1, desde = "USD", hasta = "CLP"):
-    url = "https://openexchangerates.org/api/latest.json?app_id={}".format(os.environ.get('OPEN_EXCHANGE'))
+    url = "https://openexchangerates.org/api/latest.json?app_id={}".format(get_secret('OPEN_EXCHANGE'))
     resp = requests.get(url)
     print(resp.status_code)
 

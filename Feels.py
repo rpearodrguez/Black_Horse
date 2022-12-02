@@ -1,9 +1,9 @@
 import json
 import os
 import random
+from Black_Kevin import get_secret
 
 import requests
-from boto.s3.connection import S3Connection
 
 
 def reactionImage(feel=""):
@@ -109,7 +109,7 @@ def reactionImage(feel=""):
     
 
     if feel !=  "escobazo":
-        url = "https://api.tenor.com/v1/random?key={}&q={}&locale=en_US&contentfilter=off&media_filter=minimal&ar_range=wide&limit=1".format(os.environ.get('TENOR_KEY'), search_term)
+        url = "https://api.tenor.com/v1/random?key={}&q={}&locale=en_US&contentfilter=off&media_filter=minimal&ar_range=wide&limit=1".format(get_secret('TENOR_KEY'), search_term)
         # open with GET method
         resp = requests.get(url)
         # http_respone 200 means OK status
