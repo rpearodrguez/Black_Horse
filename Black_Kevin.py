@@ -5,7 +5,7 @@ import Roleplay
 import Feels
 import os
 import datetime
-from boto.s3.connection import S3Connection
+from google.cloud import secretmanager
 
 
 
@@ -15,6 +15,20 @@ Versión 2.0.0 - Versión Operativa, adición comandos adicionales.
 Autor: Richard Peña (Vaalus)
 Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
+# GCP project in which to store secrets in Secret Manager.
+# Create the Secret Manager client.
+sm_client = secretmanager.SecretManagerServiceClient()
+
+def get_secret(secret_id):
+    # Build the resource name of the secret version.
+    name = f"projects/stick-horse/secrets/{secret_id}/versions/latest"
+
+    # Access the secret version.
+    response = sm_client.access_secret_version(request={"name": name})
+
+    # Return the decoded payload.
+    return response.payload.data.decode("UTF-8")
+
 client = discord.Client()
 
 
@@ -970,4 +984,4 @@ async def on_message(message):
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         
-client.run(os.environ.get('DISCORD_TOKEN'))
+client.run(get_secret("DISCORD_TOKEN"))
