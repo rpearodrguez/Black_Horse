@@ -1,4 +1,1 @@
-manual_scaling:
-  inistanaces: 1
-
 entrypoint: python3 Black_Kevin.py
