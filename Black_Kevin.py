@@ -69,7 +69,7 @@ async def on_message(message):
         # Si el mensaje tiene mas de 1 codigo, genera un link por cada codigo
         else:
             for i in range(1,len(mensaje)):
-                await message.channel.send("https://genshin.mihoyo.com/es/gift?cdkey={}".format(mensaje[i]))
+                await message.channel.send("https://genshin.mihoyo.com/es/gift?code={}".format(mensaje[i]))
     
     # Repite lo que se le diga
     if message.content.find("sh.say") != -1 and not message.author.bot:
