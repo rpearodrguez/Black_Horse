@@ -60,37 +60,18 @@ async def on_message(message):
         else:
             await message.channel.send("Hoy no es jueves")
 
-    '''
-    if message.content.find("sh.cyberpunk") != -1 and not message.author.bot:
-        dia = datetime.datetime.today().date()
-        print(dia)
-        estreno = datetime.date(2020,12,10)
-        delta = (dia - estreno).days
-        randNum = random.randint(1, 10)
-        if randNum == 1:
-            delta = 10000
-            estreno = "Cancelado"
-        if delta == 10000:
-            embed = embed=discord.Embed(title="Contador de días", description="Se canceló el juego")
-            embed.set_image(url="https://purepng.com/public/uploads/thumbnail/purepng.com-cyberpunk-2077-logologosgame-logogame-logosgameslogocyberpunk-2077-1271528996132viits.png")
-        elif delta < 0:
-            deltasupp = str(delta*-1)
-            embed = embed=discord.Embed(title="Contador de días", description="Quedan {} día(s) para Cyberpunk".format(deltasupp))
-            embed.set_image(url="https://purepng.com/public/uploads/thumbnail/purepng.com-cyberpunk-2077-logologosgame-logogame-logosgameslogocyberpunk-2077-1271528996132viits.png")
-            
-        elif delta == 0:
-            deltasupp = str(delta)
-            embed = embed=discord.Embed(title="Contador de días", description="Hoy sale cyberpunk!!")
-            embed.set_image(url="https://purepng.com/public/uploads/thumbnail/purepng.com-cyberpunk-2077-logologosgame-logogame-logosgameslogocyberpunk-2077-1271528996132viits.png")
-        elif delta > 0:
-            deltasupp = str(delta)
-            embed = embed=discord.Embed(title="Contador de días", description="Cyberpunk 2077 salió hace {} días".format(deltasupp))
-            embed.set_image(url="https://purepng.com/public/uploads/thumbnail/purepng.com-cyberpunk-2077-logologosgame-logogame-logosgameslogocyberpunk-2077-1271528996132viits.png")
-        embed.add_field(name="Estreno", value=estreno, inline=True)
-        embed.add_field(name="Hoy es", value=dia, inline=True)
-        embed.set_footer(text="Fuente de fecha: https://www.cyberpunk.net")
-        await message.channel.send(content=None, embed=embed)
-    '''
+    # Convierte un codigo de regalo de genshin en un link de canjeo
+    if message.content.find("sh.genshingift") != -1 and not message.author.bot:
+        mensaje = message.content.split()
+        # Si el mensaje es solo sh.genshin, no hace nada
+        if len(mensaje) == 1:
+            await message.channel.send("No has ingresado un código de regalo")
+        # Si el mensaje tiene mas de 1 codigo, genera un link por cada codigo
+        else:
+            for i in range(1,len(mensaje)):
+                await message.channel.send("https://genshin.mihoyo.com/es/gift?cdkey={}".format(mensaje[i]))
+    
+    # Repite lo que se le diga
     if message.content.find("sh.say") != -1 and not message.author.bot:
         mensaje = message.content.split()
         mensaje2 = " ".join(mensaje[1:])
