@@ -71,7 +71,7 @@ async def on_message(message):
             for i in range(1,len(mensaje)):
                 # Si el codigo es de 12 caracteres alfanumericos, genera el link
                 if len(mensaje[i]) == 12 and mensaje[i].isalnum():
-                    await message.channel.send("https://genshin.mihoyo.com/en/gift?cdkey={}".format(mensaje[i]))
+                    await message.channel.send("https://genshin.mihoyo.com/en/gift?code={}".format(mensaje[i]))
                     
     # Repite lo que se le diga
     if message.content.find("sh.say") != -1 and not message.author.bot:
