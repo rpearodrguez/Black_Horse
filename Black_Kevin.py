@@ -6,6 +6,7 @@ import Feels
 import os
 import datetime
 from google.cloud import secretmanager
+from discord import commands
 
 
 
@@ -31,10 +32,20 @@ def get_secret(secret_id):
 
 client = discord.Client()
 
-
-
+''' Prueba comandos /'''
+intents = discord.Intents.default()
+client = discord.Client(intents=intents)
+tree = app_commands.CommandTree(client)
     
+@tree.command(
+    name="prueba",
+    description="My first application Command",
+    guild=discord.Object(id=417536897527578624)
+)
+async def test(interaction):
+    await interaction.response.send_message("Hello!")
 
+'''
 @client.event
 async def on_message(message):
     #print commands in console for logging purposes
@@ -73,7 +84,7 @@ async def on_message(message):
             await message.channel.send(content=None, embed=embed)
         else:
             await message.channel.send("Hoy no es jueves")
-
+'''
     '''
     if message.content.find("sh.cyberpunk") != -1 and not message.author.bot:
         dia = datetime.datetime.today().date()
@@ -104,6 +115,7 @@ async def on_message(message):
         embed.add_field(name="Hoy es", value=dia, inline=True)
         embed.set_footer(text="Fuente de fecha: https://www.cyberpunk.net")
         await message.channel.send(content=None, embed=embed)
+    '''
     '''
     if message.content.find("sh.say") != -1 and not message.author.bot:
         mensaje = message.content.split()
@@ -983,5 +995,12 @@ async def on_message(message):
         embed.set_image(url = imagen)
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
-        
+
+        '''
+
+@client.event
+async def on_ready():
+    await tree.sync(guild=discord.Object(id=417536897527578624))
+    print("Ready!")
+
 client.run(get_secret("DISCORD_TOKEN"))
