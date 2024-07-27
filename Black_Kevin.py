@@ -45,7 +45,11 @@ tree = app_commands.CommandTree(client)
 async def test(interaction):
     await interaction.response.send_message("Hello!")
 
-'''
+@client.event
+async def on_ready():
+    await tree.sync(guild=discord.Object(id=417536897527578624))
+    print("Ready!")
+
 @client.event
 async def on_message(message):
     #print commands in console for logging purposes
@@ -964,11 +968,6 @@ async def on_message(message):
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
 
-        '''
-
-@client.event
-async def on_ready():
-    await tree.sync(guild=discord.Object(id=417536897527578624))
-    print("Ready!")
+        
 
 client.run(get_secret("DISCORD_TOKEN"))
