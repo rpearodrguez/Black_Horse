@@ -6,7 +6,7 @@ import Feels
 import os
 import datetime
 from boto.s3.connection import S3Connection
-from discord import app_commands
+
 
 
 '''
@@ -15,27 +15,12 @@ Versión 2.0.0 - Versión Operativa, adición comandos adicionales.
 Autor: Richard Peña (Vaalus)
 Desarrollado en Python 3.7 usando api Discord.py rewrite
 '''
-#client = discord.Client()
-
-intents = discord.Intents.default()
-client = discord.Client(intents=intents)
-tree = app_commands.CommandTree(client)
+client = discord.Client()
 
 
-@tree.command(
-    name="commandname",
-    description="My first application Command",
-    guild=discord.Object(id=417536897527578624)
-)
-async def first_command(interaction):
-    await interaction.response.send_message("Hello!")
 
-@client.event
-async def on_ready():
-    await tree.sync(guild=discord.Object(id=417536897527578624))
-    print("Ready!")
     
-'''
+
 @client.event
 async def on_message(message):
     #print commands in console for logging purposes
@@ -968,5 +953,4 @@ async def on_message(message):
         embed.set_footer(text="Via Tenor")
         await message.channel.send(content=None, embed=embed)
         
-'''
 client.run(os.environ.get('DISCORD_TOKEN'))
