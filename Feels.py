@@ -19,7 +19,6 @@ def reactionImage(feel=""):
         imagenes = ["http://stickhorse.cl/wp-content/uploads/2021/07/unknown.png",
                     "http://stickhorse.cl/wp-content/uploads/2021/07/Plaf.png"]
 
-
     if feel == "abrazo":
         search_term = "anime hug"
 
@@ -69,7 +68,10 @@ def reactionImage(feel=""):
         search_term = "anime spinning"
 
     if feel == "dance":
-        search_term = "anime dance"
+        if random.random() < 0.5:
+            imagenes = ["https://cdn.discordapp.com/attachments/476576031315066880/1280272175223275562/baile_metz_1.gif"]
+        else:
+            search_term = "anime dance"
     
     if feel == "caramelldansen":
         search_term = "caramelldansen"
