@@ -7,7 +7,7 @@ from boto.s3.connection import S3Connection
 
 
 def reactionImage(feel=""):
-    porcentaje = 0.5
+    porcentaje = 0.02
     imagenes = [""]
     
     if feel == "escobazo":
