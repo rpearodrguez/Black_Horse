@@ -1,6 +1,6 @@
 # Black Horse — Bot de Discord para Stick Horse
 
-Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado en Python con `discord.py 2.x` usando **slash commands** (`/comando`).
+Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado en Python con `discord.py 2.x` usando **slash commands** (`/comando`). No requiere el Privileged Intent de Message Content.
 
 ---
 
@@ -94,7 +94,7 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 ## Setup
 
 ### Requisitos
-- Python 3.11+
+- Python 3.11+ (o Docker)
 - Cuenta en [Discord Developer Portal](https://discord.com/developers/applications)
 
 ### Variables de entorno
@@ -103,7 +103,7 @@ Copia `.env.example` a `.env` y completa los valores:
 ```env
 DISCORD_TOKEN=          # Token del bot (Developer Portal → Bot → Token)
 ADMIN_ID=               # Tu ID de usuario de Discord
-TENOR_KEY=              # Google Cloud API key con Tenor API habilitada
+GIPHY_KEY=              # API key de Giphy (para comandos de reacción con GIF)
 GOOGLE_CUSTOM_SEARCH=   # Google API key (para /img)
 ID_BUSCADOR_GOOGLE=     # ID del Custom Search Engine (para /img)
 DANBOORU_LOGIN=         # Usuario de Danbooru (para /danbooru)
@@ -111,17 +111,46 @@ DANBOORU_KEY=           # API key de Danbooru (para /danbooru)
 OPEN_EXCHANGE=          # API key de OpenExchangeRates (para /convert)
 ```
 
+`DISCORD_TOKEN` y `ADMIN_ID` son obligatorias. El resto son opcionales — el bot arranca sin ellas, solo esos comandos específicos fallarán.
+
+### Correr con Docker (recomendado)
+```bash
+cp .env.example .env   # rellenar los valores
+docker compose up -d --build
+```
+
 ### Correr localmente
 ```bash
 pip install -r requirements.txt
-python Black_Kevin.py
+cp .env.example bot/.env   # rellenar los valores
+cd bot && python Black_Kevin.py
 ```
 
-### Deployment gratuito — Railway (recomendado)
-1. Crear cuenta en [railway.app](https://railway.app)
-2. Conectar este repositorio de GitHub
-3. Configurar las variables de entorno en el panel de Railway
-4. Railway detecta el `Procfile` automáticamente y lanza el bot como worker
+### Actualizar el bot (si está corriendo en Docker)
+```bash
+git pull && docker compose up -d --build
+```
+
+---
+
+## Deployment — Google Cloud Free Tier
+
+El bot corre en una VM `e2-micro` de Google Cloud (siempre gratuita):
+
+1. Crear VM `e2-micro` en `us-central1`, `us-east1` o `us-west1` con Ubuntu 24.04 LTS y disco Standard de 30 GB
+2. Conectarse por SSH e instalar Docker:
+   ```bash
+   curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker $USER
+   ```
+3. Reconectar SSH, clonar el repo y crear el `.env`:
+   ```bash
+   git clone https://github.com/rpearodrguez/Black_Horse.git && cd Black_Horse
+   nano .env
+   ```
+4. Levantar el bot:
+   ```bash
+   docker compose up -d --build
+   ```
 
 ---
 
@@ -131,12 +160,13 @@ En [discord.com/developers/applications](https://discord.com/developers/applicat
 
 - **Message Content Intent**: NO requerido (el bot usa slash commands)
 - **Server Members Intent**: NO requerido
-- Permisos mínimos al generar el link de invitación: `Send Messages`, `Embed Links`, `Read Message History`
+- Scopes al generar el link de invitación: `bot` + `applications.commands`
+- Permisos mínimos: `Send Messages`, `Embed Links`, `Read Message History`
 
 ---
 
 ## Créditos
 - Desarrollado por **Richard Peña (Vaalus)**
-- Imágenes de reacción vía [Tenor](https://tenor.com)
+- Imágenes de reacción vía [Tenor](https://tenor.com) / [Giphy](https://giphy.com)
 - Información de anime/manga vía [kitsu.io](https://kitsu.io)
 - Sugerencias: [stickhorse.cl](https://www.stickhorse.cl)
