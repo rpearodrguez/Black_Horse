@@ -7,8 +7,9 @@ from boto.s3.connection import S3Connection
 
 
 def reactionImage(feel=""):
-
+    porcentaje = 0.02
     imagenes = [""]
+    
     if feel == "escobazo":
         imagenes = ["https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif", 
                     "https://media.discordapp.net/attachments/476576031315066880/676602221571473418/tenor.gif",
@@ -18,7 +19,6 @@ def reactionImage(feel=""):
     if feel == "plaf":
         imagenes = ["http://stickhorse.cl/wp-content/uploads/2021/07/unknown.png",
                     "http://stickhorse.cl/wp-content/uploads/2021/07/Plaf.png"]
-
 
     if feel == "abrazo":
         search_term = "anime hug"
@@ -69,7 +69,10 @@ def reactionImage(feel=""):
         search_term = "anime spinning"
 
     if feel == "dance":
-        search_term = "anime dance"
+        if random.random() < porcentaje:
+            imagenes = ["https://cdn.discordapp.com/attachments/476576031315066880/1280272175223275562/baile_metz_1.gif"]
+        else:
+            search_term = "anime dance"
     
     if feel == "caramelldansen":
         search_term = "caramelldansen"
@@ -108,7 +111,7 @@ def reactionImage(feel=""):
         search_term = "anime cookie eat"
     
 
-    if feel !=  "escobazo":
+    if imagenes == [""]:
         url = "https://api.tenor.com/v1/random?key={}&q={}&locale=en_US&contentfilter=off&media_filter=minimal&ar_range=wide&limit=1".format(os.environ.get('TENOR_KEY'), search_term)
         # open with GET method
         resp = requests.get(url)
