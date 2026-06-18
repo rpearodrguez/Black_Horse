@@ -1,6 +1,5 @@
 import discord
 from discord import app_commands
-import random
 import Scrapper
 import Roleplay
 import Feels
@@ -92,7 +91,7 @@ async def help_cmd(interaction: discord.Interaction):
 @tree.command(name="invite", description="Obtén el link para invitar al bot a tu servidor")
 async def invite_cmd(interaction: discord.Interaction):
     await interaction.response.send_message(
-        "https://discordapp.com/api/oauth2/authorize?client_id=558102665695985674&permissions=92160&scope=bot"
+        "https://discord.com/api/oauth2/authorize?client_id=558102665695985674&permissions=92160&scope=bot+applications.commands"
     )
 
 
