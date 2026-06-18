@@ -1,105 +1,142 @@
-BOT DE STICK HORSE – listado de comandos (prefijo “sh.”)
+# Black Horse — Bot de Discord para Stick Horse
 
-Aquí será actualizado el listado de los comandos que puede utilizar el bot de Discord,
-Puedes acceder a el a través de este enlace
+Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado en Python con `discord.py 2.x` usando **slash commands** (`/comando`).
 
-MODULO GENERAL
+---
 
-    hola = Saluda al más puro estilo de Stick Horse
-    invite = Link de invitación
-    say = Repite lo que le indiques que diga
+## Comandos disponibles
 
-MODULO FRASES
+### General
+| Comando | Descripción |
+|---|---|
+| `/help` | Lista de comandos disponibles |
+| `/invite` | Link de invitación al bot |
+| `/hola` | Saluda al bot |
+| `/jueves` | ¿Hoy es jueves? |
+| `/say [mensaje]` | El bot repite tu mensaje |
+| `/genshingift [codigos]` | Convierte códigos de regalo de Genshin Impact en links de canjeo |
 
-Explora las diferentes frases tipicas de la cultura popular que pueden desperar a Kevin
+### Entretenimiento
+| Comando | Descripción |
+|---|---|
+| `/anime [nombre]` | Información detallada de un anime (kitsu.io) |
+| `/manga [nombre]` | Información detallada de un manga (kitsu.io) |
+| `/steam [juego]` | Información de un juego en Steam |
+| `/img [búsqueda]` | Busca una imagen (solo canales SFW) |
+| `/cc` | Meme aleatorio de CuantoCabrón |
+| `/scp [número]` | Entrada de la SCP Foundation Wiki |
+| `/convert [monto] [desde] [hasta]` | Conversión de divisas (ej: `/convert 1000 CLP USD`) |
 
-MODULO ENTRETENIMIENTO
+### Roleplay
+| Comando | Descripción |
+|---|---|
+| `/roll [dados] [caras] [bonificador]` | Tira dados (ej: `/roll 2 20 3` = 2d20+3) |
+| `/fate [dados] [modificador]` | Tira dados de Fate dF (ej: `/fate 4 2`) |
 
-    steam = Busca enlace a juego en steam
-    anime = Busca información de un anime solicitado
-    anime [genero] = Entrega información de anime aleatorio del genero solicitado, al final de la pagina encontrarás un listado de todos los generos disponibles para buscar.
-    manga = Busca información de un manga solicitado
-    img = Busca el primer resultado de un término en google images
-    cc = Busca un ragecomic aleatorio de Cuantocabron… úselo bajo su propio riesgo
+### Reacciones — sobre otros (requieren mencionar usuario)
+| Comando | Descripción |
+|---|---|
+| `/escobazo @usuario` | Dale un escobazo |
+| `/pat @usuario` | Acaricia la cabeza |
+| `/slap @usuario` | Cachetea |
+| `/lick @usuario` | Lame |
+| `/feed @usuario` | Alimenta |
+| `/kick @usuario` | Patea |
+| `/baka @usuario` | BAKA!! |
+| `/bite @usuario` | Muerde |
 
-MODULO ROLEPLAY
+### Reacciones — sobre ti mismo
+| Comando | Descripción |
+|---|---|
+| `/smug` | Eres un creído(a) |
+| `/pout` | Haces pucheros |
+| `/plaf` | Haces plaf |
+| `/spin` | Te pones a girar |
+| `/blush` | Te sonrojas |
+| `/shy` | Te haces el/la tímido(a) |
+| `/tsundere` | Modo tsundere activado |
+| `/lewd` | Pensamientos cochinos |
+| `/jojo` | JojoPose |
+| `/cry` | Lloras |
+| `/smile` | Sonríes |
+| `/suicide` | (si realmente lo necesitas, busca ayuda) |
 
-    roll [Cantidad de dados] [Cantidad de caras] [Modificador] = Lanza dados con los datos indicados
-    fate [Cantidad de dados]df[Modificador] = Lanza dados fate
+### Reacciones — duales (usuario opcional)
+| Comando | Descripción |
+|---|---|
+| `/hug [@usuario]` | Abraza a alguien o pide un abrazo |
+| `/kiss [@usuario]` | Besa a alguien o pide un besito |
+| `/dance [@usuario] [tipo]` | Baila solo o con alguien (`tipo: caramelldansen`) |
+| `/angry [@usuario]` | Enójate o enójate con alguien |
+| `/run [@usuario]` | Corre o escapa de alguien |
+| `/sleep [@usuario]` | Tienes sueño o te vas a dormir con alguien |
+| `/happy [@usuario]` | Estás feliz o feliz por alguien |
+| `/cookie [@usuario]` | Te comes una galleta o le das una a alguien |
 
-MODULO REACTIONS
+### NSFW (solo en canales marcados como NSFW)
+| Comando | Descripción |
+|---|---|
+| `/nh [número\|random\|tag]` | Busca en nhentai por número, random o tag |
+| `/patas` | Imagen aleatoria de safebooru (feet) |
+| `/piernas` | Imagen aleatoria de safebooru (thighs) |
+| `/safebooru [tags]` | Búsqueda personalizada en safebooru |
+| `/danbooru [tags]` | Búsqueda en danbooru |
+| `/hanime [título]` | Busca en hentai-id |
 
-Comandos que puedes usar en otros
+### Admin (solo el owner del bot)
+| Comando | Descripción |
+|---|---|
+| `/servers` | Lista los servidores donde está activo el bot |
+| `/sync` | Registra los slash commands en Discord |
 
-    escobazo = Dale un buen escobazo a alguien más, o ti mismo, no te juzgo
-    pat = Acaricias la cabeza de alguien
-    baka = Le dice tonto a tu objetivo así bien tsundere
-    lick = Lames a alguien
-    slap = Golpeas a alguien
-    feed = Alimentas a alguien
-    kick = Pateas a alguien
-    bite = Muerde a alguien
+---
 
-Comandos que funcionan en ti mismo
+## Setup
 
-    smug = Eres un creido
-    spin = Giras como pendejo
-    blush =Te sonrojas
-    shy = Te averguenzas
-    tsundere = El nombre lo dice
-    lewd = Tienes pensamientos lascivos
-    jojo = Jojo poses
-    cry = Lloras
+### Requisitos
+- Python 3.11+
+- Cuenta en [Discord Developer Portal](https://discord.com/developers/applications)
 
-Comandos que funcionan tanto en ti como en otros
+### Variables de entorno
+Copia `.env.example` a `.env` y completa los valores:
 
-    hug = Quieres un abrazo/Abrazas a alguien
-    kiss = Quieres un besito/Besas a alguien
-    dance = Bailas solo/Bailas con alguien
-    sleep = Tienes sueño/Duermes con alguien ( ͡° ͜ʖ ͡°)
-    happy = Estás feliz/Te sientes feliz por alguien en particular
+```env
+DISCORD_TOKEN=          # Token del bot (Developer Portal → Bot → Token)
+ADMIN_ID=               # Tu ID de usuario de Discord
+TENOR_KEY=              # Google Cloud API key con Tenor API habilitada
+GOOGLE_CUSTOM_SEARCH=   # Google API key (para /img)
+ID_BUSCADOR_GOOGLE=     # ID del Custom Search Engine (para /img)
+DANBOORU_LOGIN=         # Usuario de Danbooru (para /danbooru)
+DANBOORU_KEY=           # API key de Danbooru (para /danbooru)
+OPEN_EXCHANGE=          # API key de OpenExchangeRates (para /convert)
+```
 
-EXTRA – COMANDO ANIME [GÉNEROS]
+### Correr localmente
+```bash
+pip install -r requirements.txt
+python Black_Kevin.py
+```
 
-    El listado de géneros disponibles para el comando anime [genero] es el siguiente (escribir tal cual como está digitado):
-        accion
-        artes marciales
-        aventura
-        carreras
-        ciencia ficcion
-        comedia
-        demencia
-        demonios
-        deportes
-        drama
-        ecchi
-        escolares
-        espacial
-        fantasia
-        harem
-        historico
-        infantil
-        josei
-        juegos
-        magia
-        mecha
-        militar
-        misterio
-        musica
-        parodia
-        psicologico
-        recuentos de la vida
-        romance
-        samurai
-        seinen
-        shoujo
-        shounen
-        sobrenatural
-        superpoderes
-        suspenso
-        terror
-        vampiros
-        yaoi
-        yuri
+### Deployment gratuito — Railway (recomendado)
+1. Crear cuenta en [railway.app](https://railway.app)
+2. Conectar este repositorio de GitHub
+3. Configurar las variables de entorno en el panel de Railway
+4. Railway detecta el `Procfile` automáticamente y lanza el bot como worker
 
-De momento eso es todo, por favor agregar sugerencias (para todas las edades como comentarios en esta pagina)
+---
+
+## Configuración en Discord Developer Portal
+
+En [discord.com/developers/applications](https://discord.com/developers/applications) → tu app → **Bot**:
+
+- **Message Content Intent**: NO requerido (el bot usa slash commands)
+- **Server Members Intent**: NO requerido
+- Permisos mínimos al generar el link de invitación: `Send Messages`, `Embed Links`, `Read Message History`
+
+---
+
+## Créditos
+- Desarrollado por **Richard Peña (Vaalus)**
+- Imágenes de reacción vía [Tenor](https://tenor.com)
+- Información de anime/manga vía [kitsu.io](https://kitsu.io)
+- Sugerencias: [stickhorse.cl](https://www.stickhorse.cl)

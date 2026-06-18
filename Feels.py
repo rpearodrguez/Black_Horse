@@ -3,7 +3,6 @@ import os
 import random
 
 import requests
-from boto.s3.connection import S3Connection
 
 
 def reactionImage(feel=""):
@@ -108,15 +107,13 @@ def reactionImage(feel=""):
         search_term = "anime cookie eat"
     
 
-    if feel !=  "escobazo":
-        url = "https://api.tenor.com/v1/random?key={}&q={}&locale=en_US&contentfilter=off&media_filter=minimal&ar_range=wide&limit=1".format(os.environ.get('TENOR_KEY'), search_term)
-        # open with GET method
+    if feel != "escobazo" and feel != "plaf":
+        url = "https://tenor.googleapis.com/v2/search?key={}&q={}&random=true&limit=1&media_filter=gif".format(os.environ.get('TENOR_KEY'), search_term)
         resp = requests.get(url)
-        # http_respone 200 means OK status
         if resp.status_code == 200:
             gifs = json.loads(resp.content)
             print(gifs)
-            imagenes[0] = gifs["results"][0]["media"][0]["gif"]["url"]
+            imagenes[0] = gifs["results"][0]["media_formats"]["gif"]["url"]
             print(imagenes[0])
         else:
             imagenes[0] = "https://media.tenor.com/images/ff8a2ea033a2f87a35d895eebd09cbe8/tenor.gif"

@@ -4,13 +4,17 @@ import random
 import re
 import urllib.parse
 import conversion
-from googletrans import Translator
 
 import requests
-from boto.s3.connection import S3Connection
 from bs4 import BeautifulSoup
+from deep_translator import GoogleTranslator
 
-translator = Translator()
+
+def translate(text, dest='es'):
+    try:
+        return GoogleTranslator(source='auto', target=dest).translate(text) or text
+    except Exception:
+        return text
 
 
 #Anime Scrapping
@@ -39,14 +43,14 @@ def animeScrap(urlb=""):
             if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.':
                 sinopsis = "Sinopsis no encontrada"
             else:
-                sinopsis = translator.translate(sinopsis,dest='es').text[:1020]+"..."
+                sinopsis = translate(sinopsis)[:1020]+"..."
             lanzamiento = resultado["data"][0]["attributes"]["startDate"]
             if str(lanzamiento) == "" or str(lanzamiento) == "None":
                 lanzamiento = "No hay fecha de lanzamiento"
             termino = resultado["data"][0]["attributes"]["endDate"]
             if str(termino) == "" or str(termino) == "None":
                 termino = "No hay fecha de termino"
-            terminado = translator.translate(resultado["data"][0]["attributes"]["status"],dest='es').text
+            terminado = translate(resultado["data"][0]["attributes"]["status"])
             if str(terminado) == "" or str(terminado) == "None":
                 terminado = "No se encontro estado de termino"
             tipo = resultado["data"][0]["attributes"]["showType"]
@@ -63,7 +67,7 @@ def animeScrap(urlb=""):
                 link_generos =  resultado["data"][0]["relationships"]["genres"]["links"]["related"]
                 generos_content = json.loads(requests.get(link_generos).content)
                 for genero in generos_content["data"]:
-                    generos += translator.translate(genero["attributes"]["name"],dest='es').text+", " 
+                    generos += translate(genero["attributes"]["name"])+", "
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, generos]
                 print(find)
             except:
@@ -104,14 +108,14 @@ def mangaScrap(urlb=""):
             if sinopsis == 'No synopsis has been added for this manga yet.Click here to update this information.' or sinopsis == '':
                 sinopsis = "Sinopsis no encontrada"
             else:
-                sinopsis = translator.translate(sinopsis,dest='es').text[:1020]+"..."
+                sinopsis = translate(sinopsis)[:1020]+"..."
             lanzamiento = resultado["data"][0]["attributes"]["startDate"]
             if str(lanzamiento) == "" or str(lanzamiento) == "None":
                 lanzamiento = "Lanzamiento no encontrado"
             termino = resultado["data"][0]["attributes"]["endDate"]
             if str(termino) == "" or str(termino) == "None":
                 termino = "Fecha de termino no encontrada"
-            terminado = translator.translate(resultado["data"][0]["attributes"]["status"],dest='es').text
+            terminado = translate(resultado["data"][0]["attributes"]["status"])
             if str(terminado) == "" or str(terminado) == "None":
                 terminado = "Estado de termino no encontrado"
             tipo = resultado["data"][0]["attributes"]["subtype"]
@@ -131,7 +135,7 @@ def mangaScrap(urlb=""):
                 link_generos =  resultado["data"][0]["relationships"]["genres"]["links"]["related"]
                 generos_content = json.loads(requests.get(link_generos).content)
                 for genero in generos_content["data"]:
-                    generos += translator.translate(genero["attributes"]["name"],dest='es').text+", "
+                    generos += translate(genero["attributes"]["name"])+", "
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating ,episodios, serializacion, generos]
             except:
                 find = [titulo, portada, sinopsis, lanzamiento,termino,terminado, tipo, rating, episodios, serializacion]
@@ -245,7 +249,7 @@ def steamDataSearch(busqueda):
                     if titulo[8] != "":
                         #Descripcion
                         
-                        find[2] = translator.translate(titulo[8],dest='es').text
+                        find[2] = translate(titulo[8])
                         print(find[2])
 
                 except:
@@ -575,10 +579,10 @@ def SCP_Search(busqueda="5998"):
                 try:
                     if "\n" in i.text:
                         contenido = i.text.split("\n")
-                        scpResult.append(translator.translate(contenido[0],dest='es').text)
-                        scpResult.append(translator.translate(contenido[2],dest='es').text)
+                        scpResult.append(translate(contenido[0]))
+                        scpResult.append(translate(contenido[2]))
                     else:
-                        scpResult.append(translator.translate(i.text,dest='es').text)
+                        scpResult.append(translate(i.text))
                 except:
                     pass
             print("Revisión 3: Contenido encontrado {}".format(scpResult))

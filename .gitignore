@@ -1,3 +1,18 @@
+# Entorno
+.env
+venv/
+.venv/
 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Tests locales
 Prueba.py
 shmal.py
