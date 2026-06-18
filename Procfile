@@ -1,1 +1,1 @@
-worker: python Black_Kevin.py
+worker: sh -c 'cd bot && python Black_Kevin.py'

@@ -11,17 +11,21 @@ Bot de Discord para el servidor **Stick Horse** (stickhorse.cl). Funciona con sl
 
 ## Estructura de archivos
 
-| Archivo | Propósito |
-|---|---|
-| `Black_Kevin.py` | Punto de entrada. Define todos los slash commands y el `on_ready` |
-| `Scrapper.py` | Funciones de búsqueda externa: anime, manga, steam, SCP, booru, nhentai, imágenes, divisas |
-| `Feels.py` | Obtiene GIFs de reacción desde Tenor API v2 |
-| `Roleplay.py` | Lógica de dados: `roll` (estándar) y `fateroll` (FATE) |
-| `conversion.py` | Fórmula matemática de conversión de divisas |
-| `Procfile` | Config de deployment: `worker: python Black_Kevin.py` |
-| `requirements.txt` | Dependencias Python |
-| `runtime.txt` | Versión de Python para Railway/Render/Heroku |
-| `.env.example` | Referencia de todas las variables de entorno necesarias |
+```
+Black_Horse/
+├── bot/                  # Código fuente del bot
+│   ├── Black_Kevin.py    # Punto de entrada. Define todos los slash commands y on_ready
+│   ├── Scrapper.py       # Búsqueda externa: anime, manga, steam, SCP, booru, nhentai, divisas
+│   ├── Feels.py          # GIFs de reacción desde Tenor API v2
+│   ├── Roleplay.py       # Lógica de dados: roll (estándar) y fateroll (FATE)
+│   └── conversion.py     # Fórmula matemática de conversión de divisas
+├── Dockerfile            # Imagen Docker del bot
+├── docker-compose.yml    # Orquestador de servicios
+├── Procfile              # Config Railway: sh -c 'cd bot && python Black_Kevin.py'
+├── requirements.txt      # Dependencias Python
+├── runtime.txt           # Versión de Python
+└── .env.example          # Referencia de variables de entorno
+```
 
 ## Variables de entorno
 
@@ -38,12 +42,13 @@ Opcionales (el bot inicia, pero esos comandos específicos fallarán):
 ## Cómo correr localmente
 ```bash
 pip install -r requirements.txt
-cp .env.example .env   # y rellenar los valores
-python Black_Kevin.py
+cp .env.example bot/.env   # y rellenar los valores
+cd bot && python Black_Kevin.py
 ```
 
 ## Deployment
-Railway (recomendado): conectar el repo, configurar variables de entorno en el panel. El `Procfile` es compatible sin cambios.
+Docker (recomendado): ver `docker-compose.yml`. El `.env` va en la raíz del repo (mismo nivel que `docker-compose.yml`).
+Railway: conectar el repo, configurar variables de entorno en el panel. El `Procfile` es compatible.
 
 ## Patrones importantes al editar el código
 
