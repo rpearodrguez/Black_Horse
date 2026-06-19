@@ -22,32 +22,28 @@ def roll(cant_dados=1, cant_caras=20, bonificador=0, authorName=""):
     respuesta = "El roll de {}: {} = ({})+{}".format(authorName,resultado,stringDados,bonificador)
     return respuesta
 
-def fateroll(cant_dados=1, mod=0, authorName=""):
-    try:
-        if int(cant_dados) < 21:
-            textopositivo = ""
-            textonegativo = ""
-            contador = 0
-            positivos = 0
-            negativos = 0
-            for x in range(1, (1+int(cant_dados))):
-                print(x)
-                result = random.randint(1, 2)
-                if result == 1:
-                    textopositivo += "+"
-                    contador += 1
-                    positivos += 1
+FATE_LADDER = {
+    8: "Legendario", 7: "Épico", 6: "Fantástico",
+    5: "Soberbio", 4: "Genial", 3: "Bueno",
+    2: "Regular", 1: "Promedio", 0: "Mediocre",
+    -1: "Pobre", -2: "Terrible"
+}
 
-                if result == 2:
-                    textonegativo += "-"
-                    contador -= 1
-                    negativos += 1
-            resultado = contador+int(mod)
+def fateroll(cant_dados=4, mod=0, authorName=""):
+    if int(cant_dados) > 10:
+        return "Máximo 10 dados Fate."
 
-            finalRoll = "El roll de {} es ({}{}) ({}{}) ({})".format(
-                authorName, textopositivo, textonegativo, contador, mod, resultado)
-            return finalRoll
-        else:
-            return ("Intentas rolear una cantidad muy grande de dados: {}".format(cant_dados))
-    except:
-        return ("Ocurrio un error al intentar rolear")
+    CARA = {1: "[+]", 0: "[ ]", -1: "[-]"}
+    dados = [random.choice([-1, -1, 0, 0, 1, 1]) for _ in range(int(cant_dados))]
+    suma = sum(dados)
+    resultado = suma + int(mod)
+
+    dados_str = " ".join(CARA[d] for d in dados)
+    mod_str = f"{int(mod):+d}" if int(mod) != 0 else ""
+    ladder = FATE_LADDER.get(resultado, "Legendario+" if resultado > 8 else "Terrible-")
+
+    return (
+        f"**{authorName}** tiró {cant_dados}dF{mod_str}\n"
+        f"{dados_str}\n"
+        f"**{suma}{mod_str} = {resultado} — {ladder}**"
+    )
