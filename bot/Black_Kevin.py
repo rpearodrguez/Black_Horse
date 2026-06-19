@@ -341,6 +341,7 @@ async def hanime_cmd(interaction: discord.Interaction, titulo: str):
             embed.add_field(name=resultado[1][i], value=resultado[2][i] or "—", inline=False)
         except Exception:
             pass
+    embed.set_footer(text=resultado[0][0])
     await interaction.followup.send(embed=embed)
 
 
