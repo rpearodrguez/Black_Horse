@@ -15,8 +15,7 @@ def reactionImage(feel=""):
                     "https://cdn.discordapp.com/attachments/441806502215548931/852009811188645888/neo-escobazo.gif"]
     
     if feel == "plaf":
-        imagenes = ["http://stickhorse.cl/wp-content/uploads/2021/07/unknown.png",
-                    "http://stickhorse.cl/wp-content/uploads/2021/07/Plaf.png"]
+        search_term = "anime slap face"
 
 
     if feel == "abrazo":

@@ -36,7 +36,7 @@ def animeScrap(urlb=""):
                 titulo = "Titulo no encontrado"
             portada = resultado["data"][0]["attributes"]["posterImage"]["large"]
             if portada == "" or portada == "None":
-                portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
+                portada = ""
             sinopsis = re.sub('\n'," ",resultado["data"][0]["attributes"]["synopsis"])
             sinopsis = re.sub(r'\[.*?\]'," ",sinopsis)
             sinopsis = re.sub('\r'," ",sinopsis)
@@ -101,7 +101,7 @@ def mangaScrap(urlb=""):
                 titulo = "Titulo no encontrado"
             portada = resultado["data"][0]["attributes"]["posterImage"]["large"]
             if portada == "" or portada == "None":
-                portada = "https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png"
+                portada = ""
             sinopsis = re.sub('\n'," ",resultado["data"][0]["attributes"]["synopsis"])
             sinopsis = re.sub(r'\[.*?\]'," ",sinopsis)
             sinopsis = re.sub('\r'," ",sinopsis)

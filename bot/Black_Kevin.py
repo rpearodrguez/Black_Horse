@@ -71,20 +71,44 @@ async def sync_cmd(interaction: discord.Interaction):
 
 @tree.command(name="help", description="Muestra la lista de comandos disponibles")
 async def help_cmd(interaction: discord.Interaction):
-    embed = discord.Embed(title="Ayuda", description="Comandos disponibles")
-    embed.set_thumbnail(url="https://www.stickhorse.cl/wp-content/uploads/2019/11/SH.png")
-    embed.add_field(
-        name="Comandos generales",
-        value="https://www.stickhorse.cl/bot-de-stick-horse-listado-de-comandos-prefijo-sh/",
-        inline=False
-    )
+    embed = discord.Embed(title="Kevin, la deidad primordial", description="Comandos disponibles")
+    embed.add_field(name="General", inline=False, value=(
+        "`/hola` Saluda al bot\n"
+        "`/jueves` ¿Hoy es jueves?\n"
+        "`/say` El bot repite tu mensaje\n"
+        "`/genshingift` Códigos de Genshin a links de canjeo\n"
+        "`/invite` Invita al bot a tu servidor"
+    ))
+    embed.add_field(name="Entretenimiento", inline=False, value=(
+        "`/anime` Información de un anime\n"
+        "`/manga` Información de un manga\n"
+        "`/steam` Información de un juego en Steam\n"
+        "`/img` Busca una imagen (solo canales SFW)\n"
+        "`/cc` Meme aleatorio de CuantoCabrón\n"
+        "`/scp` Entrada de la SCP Foundation Wiki\n"
+        "`/convert` Conversión de divisas"
+    ))
+    embed.add_field(name="Roleplay", inline=False, value=(
+        "`/roll` Tira dados estándar (ej: `/roll 2 20 3` = 2d20+3)\n"
+        "`/fate` Tira dados Fate dF"
+    ))
+    embed.add_field(name="Reacciones — sobre otros", inline=False, value=(
+        "`/escobazo` `/pat` `/slap` `/lick` `/feed` `/kick` `/baka` `/bite`"
+    ))
+    embed.add_field(name="Reacciones — propias", inline=False, value=(
+        "`/smug` `/pout` `/plaf` `/spin` `/blush` `/shy` `/tsundere` `/lewd` `/jojo` `/cry` `/smile` `/suicide`"
+    ))
+    embed.add_field(name="Reacciones — duales (usuario opcional)", inline=False, value=(
+        "`/hug` `/kiss` `/dance` `/angry` `/run` `/sleep` `/happy` `/cookie`"
+    ))
     if interaction.channel.is_nsfw():
-        embed.add_field(
-            name="Comandos NSFW",
-            value="https://www.stickhorse.cl/18-bot-de-stick-horse-listado-de-comandos-nsfwprefijo-sh/",
-            inline=False
-        )
-    embed.set_footer(text="Para más información visitanos en www.stickhorse.cl")
+        embed.add_field(name="NSFW", inline=False, value=(
+            "`/nh` Busca en nhentai\n"
+            "`/patas` `/piernas` Imágenes de safebooru\n"
+            "`/safebooru` Búsqueda personalizada en safebooru\n"
+            "`/danbooru` Búsqueda en danbooru\n"
+            "`/hanime` Busca en hentai-id"
+        ))
     await interaction.response.send_message(embed=embed)
 
 
@@ -504,7 +528,7 @@ async def suicide_cmd(interaction: discord.Interaction):
     embed = _embed(
         f"{interaction.user.display_name} se mató",
         Feels.reactionImage("suicide"),
-        "Si realmente estás mal visita https://www.stickhorse.cl/lineas-de-ayuda-psicologica-o-lineas-de-suicidio-en-hispano-america/"
+        "Si realmente estás mal, busca ayuda: https://www.iasp.info/resources/Crisis_Centres/"
     )
     await interaction.response.send_message(embed=embed)
 
