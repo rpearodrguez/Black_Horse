@@ -621,6 +621,17 @@ def pokemonSearch(busqueda: str, lang: str = "es"):
     query = query.replace(" ", "-")
 
     resp = requests.get(f"{_POKEAPI}/pokemon/{query}", timeout=10)
+    if resp.status_code == 404:
+        # Algunos Pokémon requieren el nombre de forma exacto (ej: giratina-altered).
+        # Consultamos la especie para obtener la variedad por defecto.
+        species_fallback = requests.get(f"{_POKEAPI}/pokemon-species/{query}", timeout=10)
+        if species_fallback.status_code != 200:
+            return None
+        varieties = species_fallback.json().get("varieties", [])
+        default = next((v["pokemon"]["name"] for v in varieties if v["is_default"]), None)
+        if not default:
+            return None
+        resp = requests.get(f"{_POKEAPI}/pokemon/{default}", timeout=10)
     if resp.status_code != 200:
         return None
     data = resp.json()

@@ -26,6 +26,8 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/cc` | Meme aleatorio de CuantoCabrón |
 | `/scp [número]` | Entrada de la SCP Foundation Wiki |
 | `/convert [monto] [desde] [hasta]` | Conversión de divisas (ej: `/convert 1000 CLP USD`) |
+| `/pokemon [nombre\|número\|random]` | Info de un Pokémon; autocompletado muestra formas alternativas |
+| `/poketype [tipo]` | Pokémon aleatorio de un tipo (autocompletado bilingüe con los 18 tipos) |
 
 ### Roleplay
 | Comando | Descripción |
@@ -76,7 +78,6 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 ### NSFW (solo en canales marcados como NSFW)
 | Comando | Descripción |
 |---|---|
-| `/nh [número\|random\|tag]` | Busca en nhentai por número, random o tag |
 | `/patas` | Imagen aleatoria de safebooru (feet) |
 | `/piernas` | Imagen aleatoria de safebooru (thighs) |
 | `/safebooru [tags]` | Búsqueda personalizada en safebooru |

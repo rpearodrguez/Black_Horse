@@ -189,7 +189,9 @@ async def help_cmd(interaction: discord.Interaction):
         "`/img` Busca una imagen (solo canales SFW)\n"
         "`/cc` Meme aleatorio de CuantoCabron\n"
         "`/scp` Entrada de la SCP Foundation Wiki\n"
-        "`/convert` Conversion de divisas"
+        "`/convert` Conversion de divisas\n"
+        "`/pokemon` Info de un Pokemon (nombre, numero o 'random')\n"
+        "`/poketype` Pokemon aleatorio de un tipo (con autocompletado)"
     ))
     embed.add_field(name="Roleplay", inline=False, value=(
         "`/roll` Tira dados estandar (ej: `/roll 2 20 3` = 2d20+3)\n"
@@ -909,8 +911,286 @@ def _pokemon_embed(resultado: dict) -> discord.Embed:
     return embed
 
 
+# Registro de Pokémon con formas alternativas verificadas en PokéAPI.
+# Clave: nombre base que el usuario escribiría.
+# Valor: lista de (label_es, label_en, api_name)
+_POKEMON_FORMS: dict[str, list[tuple[str, str, str]]] = {
+    # ── Gen 3 ───────────────────────────────────────────────────────────────
+    "castform": [
+        ("Castform",             "Castform",             "castform"),
+        ("Castform (Sol)",       "Castform (Sunny)",     "castform-sunny"),
+        ("Castform (Lluvia)",    "Castform (Rainy)",     "castform-rainy"),
+        ("Castform (Nieve)",     "Castform (Snowy)",     "castform-snowy"),
+    ],
+    "deoxys": [
+        ("Deoxys (Normal)",      "Deoxys (Normal)",      "deoxys-normal"),
+        ("Deoxys (Ataque)",      "Deoxys (Attack)",      "deoxys-attack"),
+        ("Deoxys (Defensa)",     "Deoxys (Defense)",     "deoxys-defense"),
+        ("Deoxys (Velocidad)",   "Deoxys (Speed)",       "deoxys-speed"),
+    ],
+    "wormadam": [
+        ("Wormadam (Planta)",    "Wormadam (Plant)",     "wormadam-plant"),
+        ("Wormadam (Arena)",     "Wormadam (Sandy)",     "wormadam-sandy"),
+        ("Wormadam (Basura)",    "Wormadam (Trash)",     "wormadam-trash"),
+    ],
+    # ── Gen 4 ───────────────────────────────────────────────────────────────
+    "rotom": [
+        ("Rotom",                "Rotom",                "rotom"),
+        ("Rotom (Calor)",        "Rotom (Heat)",         "rotom-heat"),
+        ("Rotom (Lavadora)",     "Rotom (Wash)",         "rotom-wash"),
+        ("Rotom (Frío)",         "Rotom (Frost)",        "rotom-frost"),
+        ("Rotom (Ventilador)",   "Rotom (Fan)",          "rotom-fan"),
+        ("Rotom (Cortadora)",    "Rotom (Mow)",          "rotom-mow"),
+    ],
+    "giratina": [
+        ("Giratina (Alterada)",  "Giratina (Altered)",   "giratina-altered"),
+        ("Giratina (Origen)",    "Giratina (Origin)",    "giratina-origin"),
+    ],
+    "shaymin": [
+        ("Shaymin (Tierra)",     "Shaymin (Land)",       "shaymin-land"),
+        ("Shaymin (Cielo)",      "Shaymin (Sky)",        "shaymin-sky"),
+    ],
+    # ── Gen 5 ───────────────────────────────────────────────────────────────
+    "basculin": [
+        ("Basculin (Rojo)",      "Basculin (Red)",       "basculin-red-striped"),
+        ("Basculin (Azul)",      "Basculin (Blue)",      "basculin-blue-striped"),
+    ],
+    "darmanitan": [
+        ("Darmanitan (Unova)",       "Darmanitan (Unova)",       "darmanitan-standard"),
+        ("Darmanitan Zen (Unova)",   "Darmanitan Zen (Unova)",   "darmanitan-zen"),
+        ("Darmanitan (Galar)",       "Darmanitan (Galar)",       "darmanitan-galar-standard"),
+        ("Darmanitan Zen (Galar)",   "Darmanitan Zen (Galar)",   "darmanitan-galar-zen"),
+    ],
+    "tornadus": [
+        ("Tornadus (Encarnado)",  "Tornadus (Incarnate)", "tornadus-incarnate"),
+        ("Tornadus (Tótem)",      "Tornadus (Therian)",   "tornadus-therian"),
+    ],
+    "thundurus": [
+        ("Thundurus (Encarnado)", "Thundurus (Incarnate)", "thundurus-incarnate"),
+        ("Thundurus (Tótem)",     "Thundurus (Therian)",   "thundurus-therian"),
+    ],
+    "landorus": [
+        ("Landorus (Encarnado)",  "Landorus (Incarnate)", "landorus-incarnate"),
+        ("Landorus (Tótem)",      "Landorus (Therian)",   "landorus-therian"),
+    ],
+    "kyurem": [
+        ("Kyurem",               "Kyurem",               "kyurem"),
+        ("Kyurem Negro",         "Black Kyurem",         "kyurem-black"),
+        ("Kyurem Blanco",        "White Kyurem",         "kyurem-white"),
+    ],
+    "keldeo": [
+        ("Keldeo (Ordinario)",   "Keldeo (Ordinary)",    "keldeo-ordinary"),
+        ("Keldeo (Resuelto)",    "Keldeo (Resolute)",    "keldeo-resolute"),
+    ],
+    "meloetta": [
+        ("Meloetta (Aria)",      "Meloetta (Aria)",      "meloetta-aria"),
+        ("Meloetta (Pirouette)", "Meloetta (Pirouette)", "meloetta-pirouette"),
+    ],
+    # ── Gen 6 ───────────────────────────────────────────────────────────────
+    "aegislash": [
+        ("Aegislash (Escudo)",   "Aegislash (Shield)",   "aegislash-shield"),
+        ("Aegislash (Espada)",   "Aegislash (Blade)",    "aegislash-blade"),
+    ],
+    "zygarde": [
+        ("Zygarde 10%",          "Zygarde 10%",          "zygarde-10"),
+        ("Zygarde 50%",          "Zygarde 50%",          "zygarde-50"),
+        ("Zygarde Completo",     "Zygarde Complete",     "zygarde-complete"),
+    ],
+    "hoopa": [
+        ("Hoopa (Contenido)",    "Hoopa (Confined)",     "hoopa"),
+        ("Hoopa (Desatado)",     "Hoopa (Unbound)",      "hoopa-unbound"),
+    ],
+    # ── Gen 7 ───────────────────────────────────────────────────────────────
+    "oricorio": [
+        ("Oricorio (Baile)",     "Oricorio (Baile)",     "oricorio-baile"),
+        ("Oricorio (Pompón)",    "Oricorio (Pom-Pom)",   "oricorio-pom-pom"),
+        ("Oricorio (Pa'u)",      "Oricorio (Pa'u)",      "oricorio-pau"),
+        ("Oricorio (Sensu)",     "Oricorio (Sensu)",     "oricorio-sensu"),
+    ],
+    "lycanroc": [
+        ("Lycanroc (Diurno)",    "Lycanroc (Midday)",    "lycanroc-midday"),
+        ("Lycanroc (Nocturno)",  "Lycanroc (Midnight)",  "lycanroc-midnight"),
+        ("Lycanroc (Crepúsculo)","Lycanroc (Dusk)",      "lycanroc-dusk"),
+    ],
+    "wishiwashi": [
+        ("Wishiwashi (Solo)",    "Wishiwashi (Solo)",    "wishiwashi-solo"),
+        ("Wishiwashi (Banco)",   "Wishiwashi (School)",  "wishiwashi-school"),
+    ],
+    "necrozma": [
+        ("Necrozma",             "Necrozma",             "necrozma"),
+        ("Necrozma (Alba)",      "Necrozma (Dawn Wings)", "necrozma-dawn"),
+        ("Necrozma (Ocaso)",     "Necrozma (Dusk Mane)", "necrozma-dusk"),
+        ("Necrozma Ultra",       "Ultra Necrozma",       "necrozma-ultra"),
+    ],
+    # ── Gen 8 ───────────────────────────────────────────────────────────────
+    "toxtricity": [
+        ("Toxtricity (Amplio)",  "Toxtricity (Amped)",   "toxtricity-amped"),
+        ("Toxtricity (Grave)",   "Toxtricity (Low Key)", "toxtricity-low-key"),
+    ],
+    "urshifu": [
+        ("Urshifu (Golpe Único)","Urshifu (Single Strike)", "urshifu-single-strike"),
+        ("Urshifu (Golpe Rápido)","Urshifu (Rapid Strike)","urshifu-rapid-strike"),
+    ],
+    "zacian": [
+        ("Zacian (Héroe)",       "Zacian (Hero)",        "zacian"),
+        ("Zacian (Coronado)",    "Zacian (Crowned)",     "zacian-crowned"),
+    ],
+    "zamazenta": [
+        ("Zamazenta (Héroe)",    "Zamazenta (Hero)",     "zamazenta"),
+        ("Zamazenta (Coronado)", "Zamazenta (Crowned)",  "zamazenta-crowned"),
+    ],
+    "calyrex": [
+        ("Calyrex",              "Calyrex",              "calyrex"),
+        ("Calyrex (Hielo)",      "Calyrex (Ice Rider)",  "calyrex-ice"),
+        ("Calyrex (Sombra)",     "Calyrex (Shadow Rider)","calyrex-shadow"),
+    ],
+    # ── Gen 9 ───────────────────────────────────────────────────────────────
+    "tauros": [
+        ("Tauros (Kanto)",       "Tauros (Kanto)",       "tauros"),
+        ("Tauros (Combate)",     "Tauros (Combat)",      "tauros-paldea-combat-breed"),
+        ("Tauros (Fuego)",       "Tauros (Blaze)",       "tauros-paldea-blaze-breed"),
+        ("Tauros (Agua)",        "Tauros (Aqua)",        "tauros-paldea-aqua-breed"),
+    ],
+    "wooper": [
+        ("Wooper (Johto)",       "Wooper (Johto)",       "wooper"),
+        ("Wooper (Paldea)",      "Wooper (Paldea)",      "wooper-paldea"),
+    ],
+    "palafin": [
+        ("Palafin (Cero)",       "Palafin (Zero)",       "palafin-zero"),
+        ("Palafin (Héroe)",      "Palafin (Hero)",       "palafin-hero"),
+    ],
+    "tatsugiri": [
+        ("Tatsugiri (Rizado)",   "Tatsugiri (Curly)",    "tatsugiri-curly"),
+        ("Tatsugiri (Caído)",    "Tatsugiri (Droopy)",   "tatsugiri-droopy"),
+        ("Tatsugiri (Estirado)", "Tatsugiri (Stretchy)", "tatsugiri-stretchy"),
+    ],
+    # ── Formas regionales ───────────────────────────────────────────────────
+    "raichu": [
+        ("Raichu (Kanto)",       "Raichu (Kanto)",       "raichu"),
+        ("Raichu (Alola)",       "Raichu (Alola)",       "raichu-alola"),
+    ],
+    "sandshrew": [
+        ("Sandshrew (Kanto)",    "Sandshrew (Kanto)",    "sandshrew"),
+        ("Sandshrew (Alola)",    "Sandshrew (Alola)",    "sandshrew-alola"),
+    ],
+    "sandslash": [
+        ("Sandslash (Kanto)",    "Sandslash (Kanto)",    "sandslash"),
+        ("Sandslash (Alola)",    "Sandslash (Alola)",    "sandslash-alola"),
+    ],
+    "vulpix": [
+        ("Vulpix (Kanto)",       "Vulpix (Kanto)",       "vulpix"),
+        ("Vulpix (Alola)",       "Vulpix (Alola)",       "vulpix-alola"),
+    ],
+    "ninetales": [
+        ("Ninetales (Kanto)",    "Ninetales (Kanto)",    "ninetales"),
+        ("Ninetales (Alola)",    "Ninetales (Alola)",    "ninetales-alola"),
+    ],
+    "grimer": [
+        ("Grimer (Kanto)",       "Grimer (Kanto)",       "grimer"),
+        ("Grimer (Alola)",       "Grimer (Alola)",       "grimer-alola"),
+    ],
+    "muk": [
+        ("Muk (Kanto)",          "Muk (Kanto)",          "muk"),
+        ("Muk (Alola)",          "Muk (Alola)",          "muk-alola"),
+    ],
+    "exeggutor": [
+        ("Exeggutor (Kanto)",    "Exeggutor (Kanto)",    "exeggutor"),
+        ("Exeggutor (Alola)",    "Exeggutor (Alola)",    "exeggutor-alola"),
+    ],
+    "marowak": [
+        ("Marowak (Kanto)",      "Marowak (Kanto)",      "marowak"),
+        ("Marowak (Alola)",      "Marowak (Alola)",      "marowak-alola"),
+    ],
+    "ponyta": [
+        ("Ponyta (Kanto)",       "Ponyta (Kanto)",       "ponyta"),
+        ("Ponyta (Galar)",       "Ponyta (Galar)",       "ponyta-galar"),
+    ],
+    "rapidash": [
+        ("Rapidash (Kanto)",     "Rapidash (Kanto)",     "rapidash"),
+        ("Rapidash (Galar)",     "Rapidash (Galar)",     "rapidash-galar"),
+    ],
+    "slowpoke": [
+        ("Slowpoke (Kanto)",     "Slowpoke (Kanto)",     "slowpoke"),
+        ("Slowpoke (Galar)",     "Slowpoke (Galar)",     "slowpoke-galar"),
+    ],
+    "slowbro": [
+        ("Slowbro (Kanto)",      "Slowbro (Kanto)",      "slowbro"),
+        ("Slowbro (Galar)",      "Slowbro (Galar)",      "slowbro-galar"),
+    ],
+    "slowking": [
+        ("Slowking (Johto)",     "Slowking (Johto)",     "slowking"),
+        ("Slowking (Galar)",     "Slowking (Galar)",     "slowking-galar"),
+    ],
+    "farfetchd": [
+        ("Farfetch'd (Kanto)",   "Farfetch'd (Kanto)",   "farfetchd"),
+        ("Farfetch'd (Galar)",   "Farfetch'd (Galar)",   "farfetchd-galar"),
+    ],
+    "weezing": [
+        ("Weezing (Kanto)",      "Weezing (Kanto)",      "weezing"),
+        ("Weezing (Galar)",      "Weezing (Galar)",      "weezing-galar"),
+    ],
+    "mr-mime": [
+        ("Mr. Mime (Kanto)",     "Mr. Mime (Kanto)",     "mr-mime"),
+        ("Mr. Mime (Galar)",     "Mr. Mime (Galar)",     "mr-mime-galar"),
+    ],
+    "articuno": [
+        ("Articuno (Kanto)",     "Articuno (Kanto)",     "articuno"),
+        ("Articuno (Galar)",     "Articuno (Galar)",     "articuno-galar"),
+    ],
+    "zapdos": [
+        ("Zapdos (Kanto)",       "Zapdos (Kanto)",       "zapdos"),
+        ("Zapdos (Galar)",       "Zapdos (Galar)",       "zapdos-galar"),
+    ],
+    "moltres": [
+        ("Moltres (Kanto)",      "Moltres (Kanto)",      "moltres"),
+        ("Moltres (Galar)",      "Moltres (Galar)",      "moltres-galar"),
+    ],
+    "corsola": [
+        ("Corsola (Johto)",      "Corsola (Johto)",      "corsola"),
+        ("Corsola (Galar)",      "Corsola (Galar)",      "corsola-galar"),
+    ],
+    "zigzagoon": [
+        ("Zigzagoon (Hoenn)",    "Zigzagoon (Hoenn)",    "zigzagoon"),
+        ("Zigzagoon (Galar)",    "Zigzagoon (Galar)",    "zigzagoon-galar"),
+    ],
+    "linoone": [
+        ("Linoone (Hoenn)",      "Linoone (Hoenn)",      "linoone"),
+        ("Linoone (Galar)",      "Linoone (Galar)",      "linoone-galar"),
+    ],
+    "darumaka": [
+        ("Darumaka (Unova)",     "Darumaka (Unova)",     "darumaka"),
+        ("Darumaka (Galar)",     "Darumaka (Galar)",     "darumaka-galar"),
+    ],
+    "yamask": [
+        ("Yamask (Unova)",       "Yamask (Unova)",       "yamask"),
+        ("Yamask (Galar)",       "Yamask (Galar)",       "yamask-galar"),
+    ],
+    "stunfisk": [
+        ("Stunfisk (Unova)",     "Stunfisk (Unova)",     "stunfisk"),
+        ("Stunfisk (Galar)",     "Stunfisk (Galar)",     "stunfisk-galar"),
+    ],
+}
+
+
+async def _pokemon_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+    if len(current) < 2:
+        return []
+    current_lower = current.lower().replace(" ", "-")
+    en = BotConfig.get_language(interaction.guild_id) == "en"
+    results = []
+    for base_name, forms in _POKEMON_FORMS.items():
+        if current_lower in base_name:
+            for es_label, en_label, api_value in forms:
+                results.append(app_commands.Choice(
+                    name=en_label if en else es_label,
+                    value=api_value,
+                ))
+    return results[:25]
+
+
 @tree.command(name="pokemon", description="Busca informacion de un Pokemon por nombre, numero de Pokedex o 'random'")
 @app_commands.describe(busqueda="Nombre, numero nacional o 'random'")
+@app_commands.autocomplete(busqueda=_pokemon_autocomplete)
 async def pokemon_cmd(interaction: discord.Interaction, busqueda: str):
     if not await _check_module(interaction, "entretenimiento"): return
     await interaction.response.defer()
