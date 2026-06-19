@@ -16,3 +16,6 @@ __pycache__/
 # Tests locales
 Prueba.py
 shmal.py
+
+# Configuración local del bot (específica por servidor)
+bot/config.json
