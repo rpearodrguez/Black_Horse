@@ -126,6 +126,21 @@ async def hola_cmd(interaction: discord.Interaction):
     await interaction.response.send_message("Come tierra")
 
 
+@tree.command(name="twitter", description="Muestra el contenido de un tweet en Discord (videos, imágenes, etc)")
+@app_commands.describe(url="Link del tweet")
+async def twitter_cmd(interaction: discord.Interaction, url: str):
+    fixed = (url
+        .replace("https://twitter.com", "https://fxtwitter.com")
+        .replace("https://x.com", "https://fxtwitter.com")
+        .replace("http://twitter.com", "https://fxtwitter.com")
+        .replace("http://x.com", "https://fxtwitter.com")
+    )
+    if fixed == url:
+        await interaction.response.send_message("El link no parece ser de Twitter/X.", ephemeral=True)
+        return
+    await interaction.response.send_message(f"{interaction.user.display_name} compartió:\n{fixed}")
+
+
 @tree.command(name="celacanto", description="Un celacanto aparece")
 async def celacanto_cmd(interaction: discord.Interaction):
     await interaction.response.send_message(
