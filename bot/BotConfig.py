@@ -14,6 +14,8 @@ _GUILD_DEFAULT = {
 _STRINGS = {
     "es": {
         "solo_admin": "No tienes permisos para usar este comando.",
+        "solo_bot_admin": "Este comando es exclusivo del propietario del bot.",
+        "solo_server_admin": "Necesitas permisos de administrador en este servidor.",
         "modulo_desactivado": "Este modulo esta desactivado.",
         "solo_nsfw": "Haz la consulta en un canal NSFW",
         "solo_sfw": "Comando exclusivo para canales safe for work",
@@ -98,9 +100,19 @@ _STRINGS = {
         "sin_resultado": "No se pudo encontrar lo solicitado",
         "juego_no_encontrado": "Juego no encontrado o con bloqueo de edad",
         "juego_error": "No se pudo obtener informacion del juego",
+        "help_config_titulo": "Configuracion del servidor",
+        "help_config_idioma": "Cambia el idioma del bot",
+        "help_config_modulo": "Activa o desactiva un modulo",
+        "help_config_estado": "Muestra la configuracion actual",
+        "help_bot_admin_titulo": "Admin del bot",
+        "help_bot_servers": "Lista los servidores donde esta el bot",
+        "help_bot_logs": "Ultimos logs del bot",
+        "help_bot_sync": "Sincroniza los slash commands",
     },
     "en": {
         "solo_admin": "You don't have permission to use this command.",
+        "solo_bot_admin": "This command is exclusive to the bot owner.",
+        "solo_server_admin": "You need administrator permissions in this server.",
         "modulo_desactivado": "This module is disabled.",
         "solo_nsfw": "Please use an NSFW channel for this command.",
         "solo_sfw": "This command is only available in SFW channels.",
@@ -185,6 +197,14 @@ _STRINGS = {
         "sin_resultado": "Nothing found.",
         "juego_no_encontrado": "Game not found or age-locked.",
         "juego_error": "Could not retrieve game information.",
+        "help_config_titulo": "Server configuration",
+        "help_config_idioma": "Change the bot language",
+        "help_config_modulo": "Enable or disable a module",
+        "help_config_estado": "Show current configuration",
+        "help_bot_admin_titulo": "Bot admin",
+        "help_bot_servers": "List all servers the bot is in",
+        "help_bot_logs": "Show recent bot logs",
+        "help_bot_sync": "Sync slash commands with Discord",
     },
 }
 

@@ -69,8 +69,20 @@ async def _check_module(interaction: discord.Interaction, modulo: str) -> bool:
     return True
 
 
-def _is_admin(interaction: discord.Interaction) -> bool:
+def _is_bot_admin(interaction: discord.Interaction) -> bool:
+    """Solo el propietario del bot (ADMIN_ID)."""
     return interaction.user.id == ADMIN_ID
+
+
+def _is_server_admin(interaction: discord.Interaction) -> bool:
+    """ADMIN_ID, dueño del servidor, o cualquier miembro con Gestionar servidor."""
+    if interaction.user.id == ADMIN_ID:
+        return True
+    if not interaction.guild:
+        return False
+    if interaction.guild.owner_id == interaction.user.id:
+        return True
+    return interaction.user.guild_permissions.manage_guild
 
 
 # ──────────────────────────────────────────────
@@ -79,8 +91,8 @@ def _is_admin(interaction: discord.Interaction) -> bool:
 
 @tree.command(name="servers", description="Lista los servidores donde esta activo el bot")
 async def servers_cmd(interaction: discord.Interaction):
-    if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
+    if not _is_bot_admin(interaction):
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_bot_admin"), ephemeral=True)
         return
     lines = [f"Bot activo en **{len(client.guilds)}** servidor(es):\n"]
     for guild in client.guilds:
@@ -90,8 +102,8 @@ async def servers_cmd(interaction: discord.Interaction):
 
 @tree.command(name="logs", description="Muestra los ultimos logs del bot (solo admin)")
 async def logs_cmd(interaction: discord.Interaction):
-    if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
+    if not _is_bot_admin(interaction):
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_bot_admin"), ephemeral=True)
         return
     if not _log_buffer:
         await interaction.response.send_message(BotConfig.t(interaction.guild_id, "no_logs"), ephemeral=True)
@@ -102,8 +114,8 @@ async def logs_cmd(interaction: discord.Interaction):
 
 @tree.command(name="sync", description="Sincroniza los slash commands con Discord (solo admin)")
 async def sync_cmd(interaction: discord.Interaction):
-    if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
+    if not _is_bot_admin(interaction):
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_bot_admin"), ephemeral=True)
         return
     await interaction.response.defer(ephemeral=True)
     await tree.sync()
@@ -123,8 +135,8 @@ tree.add_command(config_group)
     app_commands.Choice(name="English", value="en"),
 ])
 async def config_idioma_cmd(interaction: discord.Interaction, idioma: app_commands.Choice[str]):
-    if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
+    if not _is_server_admin(interaction):
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_server_admin"), ephemeral=True)
         return
     BotConfig.set_language(interaction.guild_id, idioma.value)
     await interaction.response.send_message(BotConfig.t(interaction.guild_id, "config_idioma_ok", lang=idioma.name), ephemeral=True)
@@ -142,8 +154,8 @@ async def config_idioma_cmd(interaction: discord.Interaction, idioma: app_comman
 async def config_modulo_cmd(interaction: discord.Interaction,
                              modulo: app_commands.Choice[str],
                              estado: app_commands.Choice[str]):
-    if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
+    if not _is_server_admin(interaction):
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_server_admin"), ephemeral=True)
         return
     enabled = estado.value == "on"
     BotConfig.set_module(interaction.guild_id, modulo.value, enabled)
@@ -155,8 +167,8 @@ async def config_modulo_cmd(interaction: discord.Interaction,
 
 @config_group.command(name="estado", description="Muestra la configuracion actual del bot")
 async def config_estado_cmd(interaction: discord.Interaction):
-    if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
+    if not _is_server_admin(interaction):
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_server_admin"), ephemeral=True)
         return
     modulos = BotConfig.get_modules(interaction.guild_id)
     modulos_str = "\n".join(f"{'✅' if v else '❌'} `{k}`" for k, v in modulos.items())
@@ -212,6 +224,18 @@ async def help_cmd(interaction: discord.Interaction):
             "`/safebooru` Busqueda personalizada en safebooru\n"
             "`/danbooru` Busqueda en danbooru\n"
             "`/hanime` Busca en hentai-id"
+        ))
+    if _is_server_admin(interaction):
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "help_config_titulo"), inline=False, value=(
+            f"`/config idioma` {BotConfig.t(interaction.guild_id, 'help_config_idioma')}\n"
+            f"`/config modulo` {BotConfig.t(interaction.guild_id, 'help_config_modulo')}\n"
+            f"`/config estado` {BotConfig.t(interaction.guild_id, 'help_config_estado')}"
+        ))
+    if _is_bot_admin(interaction):
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "help_bot_admin_titulo"), inline=False, value=(
+            f"`/servers` {BotConfig.t(interaction.guild_id, 'help_bot_servers')}\n"
+            f"`/logs` {BotConfig.t(interaction.guild_id, 'help_bot_logs')}\n"
+            f"`/sync` {BotConfig.t(interaction.guild_id, 'help_bot_sync')}"
         ))
     await interaction.response.send_message(embed=embed)
 
