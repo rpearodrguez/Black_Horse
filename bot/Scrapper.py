@@ -273,79 +273,58 @@ def steamDataSearch(busqueda):
         return find
 
 #Hentai Scrapping
-def nhentaiRandomSearch(urlb="https://nhentai.net"):
-    # url = the target we want to open
-    url = "https://nhentai.net"
-    # open with GET method
-    resp = requests.get(url)
+NH_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+NH_EXT = {"j": "jpg", "p": "png", "g": "gif"}
 
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Encontraron resultados :-\n")
+def nhentaiInfo(id):
+    try:
+        resp = requests.get(f"https://nhentai.net/api/gallery/{id}", headers=NH_HEADERS)
+        if resp.status_code != 200:
+            return None
+        data = resp.json()
+        media_id = data["media_id"]
+        cover_ext = NH_EXT.get(data["images"]["cover"]["t"], "jpg")
+        tags_by_type = {}
+        for tag in data.get("tags", []):
+            tags_by_type.setdefault(tag["type"], []).append(tag["name"])
+        return {
+            "id": data["id"],
+            "title": data.get("title", {}).get("pretty") or data.get("title", {}).get("english", "Sin título"),
+            "cover": f"https://t.nhentai.net/galleries/{media_id}/cover.{cover_ext}",
+            "pages": data.get("num_pages", "?"),
+            "artists": tags_by_type.get("artist", []),
+            "groups": tags_by_type.get("group", []),
+            "languages": tags_by_type.get("language", []),
+            "parodies": tags_by_type.get("parody", []),
+            "characters": tags_by_type.get("character", []),
+            "tags": tags_by_type.get("tag", []),
+            "url": f"https://nhentai.net/g/{data['id']}/"
+        }
+    except Exception:
+        return None
 
+def nhentaiRandom():
+    try:
+        resp = requests.get("https://nhentai.net/random/", headers=NH_HEADERS, allow_redirects=True)
+        match = re.search(r'/g/(\d+)/', resp.url)
+        if match:
+            return match.group(1)
+    except Exception:
+        pass
+    return None
 
-        # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        #busca el estilo del objeto con la clase .search_result_row
-        #l = soup.find("div", {"class": "search_pagination"})
-
-        #style = soup.find("a", {"class": "search_pagination"})['style']
-        for i in soup.findAll("a", {"class": "cover"}, limit=1):
-            try:
-                url = i.get('href').split('/')
-                print(url)
-                randnh = random.randint(1, int(url[2]))
-                print(randnh)
-                urlFull = "https://nhentai.net/g/"+str(randnh)
-
-
-            except:
-                pass
-
-    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
-    return urlFull
-
-def nhentaiTagSearch(tag="https://nhentai.net"):
-    # url = the target we want to open
-    url = 'https://nhentai.net/search/?q={}&sort=popular'.format(tag)
-    #url = 'https://nhentai.net/search/?q=tag:"{}"&sort=popular'.format(tag)
-    # open with GET method
-    resp = requests.get(url)
-
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Encontraron resultados :-\n")
-
-
-        # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        #busca el estilo del objeto con la clase .search_result_row
-        #l = soup.find("div", {"class": "search_pagination"})
-
-        #style = soup.find("a", {"class": "search_pagination"})['style']
-        if "No results found" in soup.text:
-            return "No se encontraron resultados con el tag solicitado"
-        
-        lista = []
-
-        for i in soup.findAll("a", {"class": "cover"}):
-            try:
-
-                url = i.get('href').split('/')
-                print(url)
-                urlFull = "https://nhentai.net/g/"+str(url[2])
-                lista.append(urlFull)
-
-
-            except:
-                pass
-        
-        randtag = random.randint(0, len(lista)-1)
-        return lista[randtag]
-
-    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
+def nhentaiTagSearch(tag):
+    try:
+        resp = requests.get("https://nhentai.net/api/galleries/search",
+                            params={"query": tag, "sort": "popular"},
+                            headers=NH_HEADERS)
+        if resp.status_code == 200:
+            results = resp.json().get("result", [])
+            if results:
+                return str(random.choice(results)["id"])
+    except Exception:
+        pass
+    return None
 
 def imgSearch(search_term="busqueda"):
     try:
