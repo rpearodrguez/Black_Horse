@@ -6,7 +6,7 @@ _PATH = os.path.join(os.path.dirname(__file__), "config.json")
 MODULES = ["general", "entretenimiento", "roleplay", "reacciones", "nsfw"]
 LANGUAGES = ["es", "en"]
 
-_DEFAULT = {
+_GUILD_DEFAULT = {
     "language": "es",
     "modules": {m: True for m in MODULES},
 }
@@ -14,94 +14,90 @@ _DEFAULT = {
 _STRINGS = {
     "es": {
         "solo_admin": "No tienes permisos para usar este comando.",
-        "modulo_desactivado": "Este módulo está desactivado.",
+        "modulo_desactivado": "Este modulo esta desactivado.",
         "solo_nsfw": "Haz la consulta en un canal NSFW",
         "solo_sfw": "Comando exclusivo para canales safe for work",
         "sin_resultados": "No se encontraron resultados.",
         "config_idioma_ok": "Idioma cambiado a **{lang}**.",
-        "config_modulo_ok": "Módulo **{modulo}** {estado}.",
-        "config_modulo_on": "activado ✅",
-        "config_modulo_off": "desactivado ❌",
-        "config_estado_titulo": "Configuración del bot",
+        "config_modulo_ok": "Modulo **{modulo}** {estado}.",
+        "config_modulo_on": "activado",
+        "config_modulo_off": "desactivado",
+        "config_estado_titulo": "Configuracion del bot",
         "config_idioma_label": "Idioma",
-        "config_modulos_label": "Módulos",
+        "config_modulos_label": "Modulos",
         "sync_ok": "Slash commands sincronizados con Discord.",
         "no_logs": "No hay logs disponibles.",
-        "codigo_invalido": "No se encontraron códigos válidos (deben ser de 12 caracteres alfanuméricos).",
+        "codigo_invalido": "No se encontraron codigos validos (deben ser de 12 caracteres alfanumericos).",
         "link_invalido": "El link no parece ser de Twitter/X.",
         "hola": "Come tierra",
         "jueves_si": "Feliz jueves",
         "jueves_si_desc": "hoy es jueves <3",
         "jueves_no": "Hoy no es jueves",
         "celacanto": "🐟 ¡**{user}** se ha encontrado con un celacanto!\nhttps://youtu.be/0UI6Rt3Tl0A",
-        "twitter_compartio": "{user} compartió:\n{url}",
-        # Reacciones — sobre otros
+        "twitter_compartio": "{user} compartio:\n{url}",
         "escobazo": "{user} dio un escobazo a {target}",
-        "lick": "{user} lamió a {target}",
-        "pat": "{user} acarició la cabeza de {target}",
-        "slap": "{user} cacheteó a {target}",
-        "feed": "{user} alimentó a {target}",
-        "kick": "{user} pateó a {target}",
+        "lick": "{user} lamio a {target}",
+        "pat": "{user} acaricio la cabeza de {target}",
+        "slap": "{user} cacheteo a {target}",
+        "feed": "{user} alimento a {target}",
+        "kick": "{user} pateo a {target}",
         "baka": "{target} BAKA!! BAKA!! BAKAAAA!!",
         "bite": "{user} muerde a {target}",
-        # Reacciones — propias
         "smug": "{user} es un(a) creido(a)",
-        "pout": "{user} está haciendo pucheros",
+        "pout": "{user} esta haciendo pucheros",
         "plaf": "{user} hizo plaf",
-        "suicide": "{user} se mató",
+        "suicide": "{user} se mato",
         "spin": "{user} se puso a girar como pendejo",
-        "blush": "{user} se sonrojó",
-        "shy": "{user} se hace el/la tímido(a)",
+        "blush": "{user} se sonrojo",
+        "shy": "{user} se hace el/la timido(a)",
         "tsundere": "{user} es una tsundere",
-        "lewd": "{user} está teniendo pensamientos cochinos",
+        "lewd": "{user} esta teniendo pensamientos cochinos",
         "jojo": "{user} hizo una JojoPose",
-        "cry": "{user} está llorando",
-        "smile": "{user} se puso a sonreír",
-        # Reacciones — duales
+        "cry": "{user} esta llorando",
+        "smile": "{user} se puso a sonreir",
         "dance_con": "{user} se puso a bailar con {target}",
         "dance_solo": "{user} se puso a bailar",
-        "angry_con": "{user} está molesto(a) con {target}",
-        "angry_solo": "{user} está molesto(a)",
-        "hug_con": "{user} abrazó a {target}",
+        "angry_con": "{user} esta molesto(a) con {target}",
+        "angry_solo": "{user} esta molesto(a)",
+        "hug_con": "{user} abrazo a {target}",
         "hug_solo": "{user} necesita un abrazo.",
-        "run_con": "{user} escapó de {target}",
-        "run_solo": "{user} se echó a correr.",
-        "kiss_con": "{user} besó a {target}",
+        "run_con": "{user} escapo de {target}",
+        "run_solo": "{user} se echo a correr.",
+        "kiss_con": "{user} beso a {target}",
         "kiss_solo": "{user} quiere un besito.",
         "sleep_con": "{user} se fue a dormir con {target}",
-        "sleep_solo": "{user} tiene sueño",
-        "happy_con": "{user} está feliz por {target}",
-        "happy_solo": "{user} está feliz",
+        "sleep_solo": "{user} tiene sueno",
+        "happy_con": "{user} esta feliz por {target}",
+        "happy_solo": "{user} esta feliz",
         "cookie_con": "{user} le dio una galleta a {target}",
-        "cookie_solo": "{user} se comió una galleta",
-        # Embeds
-        "titulo": "Título",
+        "cookie_solo": "{user} se comio una galleta",
+        "titulo": "Titulo",
         "sinopsis": "Sinopsis",
         "lanzamiento": "Lanzamiento",
-        "finalizacion": "Finalización",
+        "finalizacion": "Finalizacion",
         "estado": "Estado",
         "tipo": "Tipo",
         "episodios": "Episodios",
-        "capitulos": "Capítulos",
-        "serializacion": "Serialización",
-        "generos": "Géneros",
+        "capitulos": "Capitulos",
+        "serializacion": "Serializacion",
+        "generos": "Generos",
         "nombre": "Nombre",
-        "descripcion": "Descripción",
+        "descripcion": "Descripcion",
         "desarrollador": "Desarrollador",
         "fecha_lanzamiento": "Fecha de lanzamiento",
-        "genero": "Género",
+        "genero": "Genero",
         "precio": "Precio",
         "imagen_encontrada": "Imagen encontrada",
-        "busqueda": "Búsqueda",
-        "busqueda_scp": "Búsqueda: SCP-",
-        "conversion": "Conversión",
-        "relacion_desde": "Relación {desde} a 1 dólar",
-        "relacion_hasta": "Relación {hasta} a 1 dólar",
+        "busqueda": "Busqueda",
+        "busqueda_scp": "Busqueda: SCP-",
+        "conversion": "Conversion",
+        "relacion_desde": "Relacion {desde} a 1 dolar",
+        "relacion_hasta": "Relacion {hasta} a 1 dolar",
         "valor_conversion": "Valor {monto} {desde} a {hasta}",
-        "resultado_imagen": "Aquí está el resultado",
+        "resultado_imagen": "Aqui esta el resultado",
         "sin_resultado": "No se pudo encontrar lo solicitado",
         "juego_no_encontrado": "Juego no encontrado o con bloqueo de edad",
-        "juego_error": "No se pudo obtener información del juego",
+        "juego_error": "No se pudo obtener informacion del juego",
     },
     "en": {
         "solo_admin": "You don't have permission to use this command.",
@@ -111,8 +107,8 @@ _STRINGS = {
         "sin_resultados": "No results found.",
         "config_idioma_ok": "Language changed to **{lang}**.",
         "config_modulo_ok": "Module **{modulo}** {estado}.",
-        "config_modulo_on": "enabled ✅",
-        "config_modulo_off": "disabled ❌",
+        "config_modulo_on": "enabled",
+        "config_modulo_off": "disabled",
         "config_estado_titulo": "Bot configuration",
         "config_idioma_label": "Language",
         "config_modulos_label": "Modules",
@@ -126,7 +122,6 @@ _STRINGS = {
         "jueves_no": "Today is not Thursday",
         "celacanto": "🐟 **{user}** encountered a coelacanth!\nhttps://youtu.be/0UI6Rt3Tl0A",
         "twitter_compartio": "{user} shared:\n{url}",
-        # Reactions — targeting others
         "escobazo": "{user} hit {target} with a broom",
         "lick": "{user} licked {target}",
         "pat": "{user} patted {target}'s head",
@@ -135,7 +130,6 @@ _STRINGS = {
         "kick": "{user} kicked {target}",
         "baka": "{target} BAKA!! BAKA!! BAKAAAA!!",
         "bite": "{user} bit {target}",
-        # Reactions — self
         "smug": "{user} is being smug",
         "pout": "{user} is pouting",
         "plaf": "{user} went plaf",
@@ -148,7 +142,6 @@ _STRINGS = {
         "jojo": "{user} struck a JojoPose",
         "cry": "{user} is crying",
         "smile": "{user} smiled",
-        # Reactions — dual
         "dance_con": "{user} is dancing with {target}",
         "dance_solo": "{user} started dancing",
         "angry_con": "{user} is angry at {target}",
@@ -165,7 +158,6 @@ _STRINGS = {
         "happy_solo": "{user} is happy",
         "cookie_con": "{user} gave a cookie to {target}",
         "cookie_solo": "{user} ate a cookie",
-        # Embeds
         "titulo": "Title",
         "sinopsis": "Synopsis",
         "lanzamiento": "Release Date",
@@ -196,53 +188,61 @@ _STRINGS = {
     },
 }
 
-_config = None
+# { "guild_id_str": { "language": "es", "modules": {...} } }
+_guilds: dict = {}
 
 
 def _load():
-    global _config
+    global _guilds
     if os.path.exists(_PATH):
         try:
             with open(_PATH, encoding="utf-8") as f:
-                loaded = json.load(f)
-            _config = dict(_DEFAULT)
-            _config.update(loaded)
-            _config["modules"] = {**_DEFAULT["modules"], **loaded.get("modules", {})}
+                _guilds = json.load(f).get("guilds", {})
             return
         except Exception:
             pass
-    _config = {"language": _DEFAULT["language"], "modules": dict(_DEFAULT["modules"])}
+    _guilds = {}
 
 
 def _save():
     with open(_PATH, "w", encoding="utf-8") as f:
-        json.dump(_config, f, indent=2, ensure_ascii=False)
+        json.dump({"guilds": _guilds}, f, indent=2, ensure_ascii=False)
 
 
-def module_enabled(name: str) -> bool:
-    return _config["modules"].get(name, True)
+def _guild(guild_id: int) -> dict:
+    key = str(guild_id)
+    if key not in _guilds:
+        _guilds[key] = {
+            "language": _GUILD_DEFAULT["language"],
+            "modules": dict(_GUILD_DEFAULT["modules"]),
+        }
+    return _guilds[key]
 
 
-def get_language() -> str:
-    return _config.get("language", "es")
+def module_enabled(guild_id: int, name: str) -> bool:
+    return _guild(guild_id)["modules"].get(name, True)
 
 
-def set_language(lang: str):
-    _config["language"] = lang
+def get_language(guild_id: int) -> str:
+    return _guild(guild_id).get("language", "es")
+
+
+def set_language(guild_id: int, lang: str):
+    _guild(guild_id)["language"] = lang
     _save()
 
 
-def set_module(name: str, enabled: bool):
-    _config["modules"][name] = enabled
+def set_module(guild_id: int, name: str, enabled: bool):
+    _guild(guild_id)["modules"][name] = enabled
     _save()
 
 
-def get_modules() -> dict:
-    return dict(_config["modules"])
+def get_modules(guild_id: int) -> dict:
+    return dict(_guild(guild_id)["modules"])
 
 
-def t(key: str, **kwargs) -> str:
-    lang = get_language()
+def t(guild_id: int, key: str, **kwargs) -> str:
+    lang = get_language(guild_id)
     strings = _STRINGS.get(lang, _STRINGS["es"])
     text = strings.get(key, _STRINGS["es"].get(key, key))
     if kwargs:

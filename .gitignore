@@ -19,3 +19,6 @@ shmal.py
 
 # Configuración local del bot (específica por servidor)
 bot/config.json
+
+# Notas internas del proyecto
+CLAUDE.md

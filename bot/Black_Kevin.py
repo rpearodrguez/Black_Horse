@@ -63,8 +63,8 @@ def _embed(titulo: str, imagen: str, footer: str = "Via Giphy") -> discord.Embed
 
 
 async def _check_module(interaction: discord.Interaction, modulo: str) -> bool:
-    if not BotConfig.module_enabled(modulo):
-        await interaction.response.send_message(BotConfig.t("modulo_desactivado"), ephemeral=True)
+    if not BotConfig.module_enabled(interaction.guild_id, modulo):
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "modulo_desactivado"), ephemeral=True)
         return False
     return True
 
@@ -80,7 +80,7 @@ def _is_admin(interaction: discord.Interaction) -> bool:
 @tree.command(name="servers", description="Lista los servidores donde esta activo el bot")
 async def servers_cmd(interaction: discord.Interaction):
     if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t("solo_admin"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
         return
     lines = [f"Bot activo en **{len(client.guilds)}** servidor(es):\n"]
     for guild in client.guilds:
@@ -91,10 +91,10 @@ async def servers_cmd(interaction: discord.Interaction):
 @tree.command(name="logs", description="Muestra los ultimos logs del bot (solo admin)")
 async def logs_cmd(interaction: discord.Interaction):
     if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t("solo_admin"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
         return
     if not _log_buffer:
-        await interaction.response.send_message(BotConfig.t("no_logs"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "no_logs"), ephemeral=True)
         return
     texto = "\n".join(list(_log_buffer)[-20:])
     await interaction.response.send_message(f"```\n{texto[-1900:]}\n```", ephemeral=True)
@@ -103,11 +103,11 @@ async def logs_cmd(interaction: discord.Interaction):
 @tree.command(name="sync", description="Sincroniza los slash commands con Discord (solo admin)")
 async def sync_cmd(interaction: discord.Interaction):
     if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t("solo_admin"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
         return
     await interaction.response.defer(ephemeral=True)
     await tree.sync()
-    await interaction.followup.send(BotConfig.t("sync_ok"), ephemeral=True)
+    await interaction.followup.send(BotConfig.t(interaction.guild_id, "sync_ok"), ephemeral=True)
 
 
 # ── /config ────────────────────────────────────
@@ -124,10 +124,10 @@ tree.add_command(config_group)
 ])
 async def config_idioma_cmd(interaction: discord.Interaction, idioma: app_commands.Choice[str]):
     if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t("solo_admin"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
         return
-    BotConfig.set_language(idioma.value)
-    await interaction.response.send_message(BotConfig.t("config_idioma_ok", lang=idioma.name), ephemeral=True)
+    BotConfig.set_language(interaction.guild_id, idioma.value)
+    await interaction.response.send_message(BotConfig.t(interaction.guild_id, "config_idioma_ok", lang=idioma.name), ephemeral=True)
 
 
 @config_group.command(name="modulo", description="Activa o desactiva un modulo de comandos")
@@ -143,26 +143,26 @@ async def config_modulo_cmd(interaction: discord.Interaction,
                              modulo: app_commands.Choice[str],
                              estado: app_commands.Choice[str]):
     if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t("solo_admin"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
         return
     enabled = estado.value == "on"
-    BotConfig.set_module(modulo.value, enabled)
-    estado_str = BotConfig.t("config_modulo_on" if enabled else "config_modulo_off")
+    BotConfig.set_module(interaction.guild_id, modulo.value, enabled)
+    estado_str = BotConfig.t(interaction.guild_id, "config_modulo_on" if enabled else "config_modulo_off")
     await interaction.response.send_message(
-        BotConfig.t("config_modulo_ok", modulo=modulo.value, estado=estado_str), ephemeral=True
+        BotConfig.t(interaction.guild_id, "config_modulo_ok", modulo=modulo.value, estado=estado_str), ephemeral=True
     )
 
 
 @config_group.command(name="estado", description="Muestra la configuracion actual del bot")
 async def config_estado_cmd(interaction: discord.Interaction):
     if not _is_admin(interaction):
-        await interaction.response.send_message(BotConfig.t("solo_admin"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_admin"), ephemeral=True)
         return
-    modulos = BotConfig.get_modules()
+    modulos = BotConfig.get_modules(interaction.guild_id)
     modulos_str = "\n".join(f"{'✅' if v else '❌'} `{k}`" for k, v in modulos.items())
-    embed = discord.Embed(title=BotConfig.t("config_estado_titulo"), color=0x5865F2)
-    embed.add_field(name=BotConfig.t("config_idioma_label"), value=f"`{BotConfig.get_language()}`", inline=True)
-    embed.add_field(name=BotConfig.t("config_modulos_label"), value=modulos_str, inline=False)
+    embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "config_estado_titulo"), color=0x5865F2)
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "config_idioma_label"), value=f"`{BotConfig.get_language(interaction.guild_id)}`", inline=True)
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "config_modulos_label"), value=modulos_str, inline=False)
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
@@ -225,7 +225,7 @@ async def invite_cmd(interaction: discord.Interaction):
 @tree.command(name="hola", description="Saluda al bot")
 async def hola_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "general"): return
-    await interaction.response.send_message(BotConfig.t("hola"))
+    await interaction.response.send_message(BotConfig.t(interaction.guild_id, "hola"))
 
 
 @tree.command(name="twitter", description="Muestra el contenido de un tweet en Discord (videos, imagenes, etc)")
@@ -239,15 +239,15 @@ async def twitter_cmd(interaction: discord.Interaction, url: str):
         .replace("http://x.com", "https://fxtwitter.com")
     )
     if fixed == url:
-        await interaction.response.send_message(BotConfig.t("link_invalido"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "link_invalido"), ephemeral=True)
         return
-    await interaction.response.send_message(BotConfig.t("twitter_compartio", user=interaction.user.display_name, url=fixed))
+    await interaction.response.send_message(BotConfig.t(interaction.guild_id, "twitter_compartio", user=interaction.user.display_name, url=fixed))
 
 
 @tree.command(name="celacanto", description="Un celacanto aparece")
 async def celacanto_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "general"): return
-    await interaction.response.send_message(BotConfig.t("celacanto", user=interaction.user.display_name))
+    await interaction.response.send_message(BotConfig.t(interaction.guild_id, "celacanto", user=interaction.user.display_name))
 
 
 @tree.command(name="epitafio", description="El epitafio de la Bruja Dorada")
@@ -285,11 +285,11 @@ async def epitafio_cmd(interaction: discord.Interaction):
 async def jueves_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "general"): return
     if datetime.datetime.today().weekday() == 3:
-        embed = discord.Embed(title=BotConfig.t("jueves_si"), description=BotConfig.t("jueves_si_desc"))
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "jueves_si"), description=BotConfig.t(interaction.guild_id, "jueves_si_desc"))
         embed.set_image(url="https://c.tenor.com/-W6QXc36TfQAAAAd/asuka-eva.gif")
         await interaction.response.send_message(embed=embed)
     else:
-        await interaction.response.send_message(BotConfig.t("jueves_no"))
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "jueves_no"))
 
 
 @tree.command(name="genshingift", description="Convierte codigos de regalo de Genshin Impact en links de canjeo")
@@ -304,7 +304,7 @@ async def genshingift_cmd(interaction: discord.Interaction, codigos: str):
     if links:
         await interaction.response.send_message("\n".join(links))
     else:
-        await interaction.response.send_message(BotConfig.t("codigo_invalido"))
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "codigo_invalido"))
 
 
 @tree.command(name="say", description="Hace que el bot repita un mensaje")
@@ -318,44 +318,39 @@ async def say_cmd(interaction: discord.Interaction, mensaje: str):
 # NSFW
 # ──────────────────────────────────────────────
 
-@tree.command(name="nh", description="Busca en nhentai (temporalmente no disponible)")
-@app_commands.describe(busqueda="Numero de doujinshi, 'random', o tag de busqueda")
-async def nh_cmd(interaction: discord.Interaction, busqueda: str):
-    await interaction.response.send_message("El comando esta temporalmente suspendido mientras nhentai actualiza su sitio.", ephemeral=True)
-
 
 @tree.command(name="patas", description="Imagen aleatoria de patas en safebooru (solo canales NSFW)")
 async def patas_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "nsfw"): return
     if not interaction.channel.is_nsfw():
-        await interaction.response.send_message(BotConfig.t("solo_nsfw"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_nsfw"), ephemeral=True)
         return
     await interaction.response.defer()
     busqueda = Scrapper.safebooruSearch("feet")
     if busqueda != "No se pudo encontrar resultado":
-        embed = discord.Embed(title=BotConfig.t("resultado_imagen"), description="Cochinon")
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "resultado_imagen"), description="Cochinon")
         embed.set_image(url=busqueda)
         embed.set_footer(text="Creditos a safebooru.org")
         await interaction.followup.send(embed=embed)
     else:
-        await interaction.followup.send(BotConfig.t("sin_resultado"))
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultado"))
 
 
 @tree.command(name="piernas", description="Imagen aleatoria de piernas en safebooru (solo canales NSFW)")
 async def piernas_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "nsfw"): return
     if not interaction.channel.is_nsfw():
-        await interaction.response.send_message(BotConfig.t("solo_nsfw"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_nsfw"), ephemeral=True)
         return
     await interaction.response.defer()
     busqueda = Scrapper.safebooruSearch("thighs")
     if busqueda != "No se pudo encontrar resultado":
-        embed = discord.Embed(title=BotConfig.t("resultado_imagen"), description="Piernas")
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "resultado_imagen"), description="Piernas")
         embed.set_image(url=busqueda)
         embed.set_footer(text="Creditos a safebooru.org")
         await interaction.followup.send(embed=embed)
     else:
-        await interaction.followup.send(BotConfig.t("sin_resultado"))
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultado"))
 
 
 @tree.command(name="safebooru", description="Busca imagenes en safebooru (solo canales NSFW)")
@@ -363,17 +358,17 @@ async def piernas_cmd(interaction: discord.Interaction):
 async def safebooru_cmd(interaction: discord.Interaction, tags: str):
     if not await _check_module(interaction, "nsfw"): return
     if not interaction.channel.is_nsfw():
-        await interaction.response.send_message(BotConfig.t("solo_nsfw"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_nsfw"), ephemeral=True)
         return
     await interaction.response.defer()
     busqueda = Scrapper.safebooruSearch("+".join(tags.split()))
     if busqueda != "No se pudo encontrar resultado":
-        embed = discord.Embed(title=BotConfig.t("busqueda"), description=tags)
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "busqueda"), description=tags)
         embed.set_image(url=busqueda)
         embed.set_footer(text="Creditos a safebooru.org")
         await interaction.followup.send(embed=embed)
     else:
-        await interaction.followup.send(BotConfig.t("sin_resultado"))
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultado"))
 
 
 @tree.command(name="danbooru", description="Busca imagenes en danbooru (solo canales NSFW)")
@@ -381,13 +376,13 @@ async def safebooru_cmd(interaction: discord.Interaction, tags: str):
 async def danbooru_cmd(interaction: discord.Interaction, tags: str):
     if not await _check_module(interaction, "nsfw"): return
     if not interaction.channel.is_nsfw():
-        await interaction.response.send_message(BotConfig.t("solo_nsfw"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_nsfw"), ephemeral=True)
         return
     await interaction.response.defer()
     busqueda = "_".join(tags.split()).replace("/", "%2F")
     resultado = Scrapper.danbooruSearch(busqueda)
     try:
-        embed = discord.Embed(title=BotConfig.t("busqueda"), description=tags)
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "busqueda"), description=tags)
         embed.set_image(url=resultado[1])
         embed.add_field(name="Id en danbooru", value=resultado[0], inline=True)
         embed.add_field(name="Artista", value=resultado[2], inline=True)
@@ -403,12 +398,12 @@ async def danbooru_cmd(interaction: discord.Interaction, tags: str):
 async def hanime_cmd(interaction: discord.Interaction, titulo: str):
     if not await _check_module(interaction, "nsfw"): return
     if not interaction.channel.is_nsfw():
-        await interaction.response.send_message(BotConfig.t("solo_nsfw"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_nsfw"), ephemeral=True)
         return
     await interaction.response.defer()
     resultado = Scrapper.hIdShow("+".join(titulo.split()))
     if not resultado:
-        await interaction.followup.send(BotConfig.t("sin_resultados"))
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultados"))
         return
     embed = discord.Embed(title=titulo, url=resultado[0][0], color=0xFF69B4)
     if resultado[0][1]:
@@ -453,26 +448,26 @@ async def anime_cmd(interaction: discord.Interaction, nombre: str):
     await interaction.response.defer()
     resultado = Scrapper.animeScrap(nombre.replace(" ", "+"))
     try:
-        embed = discord.Embed(title=BotConfig.t("titulo"), description=resultado[0])
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "titulo"), description=resultado[0])
         try: embed.set_image(url=resultado[1])
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("sinopsis"), value=resultado[2], inline=False)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "sinopsis"), value=resultado[2], inline=False)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("lanzamiento"), value=resultado[3], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "lanzamiento"), value=resultado[3], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("finalizacion"), value=resultado[4], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "finalizacion"), value=resultado[4], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("estado"), value=resultado[5], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "estado"), value=resultado[5], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("tipo"), value=resultado[6], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "tipo"), value=resultado[6], inline=True)
         except Exception: pass
         try: embed.add_field(name="Rating", value=resultado[7], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("episodios"), value=resultado[8], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "episodios"), value=resultado[8], inline=True)
         except Exception: pass
         try:
             if resultado[9] != "":
-                embed.add_field(name=BotConfig.t("generos"), value=resultado[9], inline=True)
+                embed.add_field(name=BotConfig.t(interaction.guild_id, "generos"), value=resultado[9], inline=True)
         except Exception: pass
         embed.set_footer(text="Obtenido de kitsu.io")
         await interaction.followup.send(embed=embed)
@@ -487,28 +482,28 @@ async def manga_cmd(interaction: discord.Interaction, nombre: str):
     await interaction.response.defer()
     resultado = Scrapper.mangaScrap(nombre.replace(" ", "+"))
     try:
-        embed = discord.Embed(title=BotConfig.t("titulo"), description=resultado[0])
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "titulo"), description=resultado[0])
         try: embed.set_image(url=resultado[1])
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("sinopsis"), value=resultado[2], inline=False)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "sinopsis"), value=resultado[2], inline=False)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("lanzamiento"), value=resultado[3], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "lanzamiento"), value=resultado[3], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("finalizacion"), value=resultado[4], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "finalizacion"), value=resultado[4], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("estado"), value=resultado[5], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "estado"), value=resultado[5], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("tipo"), value=resultado[6], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "tipo"), value=resultado[6], inline=True)
         except Exception: pass
         try: embed.add_field(name="Rating", value=resultado[7], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("capitulos"), value=resultado[8], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "capitulos"), value=resultado[8], inline=True)
         except Exception: pass
-        try: embed.add_field(name=BotConfig.t("serializacion"), value=resultado[9], inline=True)
+        try: embed.add_field(name=BotConfig.t(interaction.guild_id, "serializacion"), value=resultado[9], inline=True)
         except Exception: pass
         try:
             if resultado[10] != "":
-                embed.add_field(name=BotConfig.t("generos"), value=resultado[10], inline=True)
+                embed.add_field(name=BotConfig.t(interaction.guild_id, "generos"), value=resultado[10], inline=True)
         except Exception: pass
         embed.set_footer(text="Obtenido de kitsu.io")
         await interaction.followup.send(embed=embed)
@@ -524,19 +519,19 @@ async def steam_cmd(interaction: discord.Interaction, juego: str):
     resultado = Scrapper.steamDataSearch(juego.replace(" ", "+"))
     try:
         if resultado[1] != "Nombre":
-            embed = discord.Embed(title=BotConfig.t("nombre"), description=resultado[1])
+            embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "nombre"), description=resultado[1])
             embed.set_image(url=resultado[0])
-            embed.add_field(name=BotConfig.t("descripcion"), value=resultado[2], inline=False)
-            embed.add_field(name=BotConfig.t("desarrollador"), value=resultado[3], inline=True)
-            embed.add_field(name=BotConfig.t("fecha_lanzamiento"), value=resultado[4], inline=True)
-            embed.add_field(name=BotConfig.t("genero"), value=resultado[5], inline=False)
+            embed.add_field(name=BotConfig.t(interaction.guild_id, "descripcion"), value=resultado[2], inline=False)
+            embed.add_field(name=BotConfig.t(interaction.guild_id, "desarrollador"), value=resultado[3], inline=True)
+            embed.add_field(name=BotConfig.t(interaction.guild_id, "fecha_lanzamiento"), value=resultado[4], inline=True)
+            embed.add_field(name=BotConfig.t(interaction.guild_id, "genero"), value=resultado[5], inline=False)
             embed.add_field(name="Metacritic", value=resultado[6], inline=True)
-            embed.add_field(name=BotConfig.t("precio"), value=resultado[7], inline=True)
+            embed.add_field(name=BotConfig.t(interaction.guild_id, "precio"), value=resultado[7], inline=True)
             await interaction.followup.send(embed=embed)
         else:
-            await interaction.followup.send(BotConfig.t("juego_no_encontrado"))
+            await interaction.followup.send(BotConfig.t(interaction.guild_id, "juego_no_encontrado"))
     except Exception:
-        await interaction.followup.send(BotConfig.t("juego_error"))
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "juego_error"))
 
 
 @tree.command(name="img", description="Busca una imagen (solo canales SFW)")
@@ -544,7 +539,7 @@ async def steam_cmd(interaction: discord.Interaction, juego: str):
 async def img_cmd(interaction: discord.Interaction, busqueda: str):
     if not await _check_module(interaction, "entretenimiento"): return
     if interaction.channel.is_nsfw():
-        await interaction.response.send_message(BotConfig.t("solo_sfw"), ephemeral=True)
+        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_sfw"), ephemeral=True)
         return
     bloqueados = ["loli", "rape", "lolicon", "violacion", "violación", "genocidio", "genocide"]
     if any(w in busqueda.lower().split() for w in bloqueados):
@@ -555,7 +550,7 @@ async def img_cmd(interaction: discord.Interaction, busqueda: str):
         return
     await interaction.response.defer()
     resultado = Scrapper.imgSearch(busqueda.replace(" ", "+"))
-    embed = discord.Embed(title=BotConfig.t("imagen_encontrada"), description=busqueda)
+    embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "imagen_encontrada"), description=busqueda)
     embed.set_image(url=resultado)
     await interaction.followup.send(embed=embed)
 
@@ -577,7 +572,7 @@ async def scp_cmd(interaction: discord.Interaction, numero: str):
     await interaction.response.defer()
     resultado = Scrapper.SCP_Search(numero)
     try:
-        embed = discord.Embed(title=BotConfig.t("busqueda_scp"), description=numero)
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "busqueda_scp"), description=numero)
         try: embed.set_image(url=resultado[0])
         except Exception: pass
         for i in range(1, min(8, len(resultado))):
@@ -597,10 +592,10 @@ async def convert_cmd(interaction: discord.Interaction, monto: float, desde: str
     await interaction.response.defer()
     resultado = Scrapper.reporteDivisa(monto, desde.upper(), hasta.upper())
     try:
-        embed = discord.Embed(title=BotConfig.t("conversion"), description=f"{desde.upper()} a {hasta.upper()}")
-        embed.add_field(name=BotConfig.t("relacion_desde", desde=desde.upper()), value=resultado[0], inline=True)
-        embed.add_field(name=BotConfig.t("relacion_hasta", hasta=hasta.upper()), value=resultado[1], inline=True)
-        embed.add_field(name=BotConfig.t("valor_conversion", monto=monto, desde=desde.upper(), hasta=hasta.upper()), value=resultado[2], inline=False)
+        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "conversion"), description=f"{desde.upper()} a {hasta.upper()}")
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "relacion_desde", desde=desde.upper()), value=resultado[0], inline=True)
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "relacion_hasta", hasta=hasta.upper()), value=resultado[1], inline=True)
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "valor_conversion", monto=monto, desde=desde.upper(), hasta=hasta.upper()), value=resultado[2], inline=False)
         embed.set_footer(text="Fuente: https://openexchangerates.org")
         await interaction.followup.send(embed=embed)
     except Exception:
@@ -615,7 +610,7 @@ async def convert_cmd(interaction: discord.Interaction, monto: float, desde: str
 @app_commands.describe(usuario="Usuario que recibira el escobazo")
 async def escobazo_cmd(interaction: discord.Interaction, usuario: discord.Member):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("escobazo", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("escobazo"), "Via Stick Horse")
+    embed = _embed(BotConfig.t(interaction.guild_id, "escobazo", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("escobazo"), "Via Stick Horse")
     await interaction.response.send_message(embed=embed)
 
 
@@ -623,7 +618,7 @@ async def escobazo_cmd(interaction: discord.Interaction, usuario: discord.Member
 @app_commands.describe(usuario="Usuario a lamer")
 async def lick_cmd(interaction: discord.Interaction, usuario: discord.Member):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("lick", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("lamer"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "lick", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("lamer"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -631,7 +626,7 @@ async def lick_cmd(interaction: discord.Interaction, usuario: discord.Member):
 @app_commands.describe(usuario="Usuario a acariciar")
 async def pat_cmd(interaction: discord.Interaction, usuario: discord.Member):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("pat", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("pat"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "pat", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("pat"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -639,7 +634,7 @@ async def pat_cmd(interaction: discord.Interaction, usuario: discord.Member):
 @app_commands.describe(usuario="Usuario a cachetear")
 async def slap_cmd(interaction: discord.Interaction, usuario: discord.Member):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("slap", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("slap"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "slap", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("slap"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -647,7 +642,7 @@ async def slap_cmd(interaction: discord.Interaction, usuario: discord.Member):
 @app_commands.describe(usuario="Usuario a alimentar")
 async def feed_cmd(interaction: discord.Interaction, usuario: discord.Member):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("feed", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("food"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "feed", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("food"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -655,7 +650,7 @@ async def feed_cmd(interaction: discord.Interaction, usuario: discord.Member):
 @app_commands.describe(usuario="Usuario a patear")
 async def kick_cmd(interaction: discord.Interaction, usuario: discord.Member):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("kick", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("kickbutt"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "kick", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("kickbutt"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -663,7 +658,7 @@ async def kick_cmd(interaction: discord.Interaction, usuario: discord.Member):
 @app_commands.describe(usuario="Usuario BAKA")
 async def baka_cmd(interaction: discord.Interaction, usuario: discord.Member):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("baka", target=usuario.display_name), Feels.reactionImage("baka"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "baka", target=usuario.display_name), Feels.reactionImage("baka"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -671,7 +666,7 @@ async def baka_cmd(interaction: discord.Interaction, usuario: discord.Member):
 @app_commands.describe(usuario="Usuario a morder")
 async def bite_cmd(interaction: discord.Interaction, usuario: discord.Member):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("bite", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("bite"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "bite", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("bite"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -682,21 +677,21 @@ async def bite_cmd(interaction: discord.Interaction, usuario: discord.Member):
 @tree.command(name="smug", description="Ponte creido(a)")
 async def smug_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("smug", user=interaction.user.display_name), Feels.reactionImage("smug"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "smug", user=interaction.user.display_name), Feels.reactionImage("smug"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="pout", description="Haz pucheros")
 async def pout_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("pout", user=interaction.user.display_name), Feels.reactionImage("pout"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "pout", user=interaction.user.display_name), Feels.reactionImage("pout"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="plaf", description="Haz plaf")
 async def plaf_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("plaf", user=interaction.user.display_name), Feels.reactionImage("plaf"), "Via Stick Horse")
+    embed = _embed(BotConfig.t(interaction.guild_id, "plaf", user=interaction.user.display_name), Feels.reactionImage("plaf"), "Via Stick Horse")
     await interaction.response.send_message(embed=embed)
 
 
@@ -704,7 +699,7 @@ async def plaf_cmd(interaction: discord.Interaction):
 async def suicide_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
     embed = _embed(
-        BotConfig.t("suicide", user=interaction.user.display_name),
+        BotConfig.t(interaction.guild_id, "suicide", user=interaction.user.display_name),
         Feels.reactionImage("suicide"),
         "Si realmente estas mal, busca ayuda: https://www.iasp.info/resources/Crisis_Centres/"
     )
@@ -714,56 +709,56 @@ async def suicide_cmd(interaction: discord.Interaction):
 @tree.command(name="spin", description="Ponte a girar")
 async def spin_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("spin", user=interaction.user.display_name), Feels.reactionImage("spin"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "spin", user=interaction.user.display_name), Feels.reactionImage("spin"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="blush", description="Sonrojate")
 async def blush_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("blush", user=interaction.user.display_name), Feels.reactionImage("blush"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "blush", user=interaction.user.display_name), Feels.reactionImage("blush"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="shy", description="Hazte el/la timido(a)")
 async def shy_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("shy", user=interaction.user.display_name), Feels.reactionImage("shy"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "shy", user=interaction.user.display_name), Feels.reactionImage("shy"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="tsundere", description="Se una tsundere")
 async def tsundere_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("tsundere", user=interaction.user.display_name), Feels.reactionImage("tsundere"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "tsundere", user=interaction.user.display_name), Feels.reactionImage("tsundere"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="lewd", description="Pensamientos cochinos")
 async def lewd_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("lewd", user=interaction.user.display_name), Feels.reactionImage("lewd"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "lewd", user=interaction.user.display_name), Feels.reactionImage("lewd"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="jojo", description="Haz una JojoPose")
 async def jojo_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("jojo", user=interaction.user.display_name), Feels.reactionImage("jojo"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "jojo", user=interaction.user.display_name), Feels.reactionImage("jojo"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="cry", description="Llora")
 async def cry_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("cry", user=interaction.user.display_name), Feels.reactionImage("cry"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "cry", user=interaction.user.display_name), Feels.reactionImage("cry"))
     await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="smile", description="Sonrie")
 async def smile_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
-    embed = _embed(BotConfig.t("smile", user=interaction.user.display_name), Feels.reactionImage("smile"))
+    embed = _embed(BotConfig.t(interaction.guild_id, "smile", user=interaction.user.display_name), Feels.reactionImage("smile"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -776,7 +771,7 @@ async def smile_cmd(interaction: discord.Interaction):
 async def dance_cmd(interaction: discord.Interaction, usuario: discord.Member = None, tipo: str = None):
     if not await _check_module(interaction, "reacciones"): return
     feel = "caramelldansen" if tipo and tipo.lower() == "caramelldansen" else "dance"
-    titulo = BotConfig.t("dance_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t("dance_solo", user=interaction.user.display_name)
+    titulo = BotConfig.t(interaction.guild_id, "dance_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t(interaction.guild_id, "dance_solo", user=interaction.user.display_name)
     embed = _embed(titulo, Feels.reactionImage(feel))
     await interaction.response.send_message(embed=embed)
 
@@ -785,7 +780,7 @@ async def dance_cmd(interaction: discord.Interaction, usuario: discord.Member = 
 @app_commands.describe(usuario="Con quien estas enojado(a) (opcional)")
 async def angry_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
     if not await _check_module(interaction, "reacciones"): return
-    titulo = BotConfig.t("angry_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t("angry_solo", user=interaction.user.display_name)
+    titulo = BotConfig.t(interaction.guild_id, "angry_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t(interaction.guild_id, "angry_solo", user=interaction.user.display_name)
     embed = _embed(titulo, Feels.reactionImage("angry"))
     await interaction.response.send_message(embed=embed)
 
@@ -794,7 +789,7 @@ async def angry_cmd(interaction: discord.Interaction, usuario: discord.Member = 
 @app_commands.describe(usuario="Usuario a abrazar (opcional)")
 async def hug_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
     if not await _check_module(interaction, "reacciones"): return
-    titulo = BotConfig.t("hug_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t("hug_solo", user=interaction.user.display_name)
+    titulo = BotConfig.t(interaction.guild_id, "hug_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t(interaction.guild_id, "hug_solo", user=interaction.user.display_name)
     embed = _embed(titulo, Feels.reactionImage("abrazo"))
     await interaction.response.send_message(embed=embed)
 
@@ -804,9 +799,9 @@ async def hug_cmd(interaction: discord.Interaction, usuario: discord.Member = No
 async def run_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
     if not await _check_module(interaction, "reacciones"): return
     if usuario:
-        embed = _embed(BotConfig.t("run_con", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("run"))
+        embed = _embed(BotConfig.t(interaction.guild_id, "run_con", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("run"))
     else:
-        embed = _embed(BotConfig.t("run_solo", user=interaction.user.display_name), Feels.reactionImage("escapar"))
+        embed = _embed(BotConfig.t(interaction.guild_id, "run_solo", user=interaction.user.display_name), Feels.reactionImage("escapar"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -814,7 +809,7 @@ async def run_cmd(interaction: discord.Interaction, usuario: discord.Member = No
 @app_commands.describe(usuario="Usuario a besar (opcional)")
 async def kiss_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
     if not await _check_module(interaction, "reacciones"): return
-    titulo = BotConfig.t("kiss_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t("kiss_solo", user=interaction.user.display_name)
+    titulo = BotConfig.t(interaction.guild_id, "kiss_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t(interaction.guild_id, "kiss_solo", user=interaction.user.display_name)
     embed = _embed(titulo, Feels.reactionImage("kiss"))
     await interaction.response.send_message(embed=embed)
 
@@ -824,9 +819,9 @@ async def kiss_cmd(interaction: discord.Interaction, usuario: discord.Member = N
 async def sleep_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
     if not await _check_module(interaction, "reacciones"): return
     if usuario:
-        embed = _embed(BotConfig.t("sleep_con", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("sleep"))
+        embed = _embed(BotConfig.t(interaction.guild_id, "sleep_con", user=interaction.user.display_name, target=usuario.display_name), Feels.reactionImage("sleep"))
     else:
-        embed = _embed(BotConfig.t("sleep_solo", user=interaction.user.display_name), Feels.reactionImage("sleepy"))
+        embed = _embed(BotConfig.t(interaction.guild_id, "sleep_solo", user=interaction.user.display_name), Feels.reactionImage("sleepy"))
     await interaction.response.send_message(embed=embed)
 
 
@@ -834,7 +829,7 @@ async def sleep_cmd(interaction: discord.Interaction, usuario: discord.Member = 
 @app_commands.describe(usuario="Por quien estas feliz (opcional)")
 async def happy_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
     if not await _check_module(interaction, "reacciones"): return
-    titulo = BotConfig.t("happy_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t("happy_solo", user=interaction.user.display_name)
+    titulo = BotConfig.t(interaction.guild_id, "happy_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t(interaction.guild_id, "happy_solo", user=interaction.user.display_name)
     embed = _embed(titulo, Feels.reactionImage("happy"))
     await interaction.response.send_message(embed=embed)
 
@@ -843,9 +838,110 @@ async def happy_cmd(interaction: discord.Interaction, usuario: discord.Member = 
 @app_commands.describe(usuario="Usuario a quien darle la galleta (opcional)")
 async def cookie_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
     if not await _check_module(interaction, "reacciones"): return
-    titulo = BotConfig.t("cookie_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t("cookie_solo", user=interaction.user.display_name)
+    titulo = BotConfig.t(interaction.guild_id, "cookie_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t(interaction.guild_id, "cookie_solo", user=interaction.user.display_name)
     embed = _embed(titulo, Feels.reactionImage("cookie"))
     await interaction.response.send_message(embed=embed)
+
+
+# ──────────────────────────────────────────────
+# POKÉMON
+# ──────────────────────────────────────────────
+
+_TYPE_COLORS = {
+    "Fire": 0xF08030, "Water": 0x6890F0, "Grass": 0x78C850,
+    "Electric": 0xF8D030, "Ice": 0x98D8D8, "Fighting": 0xC03028,
+    "Poison": 0xA040A0, "Ground": 0xE0C068, "Flying": 0xA890F0,
+    "Psychic": 0xF85888, "Bug": 0xA8B820, "Rock": 0xB8A038,
+    "Ghost": 0x705898, "Dragon": 0x7038F8, "Dark": 0x705848,
+    "Steel": 0xB8B8D0, "Fairy": 0xEE99AC, "Normal": 0xA8A878,
+}
+_STAT_NAMES = {
+    "hp": "HP",
+    "attack": "Ataque",
+    "defense": "Defensa",
+    "special-attack": "Sp. Ataque",
+    "special-defense": "Sp. Defensa",
+    "speed": "Velocidad",
+}
+
+
+# (español, inglés, valor API)
+_TYPES = [
+    ("Normal",    "Normal",    "normal"),
+    ("Fuego",     "Fire",      "fire"),
+    ("Agua",      "Water",     "water"),
+    ("Eléctrico", "Electric",  "electric"),
+    ("Planta",    "Grass",     "grass"),
+    ("Hielo",     "Ice",       "ice"),
+    ("Lucha",     "Fighting",  "fighting"),
+    ("Veneno",    "Poison",    "poison"),
+    ("Tierra",    "Ground",    "ground"),
+    ("Volador",   "Flying",    "flying"),
+    ("Psíquico",  "Psychic",   "psychic"),
+    ("Bicho",     "Bug",       "bug"),
+    ("Roca",      "Rock",      "rock"),
+    ("Fantasma",  "Ghost",     "ghost"),
+    ("Dragón",    "Dragon",    "dragon"),
+    ("Siniestro", "Dark",      "dark"),
+    ("Acero",     "Steel",     "steel"),
+    ("Hada",      "Fairy",     "fairy"),
+]
+
+
+def _pokemon_embed(resultado: dict) -> discord.Embed:
+    color = _TYPE_COLORS.get(resultado["types"][0], 0x5865F2)
+    stats_str = "\n".join(f"{_STAT_NAMES.get(k, k)}: **{v}**" for k, v in resultado["stats"].items())
+    embed = discord.Embed(
+        title=f"#{resultado['dex']:04d} — {resultado['name']}",
+        description=resultado["flavor"] or None,
+        color=color,
+    )
+    if resultado["image"]:
+        embed.set_thumbnail(url=resultado["image"])
+    embed.add_field(name="Tipo", value=" / ".join(resultado["types"]), inline=True)
+    embed.add_field(name="Altura / Peso", value=f"{resultado['height']}m / {resultado['weight']}kg", inline=True)
+    if resultado["abilities"]:
+        embed.add_field(name="Habilidades", value=", ".join(resultado["abilities"]), inline=True)
+    if resultado["hidden"]:
+        embed.add_field(name="Habilidad oculta", value=", ".join(resultado["hidden"]), inline=True)
+    embed.add_field(name="Stats base", value=stats_str, inline=False)
+    embed.set_footer(text="Fuente: PokéAPI (pokeapi.co)")
+    return embed
+
+
+@tree.command(name="pokemon", description="Busca informacion de un Pokemon por nombre, numero de Pokedex o 'random'")
+@app_commands.describe(busqueda="Nombre, numero nacional o 'random'")
+async def pokemon_cmd(interaction: discord.Interaction, busqueda: str):
+    if not await _check_module(interaction, "entretenimiento"): return
+    await interaction.response.defer()
+    resultado = Scrapper.pokemonSearch(busqueda, lang=BotConfig.get_language(interaction.guild_id))
+    if not resultado:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultados"))
+        return
+    await interaction.followup.send(embed=_pokemon_embed(resultado))
+
+
+async def _tipo_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+    current_lower = current.lower()
+    en = BotConfig.get_language(interaction.guild_id) == "en"
+    return [
+        app_commands.Choice(name=nombre_en if en else nombre_es, value=valor)
+        for nombre_es, nombre_en, valor in _TYPES
+        if current_lower in (nombre_en if en else nombre_es).lower() or current_lower in valor.lower()
+    ][:25]
+
+
+@tree.command(name="poketype", description="Pokemon aleatorio de un tipo especifico")
+@app_commands.describe(tipo="Tipo de Pokemon")
+@app_commands.autocomplete(tipo=_tipo_autocomplete)
+async def poketype_cmd(interaction: discord.Interaction, tipo: str):
+    if not await _check_module(interaction, "entretenimiento"): return
+    await interaction.response.defer()
+    resultado = Scrapper.pokemonByType(tipo, lang=BotConfig.get_language(interaction.guild_id))
+    if not resultado:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultados"))
+        return
+    await interaction.followup.send(embed=_pokemon_embed(resultado))
 
 
 client.run(os.environ.get('DISCORD_TOKEN'))

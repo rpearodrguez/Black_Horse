@@ -88,6 +88,9 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 |---|---|
 | `/servers` | Lista los servidores donde está activo el bot |
 | `/sync` | Registra los slash commands en Discord |
+| `/config idioma [es\|en]` | Cambia el idioma del bot en este servidor |
+| `/config modulo [nombre] [activar\|desactivar]` | Activa o desactiva un módulo de comandos |
+| `/config estado` | Muestra la configuración actual del servidor |
 
 ---
 

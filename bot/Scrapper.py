@@ -607,4 +607,78 @@ def reporteDivisa(monto = 1, desde = "USD", hasta = "CLP"):
     else:
         find = [desde,hasta,"No se pudo acceder al conversor"]
         print(find)
-        return find
+
+
+# ── PokéAPI ──────────────────────────────────────────────────────────────────
+
+_POKEAPI = "https://pokeapi.co/api/v2"
+_POKEMON_COUNT = 1025  # Gen 9 (Paldea)
+
+def pokemonSearch(busqueda: str, lang: str = "es"):
+    query = busqueda.strip().lower()
+    if query == "random":
+        query = str(random.randint(1, _POKEMON_COUNT))
+    query = query.replace(" ", "-")
+
+    resp = requests.get(f"{_POKEAPI}/pokemon/{query}", timeout=10)
+    if resp.status_code != 200:
+        return None
+    data = resp.json()
+
+    flavor = ""
+    species_resp = requests.get(data["species"]["url"], timeout=10)
+    if species_resp.status_code == 200:
+        entries = species_resp.json().get("flavor_text_entries", [])
+        # Busca primero en el idioma del servidor, luego en inglés como fallback
+        for target_lang in (lang, "en"):
+            for entry in entries:
+                if entry["language"]["name"] == target_lang:
+                    flavor = entry["flavor_text"].replace("\n", " ").replace("\f", " ")
+                    break
+            if flavor:
+                break
+        # Si no había entrada nativa pero hay texto en inglés, traduce
+        if flavor and lang != "en" and all(
+            entry["language"]["name"] != lang
+            for entry in entries
+        ):
+            flavor = translate(flavor, dest=lang)
+
+    image = (
+        (data["sprites"].get("other") or {})
+        .get("official-artwork", {})
+        .get("front_default")
+        or data["sprites"].get("front_default", "")
+    )
+
+    return {
+        "name": data["name"].replace("-", " ").title(),
+        "dex": data["id"],
+        "types": [t["type"]["name"].capitalize() for t in data["types"]],
+        "abilities": [a["ability"]["name"].replace("-", " ").title() for a in data["abilities"] if not a["is_hidden"]],
+        "hidden": [a["ability"]["name"].replace("-", " ").title() for a in data["abilities"] if a["is_hidden"]],
+        "stats": {s["stat"]["name"]: s["base_stat"] for s in data["stats"]},
+        "image": image,
+        "flavor": flavor,
+        "height": data["height"] / 10,
+        "weight": data["weight"] / 10,
+    }
+
+
+def pokemonByType(api_type: str, lang: str = "es"):
+    type_resp = requests.get(f"{_POKEAPI}/type/{api_type}", timeout=10)
+    if type_resp.status_code != 200:
+        return None
+    pokemon_list = type_resp.json().get("pokemon", [])
+    base = []
+    for p in pokemon_list:
+        url = p["pokemon"]["url"].rstrip("/")
+        try:
+            pid = int(url.split("/")[-1])
+            if 1 <= pid <= _POKEMON_COUNT:
+                base.append(p["pokemon"]["name"])
+        except (ValueError, IndexError):
+            pass
+    if not base:
+        return None
+    return pokemonSearch(random.choice(base), lang=lang)
