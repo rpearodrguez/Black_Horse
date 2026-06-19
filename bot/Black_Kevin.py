@@ -137,7 +137,6 @@ async def help_cmd(interaction: discord.Interaction):
     ))
     if interaction.channel.is_nsfw():
         embed.add_field(name="NSFW", inline=False, value=(
-            "`/nh` Busca en nhentai\n"
             "`/patas` `/piernas` Imágenes de safebooru\n"
             "`/safebooru` Búsqueda personalizada en safebooru\n"
             "`/danbooru` Búsqueda en danbooru\n"
@@ -247,46 +246,10 @@ async def say_cmd(interaction: discord.Interaction, mensaje: str):
 # NSFW
 # ──────────────────────────────────────────────
 
-@tree.command(name="nh", description="Busca en nhentai (solo canales NSFW)")
+@tree.command(name="nh", description="Busca en nhentai (temporalmente no disponible)")
 @app_commands.describe(busqueda="Número de doujinshi, 'random', o tag de búsqueda")
 async def nh_cmd(interaction: discord.Interaction, busqueda: str):
-    if not interaction.channel.is_nsfw():
-        await interaction.response.send_message("No sea marrano y pregunte en un canal NSFW", ephemeral=True)
-        return
-    await interaction.response.defer()
-    if busqueda == "random":
-        id = Scrapper.nhentaiRandom()
-    elif busqueda.isdigit():
-        id = busqueda
-    else:
-        id = Scrapper.nhentaiTagSearch(busqueda)
-    if not id:
-        await interaction.followup.send("No se encontraron resultados.")
-        return
-    info = Scrapper.nhentaiInfo(id)
-    if not info:
-        await interaction.followup.send(f"No se pudo obtener información. Link directo: https://nhentai.net/g/{id}/")
-        return
-    embed = discord.Embed(title=info["title"], url=info["url"], color=0xFF69B4)
-    embed.set_image(url=info["cover"])
-    embed.add_field(name="ID", value=f"#{info['id']}", inline=True)
-    embed.add_field(name="Páginas", value=info["pages"], inline=True)
-    if info["artists"]:
-        embed.add_field(name="Artista", value=", ".join(info["artists"]), inline=True)
-    if info["groups"]:
-        embed.add_field(name="Grupo", value=", ".join(info["groups"]), inline=True)
-    if info["parodies"]:
-        embed.add_field(name="Parodia", value=", ".join(info["parodies"]), inline=True)
-    if info["characters"]:
-        embed.add_field(name="Personajes", value=", ".join(info["characters"]), inline=True)
-    if info["languages"]:
-        embed.add_field(name="Idioma", value=", ".join(info["languages"]), inline=True)
-    if info["tags"]:
-        tags_str = ", ".join(info["tags"][:15])
-        if len(info["tags"]) > 15:
-            tags_str += f" +{len(info['tags'])-15} más"
-        embed.add_field(name="Tags", value=tags_str, inline=False)
-    await interaction.followup.send(embed=embed)
+    await interaction.response.send_message("El comando está temporalmente suspendido mientras nhentai actualiza su sitio.", ephemeral=True)
 
 
 @tree.command(name="patas", description="Imagen aleatoria de patas en safebooru (solo canales NSFW)")
