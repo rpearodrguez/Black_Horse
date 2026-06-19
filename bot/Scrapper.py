@@ -455,9 +455,13 @@ def hIdSearch(busqueda):
             logger.warning(f"hIdSearch '{busqueda}': HTTP {resp.status_code}")
             return None
         soup = BeautifulSoup(resp.text, 'html.parser')
+        container = soup.find('div', class_='col-lg-9')
+        if not container:
+            logger.warning(f"hIdSearch '{busqueda}': contenedor de resultados no encontrado")
+            return None
         results = [
-            a.get('href') for a in soup.find_all('a', href=True)
-            if a.get('title', '').strip() and a.find('img') and 'hentai-id.tv' in a.get('href', '')
+            a.get('href') for a in container.find_all('a', href=True)
+            if 'hentai-id.tv' in a.get('href', '') and a.get_text(strip=True)
         ]
         return random.choice(results) if results else None
     except Exception as e:
