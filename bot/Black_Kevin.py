@@ -330,18 +330,18 @@ async def hanime_cmd(interaction: discord.Interaction, titulo: str):
         return
     await interaction.response.defer()
     resultado = Scrapper.hIdShow("+".join(titulo.split()))
-    try:
-        embed = discord.Embed(title="Búsqueda", description=titulo)
+    if not resultado:
+        await interaction.followup.send("No se encontraron resultados.")
+        return
+    embed = discord.Embed(title=titulo, url=resultado[0][0], color=0xFF69B4)
+    if resultado[0][1]:
         embed.set_image(url=resultado[0][1])
-        for i in range(min(9, len(resultado[1]))):
-            try:
-                embed.add_field(name=resultado[1][i], value=resultado[2][i], inline=False)
-            except Exception:
-                pass
-        embed.set_footer(text=f"Puedes encontrarlo en: {resultado[0][0]}")
-        await interaction.followup.send(embed=embed)
-    except Exception:
-        await interaction.followup.send(str(resultado[0]))
+    for i in range(min(9, len(resultado[1]))):
+        try:
+            embed.add_field(name=resultado[1][i], value=resultado[2][i] or "—", inline=False)
+        except Exception:
+            pass
+    await interaction.followup.send(embed=embed)
 
 
 # ──────────────────────────────────────────────
