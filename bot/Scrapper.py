@@ -278,52 +278,53 @@ def steamDataSearch(busqueda):
         return find
 
 #Hentai Scrapping
-NH_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+NH_REST = "https://nhentai.rest"
 NH_EXT = {"j": "jpg", "p": "png", "g": "gif"}
+
+def _nh_parse(data):
+    media_id = data["media_id"]
+    cover_ext = NH_EXT.get(data["images"]["cover"]["t"], "jpg")
+    tags_by_type = {}
+    for tag in data.get("tags", []):
+        tags_by_type.setdefault(tag["type"], []).append(tag["name"])
+    return {
+        "id": data["id"],
+        "title": data.get("title", {}).get("pretty") or data.get("title", {}).get("english", "Sin título"),
+        "cover": f"https://t.nhentai.net/galleries/{media_id}/cover.{cover_ext}",
+        "pages": data.get("num_pages", "?"),
+        "artists": tags_by_type.get("artist", []),
+        "groups": tags_by_type.get("group", []),
+        "languages": tags_by_type.get("language", []),
+        "parodies": tags_by_type.get("parody", []),
+        "characters": tags_by_type.get("character", []),
+        "tags": tags_by_type.get("tag", []),
+        "url": f"https://nhentai.net/g/{data['id']}/"
+    }
 
 def nhentaiInfo(id):
     try:
-        resp = _scraper.get(f"https://nhentai.net/api/gallery/{id}")
+        resp = requests.get(f"{NH_REST}/api/gallery/{id}")
         if resp.status_code != 200:
             logger.warning(f"nhentaiInfo {id}: HTTP {resp.status_code}")
             return None
-        data = resp.json()
-        media_id = data["media_id"]
-        cover_ext = NH_EXT.get(data["images"]["cover"]["t"], "jpg")
-        tags_by_type = {}
-        for tag in data.get("tags", []):
-            tags_by_type.setdefault(tag["type"], []).append(tag["name"])
-        return {
-            "id": data["id"],
-            "title": data.get("title", {}).get("pretty") or data.get("title", {}).get("english", "Sin título"),
-            "cover": f"https://t.nhentai.net/galleries/{media_id}/cover.{cover_ext}",
-            "pages": data.get("num_pages", "?"),
-            "artists": tags_by_type.get("artist", []),
-            "groups": tags_by_type.get("group", []),
-            "languages": tags_by_type.get("language", []),
-            "parodies": tags_by_type.get("parody", []),
-            "characters": tags_by_type.get("character", []),
-            "tags": tags_by_type.get("tag", []),
-            "url": f"https://nhentai.net/g/{data['id']}/"
-        }
+        return _nh_parse(resp.json())
     except Exception as e:
         logger.error(f"nhentaiInfo {id}: {e}")
         return None
 
 def nhentaiRandom():
     try:
-        resp = _scraper.get("https://nhentai.net/random/", allow_redirects=True)
-        match = re.search(r'/g/(\d+)/', resp.url)
-        if match:
-            return match.group(1)
-        logger.warning(f"nhentaiRandom: no ID en URL {resp.url}")
+        resp = requests.get(f"{NH_REST}/api/gallery/random")
+        if resp.status_code == 200:
+            return str(resp.json()["id"])
+        logger.warning(f"nhentaiRandom: HTTP {resp.status_code}")
     except Exception as e:
         logger.error(f"nhentaiRandom: {e}")
     return None
 
 def nhentaiTagSearch(tag):
     try:
-        resp = _scraper.get("https://nhentai.net/api/galleries/search",
+        resp = requests.get(f"{NH_REST}/api/gallery/search",
                             params={"query": tag, "sort": "popular"})
         if resp.status_code == 200:
             results = resp.json().get("result", [])
