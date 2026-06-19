@@ -1,4 +1,4 @@
-import json
+﻿import json
 import logging
 import os
 import random
@@ -559,7 +559,7 @@ def SCP_Search(busqueda="5998"):
                 pass
             
             print("Revisión 2: Imagen encontrada {}".format(scpResult))
-            for i in scpText.findAll("p", {"class": ""}, limit=5):
+            for i in scpText.find_all("p", limit=5):
                 try:
                     if "\n" in i.text:
                         contenido = i.text.split("\n")
