@@ -61,8 +61,9 @@ async def sync_cmd(interaction: discord.Interaction):
     if interaction.user.id != ADMIN_ID:
         await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
         return
+    await interaction.response.defer(ephemeral=True)
     await tree.sync()
-    await interaction.response.send_message("Slash commands sincronizados con Discord.", ephemeral=True)
+    await interaction.followup.send("Slash commands sincronizados con Discord.", ephemeral=True)
 
 
 # ──────────────────────────────────────────────
