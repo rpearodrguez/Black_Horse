@@ -34,7 +34,7 @@ async def on_ready():
 # HELPER
 # ──────────────────────────────────────────────
 
-def _embed(titulo: str, imagen: str, footer: str = "Via Tenor") -> discord.Embed:
+def _embed(titulo: str, imagen: str, footer: str = "Via Giphy") -> discord.Embed:
     embed = discord.Embed(title=titulo)
     embed.set_image(url=imagen)
     embed.set_footer(text=footer)
