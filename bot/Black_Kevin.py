@@ -77,6 +77,7 @@ async def help_cmd(interaction: discord.Interaction):
         "`/jueves` ¿Hoy es jueves?\n"
         "`/say` El bot repite tu mensaje\n"
         "`/genshingift` Códigos de Genshin a links de canjeo\n"
+        "`/epitafio` El epitafio de la Bruja Dorada\n"
         "`/invite` Invita al bot a tu servidor"
     ))
     embed.add_field(name="Entretenimiento", inline=False, value=(
@@ -122,6 +123,39 @@ async def invite_cmd(interaction: discord.Interaction):
 @tree.command(name="hola", description="Saluda al bot")
 async def hola_cmd(interaction: discord.Interaction):
     await interaction.response.send_message("Come tierra")
+
+
+@tree.command(name="epitafio", description="El epitafio de la Bruja Dorada")
+async def epitafio_cmd(interaction: discord.Interaction):
+    embed = discord.Embed(
+        title="Epitafio de la Bruja Dorada",
+        color=0xFFD700
+    )
+    embed.add_field(name="​", inline=False, value=(
+        "*Elogia mi nombre, reverencia a la Tierra Dorada.\n"
+        "Mi amada tierra natal, resucitada por la llave del oro.*"
+    ))
+    embed.add_field(name="​", inline=False, value=(
+        "En el primer crepúsculo, ofrece a los seis elegidos por la llave.\n"
+        "En el segundo crepúsculo, los dos que están cerca serán separados.\n"
+        "En el tercer crepúsculo, los dos que están cerca serán alabados.\n"
+        "En el cuarto crepúsculo, perfora la cabeza y mata.\n"
+        "En el quinto crepúsculo, perfora el pecho y mata.\n"
+        "En el sexto crepúsculo, perfora el estómago y mata.\n"
+        "En el séptimo crepúsculo, perfora las rodillas y mata.\n"
+        "En el octavo crepúsculo, perfora los pies y mata.\n"
+        "En el noveno crepúsculo, la bruja revivirá y no quedará nadie.\n"
+        "En el décimo crepúsculo, el viaje terminará y llegarás a la Tierra Dorada."
+    ))
+    embed.add_field(name="​", inline=False, value=(
+        "La bruja elogiará al sabio y le otorgará cuatro tesoros.\n"
+        "Uno será todo el oro de la Tierra Dorada.\n"
+        "Uno será la resurrección de las almas de todos los muertos.\n"
+        "Uno será la realización de un milagro que es imposible.\n"
+        "Uno será poner a la bruja a dormir por toda la eternidad."
+    ))
+    embed.set_footer(text="Duerme en paz, mi más amada bruja, Beatrice.")
+    await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name="jueves", description="¿Hoy es jueves?")
