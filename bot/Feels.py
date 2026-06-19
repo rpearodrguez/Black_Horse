@@ -6,13 +6,12 @@ import requests
 
 def reactionImage(feel=""):
 
+    ESCOBAZO_CLASSIC = "https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif"
+
     imagenes = [""]
     if feel == "escobazo":
-        imagenes = ["https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif", 
-                    "https://media.discordapp.net/attachments/476576031315066880/676602221571473418/tenor.gif",
-                    "https://cdn.discordapp.com/attachments/441806502215548931/852009803684642876/doom-escobazos.gif",
-                    "https://cdn.discordapp.com/attachments/441806502215548931/852009811188645888/neo-escobazo.gif"]
-    
+        search_term = "broom hit anime"
+
     if feel == "plaf":
         search_term = "anime slap face"
 
@@ -105,7 +104,9 @@ def reactionImage(feel=""):
         search_term = "anime cookie eat"
     
 
-    if feel != "escobazo" and feel != "plaf":
+    if feel == "escobazo" and random.randint(1, 7) == 1:
+        imagenes[0] = ESCOBAZO_CLASSIC
+    else:
         resp = requests.get("https://api.giphy.com/v1/gifs/search", params={
             "api_key": os.environ.get('GIPHY_KEY'),
             "q": search_term,
