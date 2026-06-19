@@ -5,6 +5,8 @@ import Roleplay
 import Feels
 import os
 import datetime
+import logging
+from collections import deque
 
 '''
 Bot para Stick Horse
@@ -15,6 +17,24 @@ Sin Message Content Intent — no requiere verificación de Privileged Intents.
 
 ADMIN_ID = int(os.environ.get('ADMIN_ID', 0))
 
+# Buffer de logs en memoria
+_log_buffer: deque[str] = deque(maxlen=50)
+
+class _BufferHandler(logging.Handler):
+    def emit(self, record):
+        _log_buffer.append(self.format(record))
+
+_fmt = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s', datefmt='%H:%M:%S')
+_buf_handler = _BufferHandler()
+_buf_handler.setFormatter(_fmt)
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s', datefmt='%H:%M:%S')
+logging.getLogger('discord').addHandler(_buf_handler)
+logging.getLogger('discord').setLevel(logging.WARNING)
+
+logger = logging.getLogger('bot')
+logger.addHandler(_buf_handler)
+
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
@@ -23,11 +43,11 @@ tree = app_commands.CommandTree(client)
 @client.event
 async def on_ready():
     await tree.sync()
-    print(f'Bot conectado como {client.user} (id: {client.user.id})')
-    print(f'Activo en {len(client.guilds)} servidor(es):')
+    logger.info(f'Bot conectado como {client.user} (id: {client.user.id})')
+    logger.info(f'Activo en {len(client.guilds)} servidor(es):')
     for guild in client.guilds:
-        print(f'  [{guild.id}] {guild.name} — {guild.member_count} miembros')
-    print('Slash commands sincronizados.')
+        logger.info(f'  [{guild.id}] {guild.name} — {guild.member_count} miembros')
+    logger.info('Slash commands sincronizados.')
 
 
 # ──────────────────────────────────────────────
@@ -54,6 +74,18 @@ async def servers_cmd(interaction: discord.Interaction):
     for guild in client.guilds:
         lines.append(f"• **{guild.name}** — {guild.member_count} miembros (id: `{guild.id}`)")
     await interaction.response.send_message("\n".join(lines), ephemeral=True)
+
+
+@tree.command(name="logs", description="Muestra los últimos logs del bot (solo admin)")
+async def logs_cmd(interaction: discord.Interaction):
+    if interaction.user.id != ADMIN_ID:
+        await interaction.response.send_message("No tienes permisos.", ephemeral=True)
+        return
+    if not _log_buffer:
+        await interaction.response.send_message("No hay logs disponibles.", ephemeral=True)
+        return
+    texto = "\n".join(list(_log_buffer)[-20:])
+    await interaction.response.send_message(f"```\n{texto[-1900:]}\n```", ephemeral=True)
 
 
 @tree.command(name="sync", description="Sincroniza los slash commands con Discord (solo admin)")
