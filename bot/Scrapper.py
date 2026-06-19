@@ -448,8 +448,13 @@ def danbooruSearch(busqueda=""):
 
 HID_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
+def _hid_trailing_num(title):
+    m = re.search(r'\s+(\d+)\s*$', title)
+    return int(m.group(1)) if m else 0
+
 def hIdSearch(busqueda):
     try:
+        query = busqueda.replace('+', ' ').strip()
         resp = requests.get(f"https://hentai-id.tv/?s={busqueda}", headers=HID_HEADERS)
         if resp.status_code != 200:
             logger.warning(f"hIdSearch '{busqueda}': HTTP {resp.status_code}")
@@ -460,10 +465,24 @@ def hIdSearch(busqueda):
             logger.warning(f"hIdSearch '{busqueda}': contenedor de resultados no encontrado")
             return None
         results = [
-            a.get('href') for a in container.find_all('a', href=True)
+            (a.get('href'), a.get_text(strip=True))
+            for a in container.find_all('a', href=True)
             if 'hentai-id.tv' in a.get('href', '') and a.get_text(strip=True)
         ]
-        return random.choice(results) if results else None
+        if not results:
+            return None
+        if len(results) == 1:
+            return results[0][0]
+        # Ordena: sin número = primero (0), luego 2, 3, 4...
+        results.sort(key=lambda x: _hid_trailing_num(x[1]))
+        # Si la búsqueda termina en número, busca el resultado con ese número
+        m = re.search(r'\s+(\d+)\s*$', query)
+        if m:
+            target = int(m.group(1))
+            for url, title in results:
+                if _hid_trailing_num(title) == target:
+                    return url
+        return results[0][0]
     except Exception as e:
         logger.error(f"hIdSearch '{busqueda}': {e}")
         return None
