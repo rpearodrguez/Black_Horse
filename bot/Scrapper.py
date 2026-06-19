@@ -1,13 +1,18 @@
 import json
+import logging
 import os
 import random
 import re
 import urllib.parse
 import conversion
 
+import cloudscraper
 import requests
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
+
+logger = logging.getLogger('bot.scrapper')
+_scraper = cloudscraper.create_scraper()
 
 
 def translate(text, dest='es'):
@@ -278,8 +283,9 @@ NH_EXT = {"j": "jpg", "p": "png", "g": "gif"}
 
 def nhentaiInfo(id):
     try:
-        resp = requests.get(f"https://nhentai.net/api/gallery/{id}", headers=NH_HEADERS)
+        resp = _scraper.get(f"https://nhentai.net/api/gallery/{id}")
         if resp.status_code != 200:
+            logger.warning(f"nhentaiInfo {id}: HTTP {resp.status_code}")
             return None
         data = resp.json()
         media_id = data["media_id"]
@@ -300,30 +306,34 @@ def nhentaiInfo(id):
             "tags": tags_by_type.get("tag", []),
             "url": f"https://nhentai.net/g/{data['id']}/"
         }
-    except Exception:
+    except Exception as e:
+        logger.error(f"nhentaiInfo {id}: {e}")
         return None
 
 def nhentaiRandom():
     try:
-        resp = requests.get("https://nhentai.net/random/", headers=NH_HEADERS, allow_redirects=True)
+        resp = _scraper.get("https://nhentai.net/random/", allow_redirects=True)
         match = re.search(r'/g/(\d+)/', resp.url)
         if match:
             return match.group(1)
-    except Exception:
-        pass
+        logger.warning(f"nhentaiRandom: no ID en URL {resp.url}")
+    except Exception as e:
+        logger.error(f"nhentaiRandom: {e}")
     return None
 
 def nhentaiTagSearch(tag):
     try:
-        resp = requests.get("https://nhentai.net/api/galleries/search",
-                            params={"query": tag, "sort": "popular"},
-                            headers=NH_HEADERS)
+        resp = _scraper.get("https://nhentai.net/api/galleries/search",
+                            params={"query": tag, "sort": "popular"})
         if resp.status_code == 200:
             results = resp.json().get("result", [])
             if results:
                 return str(random.choice(results)["id"])
-    except Exception:
-        pass
+            logger.warning(f"nhentaiTagSearch '{tag}': sin resultados")
+        else:
+            logger.warning(f"nhentaiTagSearch '{tag}': HTTP {resp.status_code}")
+    except Exception as e:
+        logger.error(f"nhentaiTagSearch '{tag}': {e}")
     return None
 
 def imgSearch(search_term="busqueda"):

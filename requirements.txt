@@ -2,3 +2,4 @@ beautifulsoup4
 requests
 discord.py>=2.3.2
 deep-translator>=1.11.4
+cloudscraper
