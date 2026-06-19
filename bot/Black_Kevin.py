@@ -126,6 +126,13 @@ async def hola_cmd(interaction: discord.Interaction):
     await interaction.response.send_message("Come tierra")
 
 
+@tree.command(name="celacanto", description="Un celacanto aparece")
+async def celacanto_cmd(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        f"🐟 ¡**{interaction.user.display_name}** se ha encontrado con un celacanto!\nhttps://youtu.be/0UI6Rt3Tl0A"
+    )
+
+
 @tree.command(name="epitafio", description="El epitafio de la Bruja Dorada")
 async def epitafio_cmd(interaction: discord.Interaction):
     embed = discord.Embed(
