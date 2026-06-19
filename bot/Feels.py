@@ -10,7 +10,7 @@ def reactionImage(feel=""):
 
     imagenes = [""]
     if feel == "escobazo":
-        search_term = "broom hit anime"
+        search_term = "hit with broom"
 
     if feel == "plaf":
         search_term = "anime slap face"
