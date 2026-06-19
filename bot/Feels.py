@@ -1,4 +1,3 @@
-import json
 import os
 import random
 
@@ -107,17 +106,18 @@ def reactionImage(feel=""):
     
 
     if feel != "escobazo" and feel != "plaf":
-        offset = random.randint(0, 20)
-        url = "https://api.giphy.com/v1/gifs/search?api_key={}&q={}&limit=1&offset={}&rating=pg-13".format(
-            os.environ.get('GIPHY_KEY'), search_term, offset
-        )
-        resp = requests.get(url)
+        resp = requests.get("https://api.giphy.com/v1/gifs/search", params={
+            "api_key": os.environ.get('GIPHY_KEY'),
+            "q": search_term,
+            "limit": 10,
+            "rating": "pg-13"
+        })
         if resp.status_code == 200:
-            gifs = json.loads(resp.content)
-            if gifs["data"]:
-                imagenes[0] = gifs["data"][0]["images"]["original"]["url"]
+            data = resp.json().get("data", [])
+            if data:
+                imagenes[0] = random.choice(data)["images"]["original"]["url"]
         if not imagenes[0]:
-            imagenes[0] = "https://media.giphy.com/media/l2Je4FbOimhxM6mE8/giphy.gif"
+            imagenes[0] = "https://media.giphy.com/media/3o7TKMt1VVNkHV2PaE/giphy.gif"
             
         
     randImage = random.randint(0, len(imagenes)-1)
