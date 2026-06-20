@@ -816,7 +816,7 @@ class _TicTacToe(discord.ui.View):
         self.winner    = None   # 'X', 'O', o None
         self.game_over = False
         for i in range(9):
-            btn = discord.ui.Button(label='　', style=discord.ButtonStyle.secondary, row=i // 3)
+            btn = discord.ui.Button(label='·', style=discord.ButtonStyle.secondary, row=i // 3)
             btn.callback = self._move(i)
             self.add_item(btn)
 
