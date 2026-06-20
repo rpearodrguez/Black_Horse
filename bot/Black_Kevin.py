@@ -1091,7 +1091,7 @@ async def scp_cmd(interaction: discord.Interaction, numero: str):
         embed = discord.Embed(
             title=f'SCP-{numero}',
             color=0x1B2631,
-            url=f'https://www.scp-wiki.net/scp-{numero}',
+            url=f'https://scp-wiki.wikidot.com/scp-{numero}',
         )
         if resultado[0]:
             embed.set_image(url=resultado[0])
