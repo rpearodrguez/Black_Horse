@@ -779,33 +779,6 @@ async def vn_cmd(interaction: discord.Interaction, busqueda: str):
 
 
 
-def _calc_eval(expr: str) -> str:
-    _OPS = {
-        _ast.Add: _op.add, _ast.Sub: _op.sub,
-        _ast.Mult: _op.mul, _ast.Div: _op.truediv,
-        _ast.Mod: _op.mod, _ast.Pow: _op.pow,
-        _ast.USub: _op.neg,
-    }
-    def _ev(n):
-        if isinstance(n, _ast.Constant) and isinstance(n.value, (int, float)):
-            return n.value
-        if isinstance(n, _ast.BinOp) and type(n.op) in _OPS:
-            l, r = _ev(n.left), _ev(n.right)
-            if isinstance(n.op, _ast.Div) and r == 0:
-                raise ZeroDivisionError
-            return _OPS[type(n.op)](l, r)
-        if isinstance(n, _ast.UnaryOp) and type(n.op) in _OPS:
-            return _OPS[type(n.op)](_ev(n.operand))
-        raise ValueError
-    try:
-        r = _ev(_ast.parse(expr, mode='eval').body)
-        if isinstance(r, float):
-            return f"{r:.10g}" if not r.is_integer() else str(int(r))
-        return str(r)
-    except ZeroDivisionError:
-        return 'Error: ÷0'
-    except Exception:
-        return 'Error'
 
 
 from Games import _Calculator, _Trivia, _RPS, _Minesweeper, _Hangman, _Snake, _Game2048, _Dungeon, _TicTacToe
