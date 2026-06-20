@@ -424,14 +424,15 @@ async def calc_cmd(interaction: discord.Interaction):
 @app_commands.describe(oponente="Usuario con quien jugar (opcional — sin @usuario juegas contra el bot)")
 async def gato_cmd(interaction: discord.Interaction, oponente: discord.Member = None):
     if not await _check_module(interaction, "entretenimiento"): return
-    if oponente.id == interaction.user.id:
-        await interaction.response.send_message(
-            BotConfig.t(interaction.guild_id, "gato_vs_si"), ephemeral=True)
-        return
-    if oponente.bot:
-        await interaction.response.send_message(
-            BotConfig.t(interaction.guild_id, "gato_vs_bot"), ephemeral=True)
-        return
+    if oponente is not None:
+        if oponente.id == interaction.user.id:
+            await interaction.response.send_message(
+                BotConfig.t(interaction.guild_id, "gato_vs_si"), ephemeral=True)
+            return
+        if oponente.bot:
+            await interaction.response.send_message(
+                BotConfig.t(interaction.guild_id, "gato_vs_bot"), ephemeral=True)
+            return
     view = _TicTacToe(interaction.user, oponente, interaction.guild_id)
     await interaction.response.send_message(embed=view._build_embed(), view=view)
 
