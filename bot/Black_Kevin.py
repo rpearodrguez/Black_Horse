@@ -235,7 +235,8 @@ async def help_cmd(interaction: discord.Interaction):
         "`/horoscopo` Horoscopo del dia\n"
         "`/personaje` Informacion de un personaje de anime\n"
         "`/pelicula` Informacion de una pelicula (IMDb)\n"
-        "`/receta` Receta de cocina"
+        "`/receta` Receta de cocina\n"
+        "`/caracola` Consulta a la Caracola Magica"
     ))
     embed.add_field(name="Juegos", inline=False, value=(
         "`/calcular` Evalua una expresion matematica directamente\n"
@@ -686,6 +687,23 @@ async def receta_cmd(interaction: discord.Interaction, busqueda: str):
     if result['youtube']:
         embed.add_field(name='Video', value=result['youtube'], inline=False)
     await interaction.followup.send(embed=embed)
+
+
+@tree.command(name='caracola', description='Consulta a la Caracola Magica')
+@app_commands.describe(pregunta='Tu pregunta para la Caracola Magica (opcional)')
+async def caracola_cmd(interaction: discord.Interaction, pregunta: str = None):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    lang = BotConfig.get_language(interaction.guild_id)
+    pool = D.CARACOLA_ES if lang == 'es' else D.CARACOLA_EN
+    respuesta = random.choice(pool)
+    titulo = '🐚 La Caracola Magica' if lang == 'es' else '🐚 The Magic Conch'
+    embed = discord.Embed(title=titulo, color=0x00B4D8)
+    if pregunta:
+        label = 'Tu pregunta' if lang == 'es' else 'Your question'
+        embed.add_field(name=label, value=f'*{pregunta}*', inline=False)
+    label_r = 'La Caracola dice...' if lang == 'es' else 'The Conch says...'
+    embed.add_field(name=label_r, value=f'**{respuesta}**', inline=False)
+    await interaction.response.send_message(embed=embed)
 
 
 # ──────────────────────────────────────────────
