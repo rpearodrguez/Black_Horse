@@ -214,7 +214,6 @@ class _RPS(discord.ui.View):
                 self.choice_x = choice
             else:
                 self.choice_o = choice
-            # Vs bot: responde de inmediato
             if self.vs_bot:
                 self.choice_o = random.choice(['piedra', 'papel', 'tijeras'])
             if self.choice_x and self.choice_o:
@@ -222,18 +221,16 @@ class _RPS(discord.ui.View):
                 await interaction.response.edit_message(embed=self._result_embed(), view=self)
                 self.stop()
             else:
-                name = self.player_x.display_name if is_x else self.player_o.display_name
-                await interaction.response.send_message(
-                    f'{self._EMOJIS[choice]} Elegiste **{choice}**. Esperando al otro jugador...', ephemeral=True)
-                if self.message:
-                    chosen = self.player_x.display_name if self.choice_x else self.player_o.display_name
-                    waiting = self.player_o.display_name if self.choice_x else self.player_x.display_name
-                    try:
-                        await self.message.edit(embed=discord.Embed(
-                            title='🪨📄✂️ Piedra Papel Tijeras',
-                            description=f'✅ {chosen} ya eligió.\n⏳ Esperando a {waiting}...',
-                            color=0xF39C12))
-                    except Exception: pass
+                # Primer jugador: edita el mensaje directamente (sin ephemeral)
+                # para que la actualización sea visible para ambos jugadores
+                chosen  = self.player_x.display_name if self.choice_x else self.player_o.display_name
+                waiting = self.player_o.display_name if self.choice_x else self.player_x.display_name
+                embed = discord.Embed(
+                    title='🪨📄✂️ Piedra Papel Tijeras',
+                    description=f'✅ {chosen} ya eligió.\n⏳ Esperando a {waiting}...',
+                    color=0xF39C12,
+                )
+                await interaction.response.edit_message(embed=embed, view=self)
         return cb
 
     def _result_embed(self) -> discord.Embed:
