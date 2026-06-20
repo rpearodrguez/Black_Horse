@@ -529,11 +529,13 @@ def SCP_Search(busqueda: str = "173") -> list:
     # Imagen: buscar en scp-image-block, luego cualquier img del contenido
     def _norm_url(src: str) -> str:
         if src.startswith('//'):
-            return 'https:' + src
-        if src.startswith('http://'):
-            return 'https://' + src[7:]
-        if src.startswith('/'):
-            return 'https://scp-wiki.wikidot.com' + src
+            src = 'https:' + src
+        elif src.startswith('http://'):
+            src = 'https://' + src[7:]
+        elif src.startswith('/'):
+            src = 'https://scp-wiki.wikidot.com' + src
+        # wikidot.com/local--files/ redirige a wdfiles.com; Discord no sigue ese redirect
+        src = src.replace('scp-wiki.wikidot.com/local--files/', 'scp-wiki.wdfiles.com/local--files/')
         return src
 
     img_url = ''
