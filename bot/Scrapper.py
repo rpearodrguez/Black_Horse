@@ -508,7 +508,7 @@ def hIdShow(busqueda):
         return None
 
 def SCP_Search(busqueda: str = "173") -> list:
-    url = f'http://www.scp-wiki.net/scp-{busqueda}'
+    url = f'https://scp-wiki.wikidot.com/scp-{busqueda}'
     logger.info(f'SCP GET {url}')
     try:
         resp = requests.get(url, timeout=12)
@@ -538,17 +538,18 @@ def SCP_Search(busqueda: str = "173") -> list:
             elif src.startswith('http://'):
                 src = 'https://' + src[7:]
             img_url = src
+    if not img_url:
+        img_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/SCP_Foundation_%28emblem%29.svg/200px-SCP_Foundation_%28emblem%29.svg.png'
     logger.info(f'SCP image: {img_url!r}')
     result.append(img_url)
 
     # Campos de texto del artículo
     content = soup.find('div', id='page-content')
     if content:
-        for p in content.find_all('p', limit=6):
-            for line in p.get_text('\n', strip=True).split('\n'):
-                line = line.strip()
-                if line:
-                    result.append(translate(line))
+        for p in content.find_all('p', limit=8):
+            text = re.sub(r'\s+', ' ', p.get_text(' ', strip=True)).strip()
+            if text:
+                result.append(translate(text))
     logger.info(f'SCP result count: {len(result)} items')
     return result if len(result) > 1 else ['', '[DATA EXPUNGED]:[DATA EXPUNGED]']
 
