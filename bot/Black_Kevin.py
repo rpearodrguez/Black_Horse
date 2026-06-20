@@ -24,6 +24,26 @@ Sin Message Content Intent.
 
 ADMIN_ID = int(os.environ.get('ADMIN_ID', 0))
 
+_RESURRECCION = datetime.date(2026, 6, 18)
+
+
+def _lore_footer() -> str:
+    dias = (datetime.date.today() - _RESURRECCION).days
+    return f'\u2620\ufe0f 7/9/2025  \u2728 18/6/2026  \u00b7  D\u00eda {dias}'
+
+
+_OrigEmbed = discord.Embed
+
+
+class _BotEmbed(_OrigEmbed):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.set_footer(text=_lore_footer())
+
+
+discord.Embed = _BotEmbed
+
+
 # Buffer de logs en memoria
 _log_buffer: deque[str] = deque(maxlen=50)
 
