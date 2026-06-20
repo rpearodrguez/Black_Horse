@@ -1,6 +1,7 @@
 import ast as _ast
 import operator as _op
 import random
+import datetime
 import discord
 import BotConfig
 import data as D
@@ -385,6 +386,13 @@ class _Minesweeper(discord.ui.View):
         except Exception: pass
 
 
+def _daily_hangman_pool(size: int = 100) -> list[str]:
+    seed = datetime.date.today().toordinal()
+    rng = random.Random(seed)
+    pool = list(D.HANGMAN_WORDS)
+    return rng.sample(pool, min(size, len(pool)))
+
+
 class _Hangman(discord.ui.View):
     _STAGES = [
         "  +---+\n  |   |\n  |\n  |\n  |\n  ====",
@@ -398,15 +406,16 @@ class _Hangman(discord.ui.View):
     _ROWS = [
         ['A','B','C','D','E'],
         ['F','G','H','I','J'],
-        ['L','M','N','Ñ','O'],
+        ['L','M','N','K','O'],
         ['P','Q','R','S','T'],
         ['U','V','X','Y','Z'],
     ]
 
-    def __init__(self, guild_id: int):
+    def __init__(self, guild_id: int, player_id: int):
         super().__init__(timeout=300)
         self.guild_id = guild_id
-        self.word = random.choice(D.HANGMAN_WORDS).upper()
+        self.player_id = player_id
+        self.word = random.choice(_daily_hangman_pool()).upper()
         self.guessed: set = set()
         self.wrongs = 0
         self.over = False
@@ -418,6 +427,10 @@ class _Hangman(discord.ui.View):
 
     def _guess(self, letter: str):
         async def cb(interaction: discord.Interaction):
+            if interaction.user.id != self.player_id:
+                await interaction.response.send_message(
+                    BotConfig.t(interaction.guild_id, 'juego_ajeno'), ephemeral=True)
+                return
             if self.over:
                 await interaction.response.defer()
                 return

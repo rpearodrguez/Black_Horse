@@ -512,7 +512,7 @@ async def dungeon_cmd(interaction: discord.Interaction):
 @tree.command(name='ahorcado', description='Adivina la palabra letra por letra')
 async def ahorcado_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, 'entretenimiento'): return
-    view = _Hangman(interaction.guild_id)
+    view = _Hangman(interaction.guild_id, interaction.user.id)
     await interaction.response.send_message(embed=view._build_embed(), view=view)
 
 
