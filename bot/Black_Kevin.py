@@ -734,6 +734,7 @@ async def caracola_cmd(interaction: discord.Interaction, pregunta: str = None):
     respuesta = random.choice(pool)
     titulo = '🐚 La Caracola Magica' if lang == 'es' else '🐚 The Magic Conch'
     embed = discord.Embed(title=titulo, color=0x00B4D8)
+    embed.set_thumbnail(url='https://static.wikia.nocookie.net/spongebob/images/e/e4/Magic_Conch_Shell.png/revision/latest?cb=20200602194627')
     if pregunta:
         label = 'Tu pregunta' if lang == 'es' else 'Your question'
         embed.add_field(name=label, value=f'*{pregunta}*', inline=False)

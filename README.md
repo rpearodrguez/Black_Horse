@@ -34,6 +34,7 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/personaje [nombre]` | Información de un personaje de anime o manga (Jikan/MAL) |
 | `/pelicula [título]` | Información de una película — rating IMDb, reparto, sinopsis (requiere `OMDB_KEY`) |
 | `/receta [ingrediente]` | Recetas que usan ese ingrediente — elige de hasta 5 resultados (Spoonacular, requiere `SPOONACULAR_KEY`) |
+| `/caracola [pregunta]` | Consulta a la Caracola Mágica de Bob Esponja |
 
 ### Juegos
 | Comando | Descripción |
@@ -85,6 +86,7 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 ### Reacciones — duales (usuario opcional)
 | Comando | Descripción |
 |---|---|
+| `/resucitar [@usuario]` | Resucita a alguien (o a ti mismo) — GIF anime + referencia a la resurrección de Kevin |
 | `/hug [@usuario]` | Abraza a alguien o pide un abrazo |
 | `/kiss [@usuario]` | Besa a alguien o pide un besito |
 | `/dance [@usuario] [tipo]` | Baila solo o con alguien (`tipo: caramelldansen`) |
