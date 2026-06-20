@@ -259,7 +259,7 @@ async def help_cmd(interaction: discord.Interaction):
         "`/smug` `/pout` `/plaf` `/spin` `/blush` `/shy` `/tsundere` `/lewd` `/jojo` `/cry` `/smile` `/suicide`"
     ))
     embed.add_field(name="Reacciones — duales (usuario opcional)", inline=False, value=(
-        "`/hug` `/kiss` `/dance` `/angry` `/run` `/sleep` `/happy` `/cookie` `/escupefuego`"
+        "`/resucitar` `/hug` `/kiss` `/dance` `/angry` `/run` `/sleep` `/happy` `/cookie` `/escupefuego`"
     ))
     if interaction.channel.is_nsfw():
         embed.add_field(name="NSFW", inline=False, value=(
@@ -1238,6 +1238,27 @@ async def angry_cmd(interaction: discord.Interaction, usuario: discord.Member = 
     if not await _check_module(interaction, "reacciones"): return
     titulo = BotConfig.t(interaction.guild_id, "angry_con", user=interaction.user.display_name, target=usuario.display_name) if usuario else BotConfig.t(interaction.guild_id, "angry_solo", user=interaction.user.display_name)
     embed = _embed(titulo, Feels.reactionImage("angry"))
+    await interaction.response.send_message(embed=embed)
+
+
+@tree.command(name="resucitar", description="Resucita a alguien (o a ti mismo)")
+@app_commands.describe(usuario="Usuario a resucitar (opcional)")
+async def resucitar_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
+    if not await _check_module(interaction, "reacciones"): return
+    lang  = BotConfig.get_language(interaction.guild_id)
+    dias  = (datetime.date.today() - _RESURRECCION).days
+    label = BotConfig.t(interaction.guild_id, "resucitar_footer_es" if lang == "es" else "resucitar_footer_en")
+    day_word = "D\u00eda" if lang == "es" else "Day"
+    footer = f"{label} \u00b7 \u2620\ufe0f 7/9/2025 \u2192 \u2728 18/6/2026 \u00b7 {day_word} {dias}"
+    titulo = (
+        BotConfig.t(interaction.guild_id, "resucitar_con",
+                    user=interaction.user.display_name, target=usuario.display_name)
+        if usuario else
+        BotConfig.t(interaction.guild_id, "resucitar_solo", user=interaction.user.display_name)
+    )
+    embed = discord.Embed(title=titulo)
+    embed.set_image(url=Feels.reactionImage("resucitar"))
+    embed.set_footer(text=footer)
     await interaction.response.send_message(embed=embed)
 
 

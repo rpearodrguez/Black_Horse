@@ -105,6 +105,12 @@ def reactionImage(feel=""):
 
     if feel == "firebreath":
         search_term = "fire breath"
+
+    if feel == "resucitar":
+        search_term = "anime resurrection revival"
+
+    if feel == "resucitar":
+        search_term = "anime resurrection revival"
     
 
     if feel == "escobazo" and random.randint(1, 7) == 1:
