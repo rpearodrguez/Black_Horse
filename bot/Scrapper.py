@@ -1,4 +1,5 @@
-﻿import json
+import html
+import json
 import logging
 import os
 import random
@@ -153,129 +154,53 @@ def mangaScrap(urlb=""):
     else:
         print(resp.content)
 
-#Game Scrapping
-def steamUrlSearch(urlb=""):
-    # url = the target we want to open
-    url = "https://store.steampowered.com/search/?term=" + urlb + "&category1=998&ignore_preferences=1"
-    # open with GET method
-    resp = requests.get(url)
+# ── Steam ─────────────────────────────────────────────────────────────────────
 
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        #busca el estilo del objeto con la clase .search_result_row
-        #l = soup.find("div", {"class": "search_pagination"})
-        #style = soup.find("a", {"class": "search_pagination"})['style']
-        #print("Contenido de la pagina: {}".format(soup.contents))
-        
-        for i in soup.findAll("a", {"class": "search_result_row"}, limit=1):
-            #print("objeto de la clase search_result_row: {}".format(i))
-            try:
-                urla = i.get('href')
-                print(urla)
-                return urla
-            except:
-                print("No se pudo rescatar información de la pagina")
-                return url
+def steamSearch(busqueda: str):
+    search = requests.get(
+        "https://store.steampowered.com/api/storesearch/",
+        params={"term": busqueda, "l": "english", "cc": "US"},
+        timeout=10,
+    )
+    if search.status_code != 200:
+        return None
+    items = search.json().get("items", [])
+    if not items:
+        return None
+    appid = items[0]["id"]
 
-    # Find posee los atributos (en el mismo orden) Título, Sumario, Puntaje, Episodios, imagen de fondo
-    return url
+    detail = requests.get(
+        "https://store.steampowered.com/api/appdetails",
+        params={"appids": appid, "cc": "cl", "l": "spanish"},
+        timeout=10,
+    )
+    if detail.status_code != 200:
+        return None
+    app = detail.json().get(str(appid), {})
+    if not app.get("success"):
+        return None
+    d = app["data"]
 
-def steamDataSearch(busqueda):
-    url = steamUrlSearch(busqueda)
-    resp = requests.get(url)
+    price = "Gratis" if d.get("is_free") else "—"
+    po = d.get("price_overview")
+    if po:
+        final = po.get("final_formatted", "—")
+        discount = po.get("discount_percent", 0)
+        if discount:
+            price = f"~~{po.get('initial_formatted')}~~ {final} (-{discount}%)"
+        else:
+            price = final
 
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Este es el sumario del juego solicitado :-\n")
-        find = ["Portada", "Nombre", "Descripcion", "Desarrollador", "Algun día", "Genero", "Demasiado malo para ser puntuado", "No es gratis, pero no tengo idea"]
-
-        # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        #print(soup.contents)
-        # l is the list which contains all the text i.e news
-        glance = soup.find("div", {"class": "glance_ctn"})
-        meta = soup.find("div", {"class": "game_meta_data"})
-        price = soup.find("div", {"id": "game_area_purchase"})
-        # now we want to print only the text part of the anchor.
-        # find all the elements of a, i.e anchor
-        try:
-            for i in glance.findAll("img", {"class": "game_header_image_full"}, limit=1):
-                try:
-                    #Portada
-                    find[0] = i.get('src')
-                    print(find[0])
-                except:
-                    pass
-
-
-
-
-            for i in meta.findAll("div", {"class": "details_block"}, limit=1):
-                try:
-                    titulo = i.text.split("\n")
-                    print(titulo)
-                    if titulo[1][7:] != "":
-                        #Nombre
-                        find[1] = titulo[1][7:]
-
-                    if titulo[5] != "":
-                        #Desarrollador
-                        find[3] = titulo[5]
-
-                    if titulo[11][14:] != "":
-                        #Fecha de lanzamiento
-                        find[4] = titulo[11][14:]
-
-                    if titulo[2][7:] != "":
-                        #Genero
-                        find[5] = titulo[2][7:]
-
-                except:
-                    pass
-
-            for i in meta.findAll("div", {"id": "game_area_metascore"}, limit=1):
-                try:
-                    titulo = i.text.split("\t")
-                    print(titulo)
-                    if titulo[10] != "":
-                        #Metascore
-                        find[6] = titulo[10]
-
-                except:
-                    pass
-
-            for i in glance.findAll("div", {"class": "game_description_snippet"}, limit=1):
-                try:
-                    titulo = i.text.split("\t")
-                    print(titulo)
-                    if titulo[8] != "":
-                        #Descripcion
-                        
-                        find[2] = translate(titulo[8])
-                        print(find[2])
-
-                except:
-                    pass
-
-            for i in price.findAll("div", {"class": "game_purchase_price"}, limit=1):
-                try:
-                    titulo = i.text.split("\t")
-                    print(titulo)
-                    if titulo[7] != "":
-                        #Precio
-                        find[7] = titulo[7]
-
-                except:
-                    pass
-
-        except:
-            find[0] = url
-        # Find posee los atributos (en el mismo orden) 0=Portada, 1=Nombre, 2=Descripcion , 3=Desarrollador, 4=Lanzamiento, 5=Genero, 6=Metacritic, 7=Precio
-        print(find)
-        return find
+    return {
+        "name": d.get("name", "—"),
+        "description": html.unescape(d.get("short_description", "—")),
+        "developer": ", ".join(d.get("developers") or []),
+        "release_date": (d.get("release_date") or {}).get("date", "—"),
+        "genres": ", ".join(g["description"] for g in (d.get("genres") or [])),
+        "metacritic": str((d.get("metacritic") or {}).get("score", "—")),
+        "price": price,
+        "image": d.get("header_image", ""),
+    }
 
 #Hentai Scrapping
 NH_REST = "https://nhentai.rest"

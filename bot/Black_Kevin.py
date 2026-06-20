@@ -542,22 +542,19 @@ async def manga_cmd(interaction: discord.Interaction, nombre: str):
 async def steam_cmd(interaction: discord.Interaction, juego: str):
     if not await _check_module(interaction, "entretenimiento"): return
     await interaction.response.defer()
-    resultado = Scrapper.steamDataSearch(juego.replace(" ", "+"))
-    try:
-        if resultado[1] != "Nombre":
-            embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "nombre"), description=resultado[1])
-            embed.set_image(url=resultado[0])
-            embed.add_field(name=BotConfig.t(interaction.guild_id, "descripcion"), value=resultado[2], inline=False)
-            embed.add_field(name=BotConfig.t(interaction.guild_id, "desarrollador"), value=resultado[3], inline=True)
-            embed.add_field(name=BotConfig.t(interaction.guild_id, "fecha_lanzamiento"), value=resultado[4], inline=True)
-            embed.add_field(name=BotConfig.t(interaction.guild_id, "genero"), value=resultado[5], inline=False)
-            embed.add_field(name="Metacritic", value=resultado[6], inline=True)
-            embed.add_field(name=BotConfig.t(interaction.guild_id, "precio"), value=resultado[7], inline=True)
-            await interaction.followup.send(embed=embed)
-        else:
-            await interaction.followup.send(BotConfig.t(interaction.guild_id, "juego_no_encontrado"))
-    except Exception:
-        await interaction.followup.send(BotConfig.t(interaction.guild_id, "juego_error"))
+    resultado = Scrapper.steamSearch(juego)
+    if not resultado:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "juego_no_encontrado"))
+        return
+    embed = discord.Embed(title=resultado["name"], description=resultado["description"], color=0x1B2838)
+    embed.set_image(url=resultado["image"])
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "desarrollador"), value=resultado["developer"] or "—", inline=True)
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "fecha_lanzamiento"), value=resultado["release_date"], inline=True)
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "genero"), value=resultado["genres"] or "—", inline=False)
+    embed.add_field(name="Metacritic", value=resultado["metacritic"], inline=True)
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "precio"), value=resultado["price"], inline=True)
+    embed.set_footer(text="Fuente: Steam Store")
+    await interaction.followup.send(embed=embed)
 
 
 @tree.command(name="vn", description="Busca una novela visual en VNDB")
