@@ -1093,6 +1093,7 @@ async def scp_cmd(interaction: discord.Interaction, numero: str):
             color=0x1B2631,
             url=f'https://scp-wiki.wikidot.com/scp-{numero}',
         )
+        embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/SCP_Foundation_(emblem).svg/200px-SCP_Foundation_(emblem).svg.png')
         if resultado[0]:
             embed.set_image(url=resultado[0])
         for i in range(1, min(8, len(resultado))):
