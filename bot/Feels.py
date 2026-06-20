@@ -104,7 +104,7 @@ def reactionImage(feel=""):
         search_term = "anime cookie eat"
 
     if feel == "firebreath":
-        search_term = "anime fire breathing"
+        search_term = "fire breath"
     
 
     if feel == "escobazo" and random.randint(1, 7) == 1:
