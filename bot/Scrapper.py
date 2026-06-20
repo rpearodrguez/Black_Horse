@@ -556,8 +556,6 @@ def SCP_Search(busqueda: str = "173") -> list:
                 logger.info(f'SCP image fallback: {img_url!r}')
                 break
 
-    if 'wdfiles.com' in img_url:
-        img_url = ''
     logger.info(f'SCP image final: {img_url!r}')
     result.append(img_url)
 
