@@ -733,6 +733,9 @@ class _RecetaSelect(discord.ui.View):
                 except Exception: pass
             label = 'Instrucciones' if lang == 'es' else 'Instructions'
             embed.add_field(name=label, value=instr[:1000], inline=False)
+        if detail['url']:
+            label = '¿Dudas? Receta completa aquí' if lang == 'es' else 'Full recipe here'
+            embed.add_field(name=label, value=detail['url'], inline=False)
         await interaction.message.edit(embed=embed, view=None)
 
 
