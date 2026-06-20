@@ -196,6 +196,14 @@ En [discord.com/developers/applications](https://discord.com/developers/applicat
 
 ---
 
+## Tareas pendientes
+
+- **`/scp` — imagen del artículo no carga en Discord**: La imagen se extrae correctamente de `scp-wiki.wdfiles.com` y la URL es válida (verificado con embed generators externos), pero Discord no la renderiza en el embed. Se intentó `set_image` y `set_thumbnail`; el problema parece ser específico de cómo Discord resuelve URLs de `wdfiles.com` desde su proxy de imágenes. Requiere investigación adicional.
+- **`/scp` — logo de la Fundación SCP como fallback**: El logo de Wikipedia Commons (`.svg.png`) tampoco carga en Discord. Alternativa: hostear el logo en un CDN compatible (ej. Fandom/Wikia) o en el propio repositorio.
+- **Música**: Integración de reproducción de audio desde YouTube pendiente de implementar (`yt-dlp` + FFmpeg + cola por servidor).
+
+---
+
 ## Créditos
 - Desarrollado por **Richard Peña (Vaalus)**
 - Imágenes de reacción vía [Tenor](https://tenor.com) / [Giphy](https://giphy.com)
