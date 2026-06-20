@@ -1098,8 +1098,13 @@ async def scp_cmd(interaction: discord.Interaction, numero: str):
         for i in range(1, min(8, len(resultado))):
             try:
                 partes = resultado[i].split(':', 1)
-                name = partes[0].strip().upper()
-                value = partes[1].strip() if len(partes) > 1 else resultado[i]
+                raw_name = partes[0].strip()
+                if len(raw_name) <= 80 and len(partes) > 1:
+                    name = raw_name.upper()
+                    value = partes[1].strip()[:1024]
+                else:
+                    name = '—'
+                    value = resultado[i][:1024]
                 if name and value:
                     embed.add_field(name=name, value=value, inline=False)
             except Exception as e:
