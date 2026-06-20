@@ -34,7 +34,8 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 ### Juegos
 | Comando | Descripción |
 |---|---|
-| `/calc` | Calculadora con botones |
+| `/calcular [expresion]` | Evalúa una expresión matemática directamente (ej: `2+2`, `(5+3)*2`, `2**8`) |
+| `/calc` | Calculadora interactiva con botones |
 | `/gato [@oponente]` | Tic-tac-toe 3×3 — contra otro usuario o contra el bot (minimax) |
 | `/ppt [@oponente]` | Piedra Papel Tijeras — contra otro usuario (elección secreta) o contra el bot |
 | `/trivia [categoría]` | Pregunta de trivia con 4 opciones (Open Trivia DB, 13 categorías) |

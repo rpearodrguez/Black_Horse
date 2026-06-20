@@ -214,7 +214,8 @@ async def help_cmd(interaction: discord.Interaction):
         "`/vn` Informacion de una novela visual (VNDB)"
     ))
     embed.add_field(name="Juegos", inline=False, value=(
-        "`/calc` Calculadora\n"
+        "`/calcular` Evalua una expresion matematica directamente\n"
+        "`/calc` Calculadora con botones\n"
         "`/gato` Tic-tac-toe — vs otro usuario o vs el bot\n"
         "`/ppt` Piedra Papel Tijeras — vs otro usuario o vs el bot\n"
         "`/trivia` Pregunta de trivia con 4 opciones (13 categorias)\n"
@@ -493,6 +494,22 @@ async def dosmil_cmd(interaction: discord.Interaction):
     view = _Game2048(interaction.guild_id, interaction.user.id)
     await interaction.response.send_message(embed=view._build_embed(), view=view)
     view.message = await interaction.original_response()
+
+
+@tree.command(name='calcular', description='Evalua una expresion matematica')
+@app_commands.describe(expresion='Expresion a calcular (ej: 2+2, 10/3, (5+3)*2, 2**8)')
+async def calcular_cmd(interaction: discord.Interaction, expresion: str):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    if len(expresion) > 200:
+        await interaction.response.send_message('Expresion demasiado larga.', ephemeral=True)
+        return
+    expr = expresion.replace('×', '*').replace('÷', '/').replace('−', '-')
+    result = _calc_eval(expr)
+    color = 0xE74C3C if result.startswith('Error') else 0x57F287
+    embed = discord.Embed(title='Calculadora', color=color)
+    embed.add_field(name='Expresion', value='`' + expresion + '`', inline=False)
+    embed.add_field(name='Resultado', value='`' + result + '`', inline=False)
+    await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name='ppt', description='Piedra, Papel o Tijeras')
@@ -781,7 +798,7 @@ async def vn_cmd(interaction: discord.Interaction, busqueda: str):
 
 
 
-from Games import _Calculator, _Trivia, _RPS, _Minesweeper, _Hangman, _Snake, _Game2048, _Dungeon, _TicTacToe
+from Games import _Calculator, _Trivia, _RPS, _Minesweeper, _Hangman, _Snake, _Game2048, _Dungeon, _TicTacToe, _calc_eval
 
 class _ImageNav(discord.ui.View):
     def __init__(self, imagenes: list, busqueda: str, guild_id: int):
