@@ -753,7 +753,7 @@ def personajeSearch(query: str) -> dict | None:
     try:
         r = requests.get(
             'https://api.jikan.moe/v4/characters',
-            params={'q': query, 'limit': 1, 'order_by': 'favorites', 'sort': 'desc'},
+            params={'q': query, 'limit': 1},
             timeout=10,
         )
         data = r.json()
