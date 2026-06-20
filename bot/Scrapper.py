@@ -693,3 +693,72 @@ def pokemonByType(api_type: str, lang: str = "es"):
     if not base:
         return None
     return pokemonSearch(random.choice(base), lang=lang)
+
+
+# ── VNDB ──────────────────────────────────────────────────────────────────────
+
+_VNDB_API = "https://api.vndb.org/kana"
+
+_VN_PLATFORMS = {
+    "win": "Windows", "lin": "Linux", "mac": "macOS", "web": "Web",
+    "and": "Android", "ios": "iOS", "xbo": "Xbox", "ps5": "PS5",
+    "ps4": "PS4", "ps3": "PS3", "psv": "PS Vita", "swi": "Switch",
+    "nds": "DS", "mob": "Mobile",
+}
+
+def _strip_vndb_markup(text: str) -> str:
+    text = re.sub(r'\[spoiler\].*?\[/spoiler\]', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'\[url=[^\]]*\](.*?)\[/url\]', r'\1', text, flags=re.DOTALL)
+    text = re.sub(r'\[[^\]]*\]', '', text)
+    return text.strip()
+
+
+def vnSearch(busqueda: str):
+    resp = requests.post(
+        f"{_VNDB_API}/vn",
+        json={
+            "filters": ["search", "=", busqueda],
+            "fields": "title, alttitle, image.url, image.sexual, description, released, rating, length_minutes, tags.name, platforms, languages",
+            "results": 1,
+            "sort": "searchrank",
+        },
+        headers={"Content-Type": "application/json"},
+        timeout=10,
+    )
+    if resp.status_code != 200:
+        return None
+    results = resp.json().get("results", [])
+    if not results:
+        return None
+    vn = results[0]
+
+    length = vn.get("length_minutes")
+    if length:
+        h, m = divmod(length, 60)
+        length_str = f"{h}h {m}m" if h else f"{m}m"
+    else:
+        length_str = "—"
+
+    desc = vn.get("description") or ""
+    desc = _strip_vndb_markup(desc)
+    if len(desc) > 500:
+        desc = desc[:497] + "..."
+
+    rating = vn.get("rating")
+    rating_str = f"{rating / 10:.1f}/10" if rating else "—"
+
+    image_obj = vn.get("image") or {}
+    image_url = image_obj.get("url", "") if image_obj.get("sexual", 1) == 0 else ""
+
+    return {
+        "title": vn.get("title", "—"),
+        "alttitle": vn.get("alttitle") or "",
+        "image": image_url,
+        "description": desc,
+        "released": vn.get("released") or "—",
+        "rating": rating_str,
+        "length": length_str,
+        "tags": [t["name"] for t in (vn.get("tags") or [])[:8]],
+        "platforms": [_VN_PLATFORMS.get(p, p) for p in (vn.get("platforms") or [])],
+        "languages": vn.get("languages") or [],
+    }

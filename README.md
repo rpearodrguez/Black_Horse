@@ -28,6 +28,7 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/convert [monto] [desde] [hasta]` | Conversión de divisas (ej: `/convert 1000 CLP USD`) |
 | `/pokemon [nombre\|número\|random]` | Info de un Pokémon; autocompletado muestra formas alternativas |
 | `/poketype [tipo]` | Pokémon aleatorio de un tipo (autocompletado bilingüe con los 18 tipos) |
+| `/vn [título]` | Información de una novela visual (VNDB) |
 
 ### Roleplay
 | Comando | Descripción |

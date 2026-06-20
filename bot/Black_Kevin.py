@@ -560,6 +560,34 @@ async def steam_cmd(interaction: discord.Interaction, juego: str):
         await interaction.followup.send(BotConfig.t(interaction.guild_id, "juego_error"))
 
 
+@tree.command(name="vn", description="Busca una novela visual en VNDB")
+@app_commands.describe(busqueda="Titulo de la novela visual")
+async def vn_cmd(interaction: discord.Interaction, busqueda: str):
+    if not await _check_module(interaction, "entretenimiento"): return
+    await interaction.response.defer()
+    resultado = Scrapper.vnSearch(busqueda)
+    if not resultado:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultados"))
+        return
+    titulo = resultado["title"]
+    if resultado["alttitle"]:
+        titulo += " / " + resultado["alttitle"]
+    embed = discord.Embed(title=titulo, description=resultado["description"] or None, color=0x2B4C7E)
+    if resultado["image"]:
+        embed.set_thumbnail(url=resultado["image"])
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_lanzamiento"), value=resultado["released"], inline=True)
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_calificacion"), value=resultado["rating"], inline=True)
+    embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_duracion"), value=resultado["length"], inline=True)
+    if resultado["platforms"]:
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_plataformas"), value=", ".join(resultado["platforms"]), inline=True)
+    if resultado["languages"]:
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_idiomas"), value=", ".join(resultado["languages"]).upper(), inline=True)
+    if resultado["tags"]:
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_etiquetas"), value=", ".join(resultado["tags"]), inline=False)
+    embed.set_footer(text="Fuente: VNDB (vndb.org)")
+    await interaction.followup.send(embed=embed)
+
+
 @tree.command(name="img", description="Busca una imagen (solo canales SFW)")
 @app_commands.describe(busqueda="Termino de busqueda")
 async def img_cmd(interaction: discord.Interaction, busqueda: str):
