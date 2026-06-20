@@ -29,6 +29,20 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/pokemon [nombre\|número\|random]` | Info de un Pokémon; autocompletado muestra formas alternativas |
 | `/poketype [tipo]` | Pokémon aleatorio de un tipo (autocompletado bilingüe con los 18 tipos) |
 | `/vn [título]` | Información de una novela visual (VNDB) |
+| `/hora` | Hora actual en múltiples zonas horarias del mundo |
+
+### Juegos
+| Comando | Descripción |
+|---|---|
+| `/calc` | Calculadora con botones |
+| `/gato [@oponente]` | Tic-tac-toe 3×3 — contra otro usuario o contra el bot (minimax) |
+| `/ppt [@oponente]` | Piedra Papel Tijeras — contra otro usuario (elección secreta) o contra el bot |
+| `/trivia [categoría]` | Pregunta de trivia con 4 opciones (Open Trivia DB, 13 categorías) |
+| `/dungeon` | Dungeon crawler ASCII de 3 niveles |
+| `/ahorcado` | Adivina la palabra letra por letra |
+| `/snake` | Snake en cuadrícula 8×8 |
+| `/dosmil` | 2048 — combina fichas hasta llegar a 2048 |
+| `/buscaminas` | Buscaminas 5×5 — no pises las minas |
 
 ### Roleplay
 | Comando | Descripción |

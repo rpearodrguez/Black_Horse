@@ -284,20 +284,22 @@ def nhentaiTagSearch(tag):
         logger.error(f"nhentaiTagSearch '{tag}': {e}")
     return None
 
-def imgSearch(search_term="busqueda"):
+def imgSearch(busqueda: str, count: int = 5) -> list:
+    key = os.environ.get('GOOGLE_CUSTOM_SEARCH')
+    cx = os.environ.get('ID_BUSCADOR_GOOGLE')
+    if not key or not cx:
+        return []
     try:
-        imagenes = ["resultado no encontrado"]
-        url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}&searchType=image&safe=active".format(os.environ.get('ID_BUSCADOR_GOOGLE'),os.environ.get('GOOGLE_CUSTOM_SEARCH'), search_term)
-        # open with GET method
-        resp = requests.get(url)
-        # http_respone 200 means OK status
-        if resp.status_code == 200:
-            gifs = json.loads(resp.content)
-            imagenes[0] = gifs["items"][0]["link"]
-            print(imagenes[0])
-        return imagenes[0]
-    except:
-        pass
+        resp = requests.get(
+            "https://www.googleapis.com/customsearch/v1",
+            params={"cx": cx, "key": key, "q": busqueda, "searchType": "image", "safe": "active", "num": count},
+            timeout=10,
+        )
+        if resp.status_code != 200:
+            return []
+        return [item["link"] for item in resp.json().get("items", [])]
+    except Exception:
+        return []
 
 def ccSearch():
     url = "https://www.cuantocabron.com/aleatorio/p/1"
@@ -708,4 +710,25 @@ def vnSearch(busqueda: str):
         "tags": [t["name"] for t in (vn.get("tags") or [])[:8]],
         "platforms": [_VN_PLATFORMS.get(p, p) for p in (vn.get("platforms") or [])],
         "languages": vn.get("languages") or [],
+    }
+
+def triviaQuestion(category_id: int = None) -> dict | None:
+    params = {"amount": 1, "type": "multiple", "encode": "url3986"}
+    if category_id:
+        params["category"] = category_id
+    try:
+        r = requests.get("https://opentdb.com/api.php", params=params, timeout=10)
+        data = r.json()
+    except Exception:
+        return None
+    if data.get("response_code") != 0 or not data.get("results"):
+        return None
+    q = data["results"][0]
+    decode = lambda s: html.unescape(urllib.parse.unquote(s))
+    return {
+        "question":   decode(q["question"]),
+        "correct":    decode(q["correct_answer"]),
+        "incorrect":  [decode(a) for a in q["incorrect_answers"]],
+        "difficulty": q["difficulty"],
+        "category":   decode(q["category"]),
     }

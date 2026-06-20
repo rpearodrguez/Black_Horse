@@ -1,12 +1,17 @@
+import ast as _ast
+import random
 import asyncio
+import datetime
 import discord
 from discord import app_commands
+import operator as _op
+from zoneinfo import ZoneInfo
+import data as D
 import Scrapper
 import Roleplay
 import Feels
 import BotConfig
 import os
-import datetime
 import logging
 from collections import deque
 
@@ -341,6 +346,169 @@ async def say_cmd(interaction: discord.Interaction, mensaje: str):
     await interaction.response.send_message(mensaje)
 
 
+async def _hora_autocomplete(interaction: discord.Interaction, current: str) -> list:
+    lang = BotConfig.get_language(interaction.guild_id)
+    idx = 0 if lang == "es" else 1
+    return [
+        app_commands.Choice(name=f"{tz[3]} {tz[idx]}", value=tz[2])
+        for tz in D.TIMEZONES
+        if current.lower() in tz[0].lower() or current.lower() in tz[1].lower()
+    ][:25]
+
+
+@tree.command(name="hora", description="Hora actual en el mundo")
+@app_commands.describe(zona="Ciudad (opcional — autocompletado disponible)")
+@app_commands.autocomplete(zona=_hora_autocomplete)
+async def hora_cmd(interaction: discord.Interaction, zona: str = None):
+    if not await _check_module(interaction, "general"): return
+    lang = BotConfig.get_language(interaction.guild_id)
+    days = D.DAYS[lang]
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
+
+    if zona:
+        try:
+            tz = ZoneInfo(zona)
+        except Exception:
+            await interaction.response.send_message(BotConfig.t(interaction.guild_id, "sin_resultados"), ephemeral=True)
+            return
+        now = now_utc.astimezone(tz)
+        offset_secs = now.utcoffset().total_seconds()
+        offset_h = int(offset_secs // 3600)
+        offset_m = int((abs(offset_secs) % 3600) // 60)
+        offset_str = f"UTC{'+' if offset_h >= 0 else ''}{offset_h}" + (f":{offset_m:02d}" if offset_m else "")
+        entry = next((t for t in D.TIMEZONES if t[2] == zona), None)
+        flag = entry[3] if entry else "🌐"
+        city = entry[0 if lang == "es" else 1] if entry else zona
+        embed = discord.Embed(title=f"{flag} {city} — {now.strftime('%H:%M')}", color=0x2F81C7)
+        embed.add_field(name=BotConfig.t(interaction.guild_id, "hora_fecha"),
+                        value=f"{now.strftime('%d/%m/%Y')} ({days[now.weekday()]})", inline=True)
+        embed.add_field(name="UTC", value=offset_str, inline=True)
+        await interaction.response.send_message(embed=embed)
+    else:
+        main = D.TIMEZONES[:D.HORA_MAIN]
+        lines = []
+        for es_name, en_name, tz_id, flag in main:
+            now = now_utc.astimezone(ZoneInfo(tz_id))
+            city = es_name if lang == "es" else en_name
+            lines.append(f"{flag} **{city}** — {now.strftime('%H:%M')} ({days[now.weekday()]})")
+        embed = discord.Embed(
+            title=BotConfig.t(interaction.guild_id, "hora_titulo"),
+            description="\n".join(lines),
+            color=0x2F81C7,
+        )
+        embed.set_footer(text=f"UTC {now_utc.strftime('%H:%M')}")
+        await interaction.response.send_message(embed=embed)
+
+
+@tree.command(name="calc", description="Calculadora interactiva")
+async def calc_cmd(interaction: discord.Interaction):
+    if not await _check_module(interaction, "general"): return
+    view = _Calculator()
+    await interaction.response.send_message(embed=view._build_embed(), view=view)
+
+
+@tree.command(name="gato", description="Juega al gato (tic-tac-toe)")
+@app_commands.describe(oponente="Usuario con quien jugar (opcional — sin @usuario juegas contra el bot)")
+async def gato_cmd(interaction: discord.Interaction, oponente: discord.Member = None):
+    if not await _check_module(interaction, "entretenimiento"): return
+    if oponente.id == interaction.user.id:
+        await interaction.response.send_message(
+            BotConfig.t(interaction.guild_id, "gato_vs_si"), ephemeral=True)
+        return
+    if oponente.bot:
+        await interaction.response.send_message(
+            BotConfig.t(interaction.guild_id, "gato_vs_bot"), ephemeral=True)
+        return
+    view = _TicTacToe(interaction.user, oponente, interaction.guild_id)
+    await interaction.response.send_message(embed=view._build_embed(), view=view)
+
+
+async def _trivia_autocomplete(interaction: discord.Interaction, current: str):
+    lang = BotConfig.get_language(interaction.guild_id)
+    name_idx = 1 if lang == "es" else 2
+    return [
+        app_commands.Choice(name=cat[name_idx], value=str(cat[0]))
+        for cat in D.TRIVIA_CATEGORIES
+        if current.lower() in cat[1].lower() or current.lower() in cat[2].lower()
+    ][:25]
+
+
+@tree.command(name="trivia", description="Pregunta de trivia aleatoria")
+@app_commands.describe(categoria="Categoría de la pregunta (opcional)")
+@app_commands.autocomplete(categoria=_trivia_autocomplete)
+async def trivia_cmd(interaction: discord.Interaction, categoria: str = None):
+    if not await _check_module(interaction, "entretenimiento"): return
+    await interaction.response.defer()
+    cat_id = int(categoria) if categoria and categoria.isdigit() else None
+    q = Scrapper.triviaQuestion(cat_id)
+    if not q:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultados"))
+        return
+    lang = BotConfig.get_language(interaction.guild_id)
+    view = _Trivia(q, interaction.guild_id)
+    msg = await interaction.followup.send(embed=view._question_embed(lang), view=view)
+    view.message = msg
+
+
+@tree.command(name="dungeon", description="Dungeon crawler — explora, mata enemigos y sobrevive")
+async def dungeon_cmd(interaction: discord.Interaction):
+    if not await _check_module(interaction, "entretenimiento"): return
+    view = _Dungeon(interaction.guild_id, interaction.user.id)
+    await interaction.response.send_message(embed=view._build_embed(), view=view)
+    view.message = await interaction.original_response()
+
+
+@tree.command(name='ahorcado', description='Adivina la palabra letra por letra')
+async def ahorcado_cmd(interaction: discord.Interaction):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    view = _Hangman(interaction.guild_id)
+    await interaction.response.send_message(embed=view._build_embed(), view=view)
+
+
+@tree.command(name='snake', description='Snake — come manzanas sin chocarte')
+async def snake_cmd(interaction: discord.Interaction):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    view = _Snake(interaction.guild_id, interaction.user.id)
+    await interaction.response.send_message(embed=view._build_embed(), view=view)
+    view.message = await interaction.original_response()
+
+
+@tree.command(name='dosmil', description='2048 — combina fichas hasta llegar a 2048')
+async def dosmil_cmd(interaction: discord.Interaction):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    view = _Game2048(interaction.guild_id, interaction.user.id)
+    await interaction.response.send_message(embed=view._build_embed(), view=view)
+    view.message = await interaction.original_response()
+
+
+@tree.command(name='ppt', description='Piedra, Papel o Tijeras')
+@app_commands.describe(oponente='Usuario contra quien jugar (opcional — sin @usuario juegas contra el bot)')
+async def ppt_cmd(interaction: discord.Interaction, oponente: discord.Member = None):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    if oponente is not None:
+        if oponente.id == interaction.user.id:
+            await interaction.response.send_message(BotConfig.t(interaction.guild_id, 'gato_vs_si'), ephemeral=True)
+            return
+        if oponente.bot:
+            await interaction.response.send_message(BotConfig.t(interaction.guild_id, 'gato_vs_bot'), ephemeral=True)
+            return
+    view = _RPS(interaction.user, oponente, interaction.guild_id)
+    vs = oponente.mention if oponente else '🤖 Bot'
+    embed = discord.Embed(title='🪨📄✂️ Piedra Papel Tijeras',
+                          description=f'{interaction.user.mention} vs {vs}\nElige en secreto:',
+                          color=0x3498DB)
+    await interaction.response.send_message(embed=embed, view=view)
+    view.message = await interaction.original_response()
+
+
+@tree.command(name='buscaminas', description='Buscaminas 5×5 — no pises las minas')
+async def buscaminas_cmd(interaction: discord.Interaction):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    view = _Minesweeper(interaction.guild_id, interaction.user.id)
+    await interaction.response.send_message(embed=view._build_embed(), view=view)
+    view.message = await interaction.original_response()
+
+
 # ──────────────────────────────────────────────
 # NSFW
 # ──────────────────────────────────────────────
@@ -595,6 +763,70 @@ async def vn_cmd(interaction: discord.Interaction, busqueda: str):
     await interaction.followup.send(embed=embed)
 
 
+
+
+def _calc_eval(expr: str) -> str:
+    _OPS = {
+        _ast.Add: _op.add, _ast.Sub: _op.sub,
+        _ast.Mult: _op.mul, _ast.Div: _op.truediv,
+        _ast.Mod: _op.mod, _ast.Pow: _op.pow,
+        _ast.USub: _op.neg,
+    }
+    def _ev(n):
+        if isinstance(n, _ast.Constant) and isinstance(n.value, (int, float)):
+            return n.value
+        if isinstance(n, _ast.BinOp) and type(n.op) in _OPS:
+            l, r = _ev(n.left), _ev(n.right)
+            if isinstance(n.op, _ast.Div) and r == 0:
+                raise ZeroDivisionError
+            return _OPS[type(n.op)](l, r)
+        if isinstance(n, _ast.UnaryOp) and type(n.op) in _OPS:
+            return _OPS[type(n.op)](_ev(n.operand))
+        raise ValueError
+    try:
+        r = _ev(_ast.parse(expr, mode='eval').body)
+        if isinstance(r, float):
+            return f"{r:.10g}" if not r.is_integer() else str(int(r))
+        return str(r)
+    except ZeroDivisionError:
+        return 'Error: ÷0'
+    except Exception:
+        return 'Error'
+
+
+from Games import _Calculator, _Trivia, _RPS, _Minesweeper, _Hangman, _Snake, _Game2048, _Dungeon, _TicTacToe
+
+class _ImageNav(discord.ui.View):
+    def __init__(self, imagenes: list, busqueda: str, guild_id: int):
+        super().__init__(timeout=120)
+        self.imagenes = imagenes
+        self.busqueda = busqueda
+        self.guild_id = guild_id
+        self.index = 0
+        if len(imagenes) <= 1:
+            for child in self.children:
+                child.disabled = True
+
+    def build_embed(self) -> discord.Embed:
+        embed = discord.Embed(
+            title=BotConfig.t(self.guild_id, "imagen_encontrada"),
+            description=self.busqueda,
+        )
+        embed.set_image(url=self.imagenes[self.index])
+        embed.set_footer(text=f"{self.index + 1} / {len(self.imagenes)}")
+        return embed
+
+    @discord.ui.button(emoji="⬅️", style=discord.ButtonStyle.secondary)
+    async def prev_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.index = (self.index - 1) % len(self.imagenes)
+        await interaction.response.edit_message(embed=self.build_embed())
+
+    @discord.ui.button(emoji="➡️", style=discord.ButtonStyle.secondary)
+    async def next_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.index = (self.index + 1) % len(self.imagenes)
+        await interaction.response.edit_message(embed=self.build_embed())
+
+
 @tree.command(name="img", description="Busca una imagen (solo canales SFW)")
 @app_commands.describe(busqueda="Termino de busqueda")
 async def img_cmd(interaction: discord.Interaction, busqueda: str):
@@ -602,18 +834,13 @@ async def img_cmd(interaction: discord.Interaction, busqueda: str):
     if interaction.channel.is_nsfw():
         await interaction.response.send_message(BotConfig.t(interaction.guild_id, "solo_sfw"), ephemeral=True)
         return
-    bloqueados = ["loli", "rape", "lolicon", "violacion", "violación", "genocidio", "genocide"]
-    if any(w in busqueda.lower().split() for w in bloqueados):
-        await interaction.response.send_message(
-            "Se solicito la busqueda de un termino ilegal, se procedio a enviar su IP a las autoridades correspondientes. Feliz navidad uwu",
-            ephemeral=True
-        )
-        return
     await interaction.response.defer()
-    resultado = Scrapper.imgSearch(busqueda.replace(" ", "+"))
-    embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "imagen_encontrada"), description=busqueda)
-    embed.set_image(url=resultado)
-    await interaction.followup.send(embed=embed)
+    imagenes = Scrapper.imgSearch(busqueda)
+    if not imagenes:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultados"))
+        return
+    view = _ImageNav(imagenes, busqueda, interaction.guild_id)
+    await interaction.followup.send(embed=view.build_embed(), view=view)
 
 
 @tree.command(name="cc", description="Meme aleatorio de CuantoCabron")
@@ -920,331 +1147,11 @@ async def cookie_cmd(interaction: discord.Interaction, usuario: discord.Member =
     await interaction.response.send_message(embed=embed)
 
 
+
 # ──────────────────────────────────────────────
 # POKÉMON
 # ──────────────────────────────────────────────
 
-_TYPE_COLORS = {
-    "Fire": 0xF08030, "Water": 0x6890F0, "Grass": 0x78C850,
-    "Electric": 0xF8D030, "Ice": 0x98D8D8, "Fighting": 0xC03028,
-    "Poison": 0xA040A0, "Ground": 0xE0C068, "Flying": 0xA890F0,
-    "Psychic": 0xF85888, "Bug": 0xA8B820, "Rock": 0xB8A038,
-    "Ghost": 0x705898, "Dragon": 0x7038F8, "Dark": 0x705848,
-    "Steel": 0xB8B8D0, "Fairy": 0xEE99AC, "Normal": 0xA8A878,
-}
-_STAT_NAMES = {
-    "hp": "HP",
-    "attack": "Ataque",
-    "defense": "Defensa",
-    "special-attack": "Sp. Ataque",
-    "special-defense": "Sp. Defensa",
-    "speed": "Velocidad",
-}
-
-
-# (español, inglés, valor API)
-_TYPES = [
-    ("Normal",    "Normal",    "normal"),
-    ("Fuego",     "Fire",      "fire"),
-    ("Agua",      "Water",     "water"),
-    ("Eléctrico", "Electric",  "electric"),
-    ("Planta",    "Grass",     "grass"),
-    ("Hielo",     "Ice",       "ice"),
-    ("Lucha",     "Fighting",  "fighting"),
-    ("Veneno",    "Poison",    "poison"),
-    ("Tierra",    "Ground",    "ground"),
-    ("Volador",   "Flying",    "flying"),
-    ("Psíquico",  "Psychic",   "psychic"),
-    ("Bicho",     "Bug",       "bug"),
-    ("Roca",      "Rock",      "rock"),
-    ("Fantasma",  "Ghost",     "ghost"),
-    ("Dragón",    "Dragon",    "dragon"),
-    ("Siniestro", "Dark",      "dark"),
-    ("Acero",     "Steel",     "steel"),
-    ("Hada",      "Fairy",     "fairy"),
-]
-
-
-def _pokemon_embed(resultado: dict) -> discord.Embed:
-    color = _TYPE_COLORS.get(resultado["types"][0], 0x5865F2)
-    stats_str = "\n".join(f"{_STAT_NAMES.get(k, k)}: **{v}**" for k, v in resultado["stats"].items())
-    embed = discord.Embed(
-        title=f"#{resultado['dex']:04d} — {resultado['name']}",
-        description=resultado["flavor"] or None,
-        color=color,
-    )
-    if resultado["image"]:
-        embed.set_thumbnail(url=resultado["image"])
-    embed.add_field(name="Tipo", value=" / ".join(resultado["types"]), inline=True)
-    embed.add_field(name="Altura / Peso", value=f"{resultado['height']}m / {resultado['weight']}kg", inline=True)
-    if resultado["abilities"]:
-        embed.add_field(name="Habilidades", value=", ".join(resultado["abilities"]), inline=True)
-    if resultado["hidden"]:
-        embed.add_field(name="Habilidad oculta", value=", ".join(resultado["hidden"]), inline=True)
-    embed.add_field(name="Stats base", value=stats_str, inline=False)
-    embed.set_footer(text="Fuente: PokéAPI (pokeapi.co)")
-    return embed
-
-
-# Registro de Pokémon con formas alternativas verificadas en PokéAPI.
-# Clave: nombre base que el usuario escribiría.
-# Valor: lista de (label_es, label_en, api_name)
-_POKEMON_FORMS: dict[str, list[tuple[str, str, str]]] = {
-    # ── Gen 3 ───────────────────────────────────────────────────────────────
-    "castform": [
-        ("Castform",             "Castform",             "castform"),
-        ("Castform (Sol)",       "Castform (Sunny)",     "castform-sunny"),
-        ("Castform (Lluvia)",    "Castform (Rainy)",     "castform-rainy"),
-        ("Castform (Nieve)",     "Castform (Snowy)",     "castform-snowy"),
-    ],
-    "deoxys": [
-        ("Deoxys (Normal)",      "Deoxys (Normal)",      "deoxys-normal"),
-        ("Deoxys (Ataque)",      "Deoxys (Attack)",      "deoxys-attack"),
-        ("Deoxys (Defensa)",     "Deoxys (Defense)",     "deoxys-defense"),
-        ("Deoxys (Velocidad)",   "Deoxys (Speed)",       "deoxys-speed"),
-    ],
-    "wormadam": [
-        ("Wormadam (Planta)",    "Wormadam (Plant)",     "wormadam-plant"),
-        ("Wormadam (Arena)",     "Wormadam (Sandy)",     "wormadam-sandy"),
-        ("Wormadam (Basura)",    "Wormadam (Trash)",     "wormadam-trash"),
-    ],
-    # ── Gen 4 ───────────────────────────────────────────────────────────────
-    "rotom": [
-        ("Rotom",                "Rotom",                "rotom"),
-        ("Rotom (Calor)",        "Rotom (Heat)",         "rotom-heat"),
-        ("Rotom (Lavadora)",     "Rotom (Wash)",         "rotom-wash"),
-        ("Rotom (Frío)",         "Rotom (Frost)",        "rotom-frost"),
-        ("Rotom (Ventilador)",   "Rotom (Fan)",          "rotom-fan"),
-        ("Rotom (Cortadora)",    "Rotom (Mow)",          "rotom-mow"),
-    ],
-    "giratina": [
-        ("Giratina (Alterada)",  "Giratina (Altered)",   "giratina-altered"),
-        ("Giratina (Origen)",    "Giratina (Origin)",    "giratina-origin"),
-    ],
-    "shaymin": [
-        ("Shaymin (Tierra)",     "Shaymin (Land)",       "shaymin-land"),
-        ("Shaymin (Cielo)",      "Shaymin (Sky)",        "shaymin-sky"),
-    ],
-    # ── Gen 5 ───────────────────────────────────────────────────────────────
-    "basculin": [
-        ("Basculin (Rojo)",      "Basculin (Red)",       "basculin-red-striped"),
-        ("Basculin (Azul)",      "Basculin (Blue)",      "basculin-blue-striped"),
-    ],
-    "darmanitan": [
-        ("Darmanitan (Unova)",       "Darmanitan (Unova)",       "darmanitan-standard"),
-        ("Darmanitan Zen (Unova)",   "Darmanitan Zen (Unova)",   "darmanitan-zen"),
-        ("Darmanitan (Galar)",       "Darmanitan (Galar)",       "darmanitan-galar-standard"),
-        ("Darmanitan Zen (Galar)",   "Darmanitan Zen (Galar)",   "darmanitan-galar-zen"),
-    ],
-    "tornadus": [
-        ("Tornadus (Encarnado)",  "Tornadus (Incarnate)", "tornadus-incarnate"),
-        ("Tornadus (Tótem)",      "Tornadus (Therian)",   "tornadus-therian"),
-    ],
-    "thundurus": [
-        ("Thundurus (Encarnado)", "Thundurus (Incarnate)", "thundurus-incarnate"),
-        ("Thundurus (Tótem)",     "Thundurus (Therian)",   "thundurus-therian"),
-    ],
-    "landorus": [
-        ("Landorus (Encarnado)",  "Landorus (Incarnate)", "landorus-incarnate"),
-        ("Landorus (Tótem)",      "Landorus (Therian)",   "landorus-therian"),
-    ],
-    "kyurem": [
-        ("Kyurem",               "Kyurem",               "kyurem"),
-        ("Kyurem Negro",         "Black Kyurem",         "kyurem-black"),
-        ("Kyurem Blanco",        "White Kyurem",         "kyurem-white"),
-    ],
-    "keldeo": [
-        ("Keldeo (Ordinario)",   "Keldeo (Ordinary)",    "keldeo-ordinary"),
-        ("Keldeo (Resuelto)",    "Keldeo (Resolute)",    "keldeo-resolute"),
-    ],
-    "meloetta": [
-        ("Meloetta (Aria)",      "Meloetta (Aria)",      "meloetta-aria"),
-        ("Meloetta (Pirouette)", "Meloetta (Pirouette)", "meloetta-pirouette"),
-    ],
-    # ── Gen 6 ───────────────────────────────────────────────────────────────
-    "aegislash": [
-        ("Aegislash (Escudo)",   "Aegislash (Shield)",   "aegislash-shield"),
-        ("Aegislash (Espada)",   "Aegislash (Blade)",    "aegislash-blade"),
-    ],
-    "zygarde": [
-        ("Zygarde 10%",          "Zygarde 10%",          "zygarde-10"),
-        ("Zygarde 50%",          "Zygarde 50%",          "zygarde-50"),
-        ("Zygarde Completo",     "Zygarde Complete",     "zygarde-complete"),
-    ],
-    "hoopa": [
-        ("Hoopa (Contenido)",    "Hoopa (Confined)",     "hoopa"),
-        ("Hoopa (Desatado)",     "Hoopa (Unbound)",      "hoopa-unbound"),
-    ],
-    # ── Gen 7 ───────────────────────────────────────────────────────────────
-    "oricorio": [
-        ("Oricorio (Baile)",     "Oricorio (Baile)",     "oricorio-baile"),
-        ("Oricorio (Pompón)",    "Oricorio (Pom-Pom)",   "oricorio-pom-pom"),
-        ("Oricorio (Pa'u)",      "Oricorio (Pa'u)",      "oricorio-pau"),
-        ("Oricorio (Sensu)",     "Oricorio (Sensu)",     "oricorio-sensu"),
-    ],
-    "lycanroc": [
-        ("Lycanroc (Diurno)",    "Lycanroc (Midday)",    "lycanroc-midday"),
-        ("Lycanroc (Nocturno)",  "Lycanroc (Midnight)",  "lycanroc-midnight"),
-        ("Lycanroc (Crepúsculo)","Lycanroc (Dusk)",      "lycanroc-dusk"),
-    ],
-    "wishiwashi": [
-        ("Wishiwashi (Solo)",    "Wishiwashi (Solo)",    "wishiwashi-solo"),
-        ("Wishiwashi (Banco)",   "Wishiwashi (School)",  "wishiwashi-school"),
-    ],
-    "necrozma": [
-        ("Necrozma",             "Necrozma",             "necrozma"),
-        ("Necrozma (Alba)",      "Necrozma (Dawn Wings)", "necrozma-dawn"),
-        ("Necrozma (Ocaso)",     "Necrozma (Dusk Mane)", "necrozma-dusk"),
-        ("Necrozma Ultra",       "Ultra Necrozma",       "necrozma-ultra"),
-    ],
-    # ── Gen 8 ───────────────────────────────────────────────────────────────
-    "toxtricity": [
-        ("Toxtricity (Amplio)",  "Toxtricity (Amped)",   "toxtricity-amped"),
-        ("Toxtricity (Grave)",   "Toxtricity (Low Key)", "toxtricity-low-key"),
-    ],
-    "urshifu": [
-        ("Urshifu (Golpe Único)","Urshifu (Single Strike)", "urshifu-single-strike"),
-        ("Urshifu (Golpe Rápido)","Urshifu (Rapid Strike)","urshifu-rapid-strike"),
-    ],
-    "zacian": [
-        ("Zacian (Héroe)",       "Zacian (Hero)",        "zacian"),
-        ("Zacian (Coronado)",    "Zacian (Crowned)",     "zacian-crowned"),
-    ],
-    "zamazenta": [
-        ("Zamazenta (Héroe)",    "Zamazenta (Hero)",     "zamazenta"),
-        ("Zamazenta (Coronado)", "Zamazenta (Crowned)",  "zamazenta-crowned"),
-    ],
-    "calyrex": [
-        ("Calyrex",              "Calyrex",              "calyrex"),
-        ("Calyrex (Hielo)",      "Calyrex (Ice Rider)",  "calyrex-ice"),
-        ("Calyrex (Sombra)",     "Calyrex (Shadow Rider)","calyrex-shadow"),
-    ],
-    # ── Gen 9 ───────────────────────────────────────────────────────────────
-    "tauros": [
-        ("Tauros (Kanto)",       "Tauros (Kanto)",       "tauros"),
-        ("Tauros (Combate)",     "Tauros (Combat)",      "tauros-paldea-combat-breed"),
-        ("Tauros (Fuego)",       "Tauros (Blaze)",       "tauros-paldea-blaze-breed"),
-        ("Tauros (Agua)",        "Tauros (Aqua)",        "tauros-paldea-aqua-breed"),
-    ],
-    "wooper": [
-        ("Wooper (Johto)",       "Wooper (Johto)",       "wooper"),
-        ("Wooper (Paldea)",      "Wooper (Paldea)",      "wooper-paldea"),
-    ],
-    "palafin": [
-        ("Palafin (Cero)",       "Palafin (Zero)",       "palafin-zero"),
-        ("Palafin (Héroe)",      "Palafin (Hero)",       "palafin-hero"),
-    ],
-    "tatsugiri": [
-        ("Tatsugiri (Rizado)",   "Tatsugiri (Curly)",    "tatsugiri-curly"),
-        ("Tatsugiri (Caído)",    "Tatsugiri (Droopy)",   "tatsugiri-droopy"),
-        ("Tatsugiri (Estirado)", "Tatsugiri (Stretchy)", "tatsugiri-stretchy"),
-    ],
-    # ── Formas regionales ───────────────────────────────────────────────────
-    "raichu": [
-        ("Raichu (Kanto)",       "Raichu (Kanto)",       "raichu"),
-        ("Raichu (Alola)",       "Raichu (Alola)",       "raichu-alola"),
-    ],
-    "sandshrew": [
-        ("Sandshrew (Kanto)",    "Sandshrew (Kanto)",    "sandshrew"),
-        ("Sandshrew (Alola)",    "Sandshrew (Alola)",    "sandshrew-alola"),
-    ],
-    "sandslash": [
-        ("Sandslash (Kanto)",    "Sandslash (Kanto)",    "sandslash"),
-        ("Sandslash (Alola)",    "Sandslash (Alola)",    "sandslash-alola"),
-    ],
-    "vulpix": [
-        ("Vulpix (Kanto)",       "Vulpix (Kanto)",       "vulpix"),
-        ("Vulpix (Alola)",       "Vulpix (Alola)",       "vulpix-alola"),
-    ],
-    "ninetales": [
-        ("Ninetales (Kanto)",    "Ninetales (Kanto)",    "ninetales"),
-        ("Ninetales (Alola)",    "Ninetales (Alola)",    "ninetales-alola"),
-    ],
-    "grimer": [
-        ("Grimer (Kanto)",       "Grimer (Kanto)",       "grimer"),
-        ("Grimer (Alola)",       "Grimer (Alola)",       "grimer-alola"),
-    ],
-    "muk": [
-        ("Muk (Kanto)",          "Muk (Kanto)",          "muk"),
-        ("Muk (Alola)",          "Muk (Alola)",          "muk-alola"),
-    ],
-    "exeggutor": [
-        ("Exeggutor (Kanto)",    "Exeggutor (Kanto)",    "exeggutor"),
-        ("Exeggutor (Alola)",    "Exeggutor (Alola)",    "exeggutor-alola"),
-    ],
-    "marowak": [
-        ("Marowak (Kanto)",      "Marowak (Kanto)",      "marowak"),
-        ("Marowak (Alola)",      "Marowak (Alola)",      "marowak-alola"),
-    ],
-    "ponyta": [
-        ("Ponyta (Kanto)",       "Ponyta (Kanto)",       "ponyta"),
-        ("Ponyta (Galar)",       "Ponyta (Galar)",       "ponyta-galar"),
-    ],
-    "rapidash": [
-        ("Rapidash (Kanto)",     "Rapidash (Kanto)",     "rapidash"),
-        ("Rapidash (Galar)",     "Rapidash (Galar)",     "rapidash-galar"),
-    ],
-    "slowpoke": [
-        ("Slowpoke (Kanto)",     "Slowpoke (Kanto)",     "slowpoke"),
-        ("Slowpoke (Galar)",     "Slowpoke (Galar)",     "slowpoke-galar"),
-    ],
-    "slowbro": [
-        ("Slowbro (Kanto)",      "Slowbro (Kanto)",      "slowbro"),
-        ("Slowbro (Galar)",      "Slowbro (Galar)",      "slowbro-galar"),
-    ],
-    "slowking": [
-        ("Slowking (Johto)",     "Slowking (Johto)",     "slowking"),
-        ("Slowking (Galar)",     "Slowking (Galar)",     "slowking-galar"),
-    ],
-    "farfetchd": [
-        ("Farfetch'd (Kanto)",   "Farfetch'd (Kanto)",   "farfetchd"),
-        ("Farfetch'd (Galar)",   "Farfetch'd (Galar)",   "farfetchd-galar"),
-    ],
-    "weezing": [
-        ("Weezing (Kanto)",      "Weezing (Kanto)",      "weezing"),
-        ("Weezing (Galar)",      "Weezing (Galar)",      "weezing-galar"),
-    ],
-    "mr-mime": [
-        ("Mr. Mime (Kanto)",     "Mr. Mime (Kanto)",     "mr-mime"),
-        ("Mr. Mime (Galar)",     "Mr. Mime (Galar)",     "mr-mime-galar"),
-    ],
-    "articuno": [
-        ("Articuno (Kanto)",     "Articuno (Kanto)",     "articuno"),
-        ("Articuno (Galar)",     "Articuno (Galar)",     "articuno-galar"),
-    ],
-    "zapdos": [
-        ("Zapdos (Kanto)",       "Zapdos (Kanto)",       "zapdos"),
-        ("Zapdos (Galar)",       "Zapdos (Galar)",       "zapdos-galar"),
-    ],
-    "moltres": [
-        ("Moltres (Kanto)",      "Moltres (Kanto)",      "moltres"),
-        ("Moltres (Galar)",      "Moltres (Galar)",      "moltres-galar"),
-    ],
-    "corsola": [
-        ("Corsola (Johto)",      "Corsola (Johto)",      "corsola"),
-        ("Corsola (Galar)",      "Corsola (Galar)",      "corsola-galar"),
-    ],
-    "zigzagoon": [
-        ("Zigzagoon (Hoenn)",    "Zigzagoon (Hoenn)",    "zigzagoon"),
-        ("Zigzagoon (Galar)",    "Zigzagoon (Galar)",    "zigzagoon-galar"),
-    ],
-    "linoone": [
-        ("Linoone (Hoenn)",      "Linoone (Hoenn)",      "linoone"),
-        ("Linoone (Galar)",      "Linoone (Galar)",      "linoone-galar"),
-    ],
-    "darumaka": [
-        ("Darumaka (Unova)",     "Darumaka (Unova)",     "darumaka"),
-        ("Darumaka (Galar)",     "Darumaka (Galar)",     "darumaka-galar"),
-    ],
-    "yamask": [
-        ("Yamask (Unova)",       "Yamask (Unova)",       "yamask"),
-        ("Yamask (Galar)",       "Yamask (Galar)",       "yamask-galar"),
-    ],
-    "stunfisk": [
-        ("Stunfisk (Unova)",     "Stunfisk (Unova)",     "stunfisk"),
-        ("Stunfisk (Galar)",     "Stunfisk (Galar)",     "stunfisk-galar"),
-    ],
-}
 
 
 async def _pokemon_autocomplete(interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
@@ -1253,7 +1160,7 @@ async def _pokemon_autocomplete(interaction: discord.Interaction, current: str) 
     current_lower = current.lower().replace(" ", "-")
     en = BotConfig.get_language(interaction.guild_id) == "en"
     results = []
-    for base_name, forms in _POKEMON_FORMS.items():
+    for base_name, forms in D.POKEMON_FORMS.items():
         if current_lower in base_name:
             for es_label, en_label, api_value in forms:
                 results.append(app_commands.Choice(
@@ -1281,7 +1188,7 @@ async def _tipo_autocomplete(interaction: discord.Interaction, current: str) -> 
     en = BotConfig.get_language(interaction.guild_id) == "en"
     return [
         app_commands.Choice(name=nombre_en if en else nombre_es, value=valor)
-        for nombre_es, nombre_en, valor in _TYPES
+        for nombre_es, nombre_en, valor in D.TYPES
         if current_lower in (nombre_en if en else nombre_es).lower() or current_lower in valor.lower()
     ][:25]
 
