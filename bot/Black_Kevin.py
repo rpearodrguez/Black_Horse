@@ -221,7 +221,6 @@ async def help_cmd(interaction: discord.Interaction):
         "`/trivia` Pregunta de trivia con 4 opciones (13 categorias)\n"
         "`/dungeon` Dungeon crawler de 3 niveles\n"
         "`/ahorcado` Adivina la palabra letra por letra\n"
-        "`/snake` Snake en cuadricula 8x8\n"
         "`/dosmil` 2048 — combina fichas hasta llegar a 2048\n"
         "`/buscaminas` Buscaminas 5x5 — no pises las minas"
     ))
@@ -491,13 +490,6 @@ async def ahorcado_cmd(interaction: discord.Interaction):
     view = _Hangman(interaction.guild_id)
     await interaction.response.send_message(embed=view._build_embed(), view=view)
 
-
-@tree.command(name='snake', description='Snake — come manzanas sin chocarte')
-async def snake_cmd(interaction: discord.Interaction):
-    if not await _check_module(interaction, 'entretenimiento'): return
-    view = _Snake(interaction.guild_id, interaction.user.id)
-    await interaction.response.send_message(embed=view._build_embed(), view=view)
-    view.message = await interaction.original_response()
 
 
 @tree.command(name='dosmil', description='2048 — combina fichas hasta llegar a 2048')
@@ -810,7 +802,7 @@ async def vn_cmd(interaction: discord.Interaction, busqueda: str):
 
 
 
-from Games import _Calculator, _Trivia, _RPS, _Minesweeper, _Hangman, _Snake, _Game2048, _Dungeon, _TicTacToe, _calc_eval
+from Games import _Calculator, _Trivia, _RPS, _Minesweeper, _Hangman, _Game2048, _Dungeon, _TicTacToe, _calc_eval
 
 class _ImageNav(discord.ui.View):
     def __init__(self, imagenes: list, busqueda: str, guild_id: int):

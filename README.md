@@ -41,7 +41,6 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/trivia [categoría]` | Pregunta de trivia con 4 opciones (Open Trivia DB, 13 categorías) |
 | `/dungeon` | Dungeon crawler ASCII de 3 niveles |
 | `/ahorcado` | Adivina la palabra letra por letra |
-| `/snake` | Snake en cuadrícula 8×8 |
 | `/dosmil` | 2048 — combina fichas hasta llegar a 2048 |
 | `/buscaminas` | Buscaminas 5×5 — no pises las minas |
 
