@@ -14,7 +14,6 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/hola` | Saluda al bot |
 | `/jueves` | ¿Hoy es jueves? |
 | `/say [mensaje]` | El bot repite tu mensaje |
-| `/genshingift [codigos]` | Convierte códigos de regalo de Genshin Impact en links de canjeo |
 
 ### Utilidades
 | Comando | Descripción |

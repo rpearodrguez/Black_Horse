@@ -216,7 +216,6 @@ async def help_cmd(interaction: discord.Interaction):
         "`/hola` Saluda al bot\n"
         "`/jueves` ¿Hoy es jueves?\n"
         "`/say` El bot repite tu mensaje\n"
-        "`/genshingift` Codigos de Genshin a links de canjeo\n"
         "`/epitafio` El epitafio de la Bruja Dorada\n"
         "`/invite` Invita al bot a tu servidor"
     ))
@@ -364,20 +363,6 @@ async def jueves_cmd(interaction: discord.Interaction):
     else:
         await interaction.response.send_message(BotConfig.t(interaction.guild_id, "jueves_no"))
 
-
-@tree.command(name="genshingift", description="Convierte codigos de regalo de Genshin Impact en links de canjeo")
-@app_commands.describe(codigos="Uno o mas codigos separados por espacios")
-async def genshingift_cmd(interaction: discord.Interaction, codigos: str):
-    if not await _check_module(interaction, "general"): return
-    links = [
-        f"https://genshin.mihoyo.com/en/gift?code={c}"
-        for c in codigos.split()
-        if len(c) == 12 and c.isalnum()
-    ]
-    if links:
-        await interaction.response.send_message("\n".join(links))
-    else:
-        await interaction.response.send_message(BotConfig.t(interaction.guild_id, "codigo_invalido"))
 
 
 @tree.command(name="say", description="Hace que el bot repita un mensaje")
