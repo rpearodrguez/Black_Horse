@@ -508,7 +508,7 @@ def hIdShow(busqueda):
         return None
 
 def SCP_Search(busqueda: str = "173") -> list:
-    url = f'https://scp-wiki.net/scp-{busqueda}'
+    url = f'https://scp-wiki.wikidot.com/scp-{busqueda}'
     try:
         resp = requests.get(url, timeout=12)
     except Exception:
