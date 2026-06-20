@@ -556,8 +556,9 @@ def SCP_Search(busqueda: str = "173") -> list:
                 logger.info(f'SCP image fallback: {img_url!r}')
                 break
 
-    if not img_url:
-        img_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/SCP_Foundation_%28emblem%29.svg/200px-SCP_Foundation_%28emblem%29.svg.png'
+    SCP_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/SCP_Foundation_%28emblem%29.svg/200px-SCP_Foundation_%28emblem%29.svg.png'
+    if not img_url or 'wdfiles.com' in img_url:
+        img_url = SCP_LOGO
     logger.info(f'SCP image final: {img_url!r}')
     result.append(img_url)
 
