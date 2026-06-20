@@ -208,8 +208,21 @@ async def help_cmd(interaction: discord.Interaction):
         "`/cc` Meme aleatorio de CuantoCabron\n"
         "`/scp` Entrada de la SCP Foundation Wiki\n"
         "`/convert` Conversion de divisas\n"
+        "`/hora` Hora actual en distintas zonas horarias\n"
         "`/pokemon` Info de un Pokemon (nombre, numero o 'random')\n"
-        "`/poketype` Pokemon aleatorio de un tipo (con autocompletado)"
+        "`/poketype` Pokemon aleatorio de un tipo (con autocompletado)\n"
+        "`/vn` Informacion de una novela visual (VNDB)"
+    ))
+    embed.add_field(name="Juegos", inline=False, value=(
+        "`/calc` Calculadora\n"
+        "`/gato` Tic-tac-toe — vs otro usuario o vs el bot\n"
+        "`/ppt` Piedra Papel Tijeras — vs otro usuario o vs el bot\n"
+        "`/trivia` Pregunta de trivia con 4 opciones (13 categorias)\n"
+        "`/dungeon` Dungeon crawler de 3 niveles\n"
+        "`/ahorcado` Adivina la palabra letra por letra\n"
+        "`/snake` Snake en cuadricula 8x8\n"
+        "`/dosmil` 2048 — combina fichas hasta llegar a 2048\n"
+        "`/buscaminas` Buscaminas 5x5 — no pises las minas"
     ))
     embed.add_field(name="Roleplay", inline=False, value=(
         "`/roll` Tira dados estandar (ej: `/roll 2 20 3` = 2d20+3)\n"
