@@ -1084,17 +1084,25 @@ async def scp_cmd(interaction: discord.Interaction, numero: str):
     await interaction.response.defer()
     resultado = Scrapper.SCP_Search(numero)
     try:
-        embed = discord.Embed(title=BotConfig.t(interaction.guild_id, "busqueda_scp"), description=numero)
-        try: embed.set_image(url=resultado[0])
-        except Exception: pass
+        embed = discord.Embed(
+            title=f'SCP-{numero}',
+            color=0x1B2631,
+            url=f'https://scp-wiki.net/scp-{numero}',
+        )
+        if resultado[0]:
+            embed.set_image(url=resultado[0])
         for i in range(1, min(8, len(resultado))):
             try:
-                partes = resultado[i].split(":", 1)
-                embed.add_field(name=partes[0], value=partes[1] if len(partes) > 1 else resultado[i], inline=False)
-            except Exception: pass
+                partes = resultado[i].split(':', 1)
+                name = partes[0].strip().upper()
+                value = partes[1].strip() if len(partes) > 1 else resultado[i]
+                if name and value:
+                    embed.add_field(name=name, value=value, inline=False)
+            except Exception:
+                pass
         await interaction.followup.send(embed=embed)
     except Exception:
-        await interaction.followup.send(str(resultado[0]))
+        await interaction.followup.send('[DATA EXPUNGED]')
 
 
 @tree.command(name="convert", description="Convierte divisas")

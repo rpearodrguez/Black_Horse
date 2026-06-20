@@ -507,67 +507,45 @@ def hIdShow(busqueda):
         logger.error(f"hIdShow '{busqueda}': {e}")
         return None
 
-def SCP_Search(busqueda="5998"):
-    url = "http://www.scp-wiki.net/scp-{}".format(busqueda)
-    print(url)
-    resp = requests.get(url)
-    print (resp)
+def SCP_Search(busqueda: str = "173") -> list:
+    url = f'https://scp-wiki.net/scp-{busqueda}'
+    try:
+        resp = requests.get(url, timeout=12)
+    except Exception:
+        return ['', '[DATA EXPUNGED]:[DATA EXPUNGED]']
+    if resp.status_code == 404:
+        return ['', '[DATA EXPUNGED]:[DATA EXPUNGED]',
+                '[DATA EXPUNGED]:PARA UNA VERSION ACTUALIZADA CONTACTA CON EL DOCTOR [REDACTED]']
+    if resp.status_code != 200:
+        return ['', '[DATA EXPUNGED]:[DATA EXPUNGED]']
 
-    # http_respone 200 means OK status
-    if resp.status_code == 200:
-        print("Successfully opened the web page")
-        print("Este es el sumario del meme solicitado :-\n")
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    result = []
 
-        # we need a parser,Python built-in HTML parser is enough .
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        # l is the list which contains all the text i.e news
-        scpImage = soup.find("div", {"class": "scp-image-block"})
-        scpText = soup.find("div", {"id": "page-content"})
-        # now we want to print only the text part of the anchor.
-        # find all the elements of a, i.e anchor
-        scpResult = []
-        try:
-            print("inicia busqueda de contenido")
-            try:
-                for i in scpImage.findAll("a", {"class": ""}, limit=10):
-                    try:
-                        #Portada
-                        scpResult.append(i.get('href'))
-                        print(scpResult[0])
-                        
-                    except:
-                        pass
-                print("Revisión 1: Imagen encontrada {}".format(scpResult))
-                if scpResult == []:
-                    try: 
-                        for i in scpImage.findAll("img", {"class": "image"}):
-                            scpResult.append(i['src'])
-                            print(scpResult[0])
-                    except:
-                        pass
-            except:
-                scpResult.append("http://scp-wiki.wdfiles.com/local--files/component%3Atheme/logo.png")
-                pass
-            
-            print("Revisión 2: Imagen encontrada {}".format(scpResult))
-            for i in scpText.find_all("p", limit=5):
-                try:
-                    if "\n" in i.text:
-                        contenido = i.text.split("\n")
-                        scpResult.append(translate(contenido[0]))
-                        scpResult.append(translate(contenido[2]))
-                    else:
-                        scpResult.append(translate(i.text))
-                except:
-                    pass
-            print("Revisión 3: Contenido encontrado {}".format(scpResult))
-        except:
-            pass
-        
-        return scpResult
-    
-    elif resp.status_code == 404:
-        return ["[DATA EXPUNGED]","[DATA EXPUNGED]:[DATA EXPUNGED]","[DATA EXPUNGED]:PARA UNA VERSION ACTUALIZADA DEL INFORME CONTACTA CON EL DOCTOR [REDACTED]"]
+    # Imagen: primer <img> dentro del bloque de imagen
+    img_url = ''
+    img_block = soup.find('div', class_='scp-image-block')
+    if img_block:
+        img_tag = img_block.find('img')
+        if img_tag and img_tag.get('src'):
+            src = img_tag['src']
+            if src.startswith('//'):
+                src = 'https:' + src
+            elif src.startswith('http://'):
+                src = 'https://' + src[7:]
+            img_url = src
+    result.append(img_url)
+
+    # Campos de texto del artículo
+    content = soup.find('div', id='page-content')
+    if content:
+        for p in content.find_all('p', limit=6):
+            for line in p.get_text('\n', strip=True).split('\n'):
+                line = line.strip()
+                if line:
+                    result.append(translate(line))
+
+    return result if len(result) > 1 else ['', '[DATA EXPUNGED]:[DATA EXPUNGED]']
 
 def reporteDivisa(monto = 1, desde = "USD", hasta = "CLP"):
     url = "https://openexchangerates.org/api/latest.json?app_id={}".format(os.environ.get('OPEN_EXCHANGE'))
