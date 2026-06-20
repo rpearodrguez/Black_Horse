@@ -509,14 +509,18 @@ def hIdShow(busqueda):
 
 def SCP_Search(busqueda: str = "173") -> list:
     url = f'http://www.scp-wiki.net/scp-{busqueda}'
+    logger.info(f'SCP GET {url}')
     try:
         resp = requests.get(url, timeout=12)
-    except Exception:
+    except Exception as e:
+        logger.error(f'SCP request error: {e}')
         return ['', '[DATA EXPUNGED]:[DATA EXPUNGED]']
+    logger.info(f'SCP status {resp.status_code} | final url: {resp.url}')
     if resp.status_code == 404:
         return ['', '[DATA EXPUNGED]:[DATA EXPUNGED]',
                 '[DATA EXPUNGED]:PARA UNA VERSION ACTUALIZADA CONTACTA CON EL DOCTOR [REDACTED]']
     if resp.status_code != 200:
+        logger.error(f'SCP unexpected status {resp.status_code}')
         return ['', '[DATA EXPUNGED]:[DATA EXPUNGED]']
 
     soup = BeautifulSoup(resp.text, 'html.parser')
@@ -534,6 +538,7 @@ def SCP_Search(busqueda: str = "173") -> list:
             elif src.startswith('http://'):
                 src = 'https://' + src[7:]
             img_url = src
+    logger.info(f'SCP image: {img_url!r}')
     result.append(img_url)
 
     # Campos de texto del artículo
@@ -544,7 +549,7 @@ def SCP_Search(busqueda: str = "173") -> list:
                 line = line.strip()
                 if line:
                     result.append(translate(line))
-
+    logger.info(f'SCP result count: {len(result)} items')
     return result if len(result) > 1 else ['', '[DATA EXPUNGED]:[DATA EXPUNGED]']
 
 def reporteDivisa(monto = 1, desde = "USD", hasta = "CLP"):
@@ -739,7 +744,8 @@ def triviaQuestion(category_id: int = None) -> dict | None:
     try:
         r = requests.get("https://opentdb.com/api.php", params=params, timeout=10)
         data = r.json()
-    except Exception:
+    except Exception as e:
+        logger.error(f'triviaQuestion error: {e}')
         return None
     if data.get("response_code") != 0 or not data.get("results"):
         return None
@@ -765,7 +771,8 @@ def horoscopoSearch(sign: str) -> dict | None:
         if not data.get('success'):
             return None
         return {'sign': sign, 'date': data['data']['date'], 'text': data['data']['horoscope_data']}
-    except Exception:
+    except Exception as e:
+        logger.error(f'horoscopoSearch error: {e}')
         return None
 
 
@@ -790,7 +797,8 @@ def personajeSearch(query: str) -> dict | None:
             'anime': anime_list,
             'about': (c.get('about') or '')[:400],
         }
-    except Exception:
+    except Exception as e:
+        logger.error(f'personajeSearch error: {e}')
         return None
 
 

@@ -482,8 +482,8 @@ async def trivia_cmd(interaction: discord.Interaction, categoria: str = None):
                 q['question']  = t_parts[0]
                 q['correct']   = t_parts[1]
                 q['incorrect'] = t_parts[2:]
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f'trivia_cmd translate error: {e}')
     view = _Trivia(q, interaction.guild_id)
     msg = await interaction.followup.send(embed=view._question_embed(lang), view=view)
     view.message = msg
@@ -609,7 +609,7 @@ async def horoscopo_cmd(interaction: discord.Interaction, signo: str):
     text  = result['text']
     if lang == 'es':
         try: text = Scrapper.translate(text, dest='es')
-        except Exception: pass
+        except Exception as e: logger.warning(f'horoscopo translate: {e}')
     embed = discord.Embed(title=f'{emoji} {name}', description=text, color=0x9B59B6)
     embed.set_footer(text=result['date'])
     await interaction.followup.send(embed=embed)
@@ -630,7 +630,7 @@ async def personaje_cmd(interaction: discord.Interaction, nombre: str):
         desc = result['about']
         if lang == 'es':
             try: desc = Scrapper.translate(desc, dest='es')
-            except Exception: pass
+            except Exception as e: logger.warning(f'personaje translate: {e}')
         embed.description = desc
     if result['anime']:
         label = 'Aparece en' if lang == 'es' else 'Appears in'
@@ -657,7 +657,7 @@ async def pelicula_cmd(interaction: discord.Interaction, titulo: str):
         plot = result['plot']
         if lang == 'es':
             try: plot = Scrapper.translate(plot, dest='es')
-            except Exception: pass
+            except Exception as e: logger.warning(f'pelicula translate: {e}')
         embed.description = plot
     if result['poster']:
         embed.set_thumbnail(url=result['poster'])
@@ -715,7 +715,7 @@ class _RecetaSelect(discord.ui.View):
             instr = detail['instructions']
             if lang == 'es':
                 try: instr = Scrapper.translate(instr, dest='es')
-                except Exception: pass
+                except Exception as e: logger.warning(f'receta translate: {e}')
             label = 'Instrucciones' if lang == 'es' else 'Instructions'
             embed.add_field(name=label, value=instr[:1000], inline=False)
         if detail['url']:
@@ -835,7 +835,8 @@ async def danbooru_cmd(interaction: discord.Interaction, tags: str):
         embed.add_field(name="Tags", value=resultado[3], inline=False)
         embed.set_footer(text="Creditos a https://danbooru.donmai.us")
         await interaction.followup.send(embed=embed)
-    except Exception:
+    except Exception as e:
+        logger.error(f'danbooru_cmd error: {e}')
         await interaction.followup.send(resultado[0])
 
 
@@ -857,8 +858,8 @@ async def hanime_cmd(interaction: discord.Interaction, titulo: str):
     for i in range(min(9, len(resultado[1]))):
         try:
             embed.add_field(name=resultado[1][i], value=resultado[2][i] or "—", inline=False)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f'hanime field: {e}')
     embed.set_footer(text=resultado[0][0])
     await interaction.followup.send(embed=embed)
 
@@ -917,7 +918,8 @@ async def anime_cmd(interaction: discord.Interaction, nombre: str):
         except Exception: pass
         embed.set_footer(text="Obtenido de kitsu.io")
         await interaction.followup.send(embed=embed)
-    except Exception:
+    except Exception as e:
+        logger.error(f'anime_cmd error: {e}')
         await interaction.followup.send(str(resultado[0]))
 
 
@@ -953,7 +955,8 @@ async def manga_cmd(interaction: discord.Interaction, nombre: str):
         except Exception: pass
         embed.set_footer(text="Obtenido de kitsu.io")
         await interaction.followup.send(embed=embed)
-    except Exception:
+    except Exception as e:
+        logger.error(f'manga_cmd error: {e}')
         await interaction.followup.send(str(resultado[0]))
 
 
@@ -1083,6 +1086,7 @@ async def scp_cmd(interaction: discord.Interaction, numero: str):
     if not await _check_module(interaction, "entretenimiento"): return
     await interaction.response.defer()
     resultado = Scrapper.SCP_Search(numero)
+    logger.info(f'scp_cmd resultado[0]={resultado[0]!r} len={len(resultado)}')
     try:
         embed = discord.Embed(
             title=f'SCP-{numero}',
@@ -1098,10 +1102,11 @@ async def scp_cmd(interaction: discord.Interaction, numero: str):
                 value = partes[1].strip() if len(partes) > 1 else resultado[i]
                 if name and value:
                     embed.add_field(name=name, value=value, inline=False)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f'scp field {i} error: {e}')
         await interaction.followup.send(embed=embed)
-    except Exception:
+    except Exception as e:
+        logger.error(f'scp_cmd embed error: {e}')
         await interaction.followup.send('[DATA EXPUNGED]')
 
 
@@ -1118,7 +1123,8 @@ async def convert_cmd(interaction: discord.Interaction, monto: float, desde: str
         embed.add_field(name=BotConfig.t(interaction.guild_id, "valor_conversion", monto=monto, desde=desde.upper(), hasta=hasta.upper()), value=resultado[2], inline=False)
         embed.set_footer(text="Fuente: https://openexchangerates.org")
         await interaction.followup.send(embed=embed)
-    except Exception:
+    except Exception as e:
+        logger.error(f'convert_cmd error: {e}')
         await interaction.followup.send(str(resultado[2]))
 
 
