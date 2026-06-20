@@ -438,7 +438,7 @@ class _Hangman(discord.ui.View):
         return cb
 
     def _display_word(self) -> str:
-        return ' '.join(c if (c in self.guessed or not c.isalpha()) else '_' for c in self.word)
+        return ' '.join(c if (c in self.guessed or not c.isalpha()) else '\\_' for c in self.word)
 
     def _build_embed(self) -> discord.Embed:
         art = self._STAGES[min(self.wrongs, 6)]
