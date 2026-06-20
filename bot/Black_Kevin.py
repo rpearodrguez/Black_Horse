@@ -216,7 +216,7 @@ async def help_cmd(interaction: discord.Interaction):
         "`/smug` `/pout` `/plaf` `/spin` `/blush` `/shy` `/tsundere` `/lewd` `/jojo` `/cry` `/smile` `/suicide`"
     ))
     embed.add_field(name="Reacciones — duales (usuario opcional)", inline=False, value=(
-        "`/hug` `/kiss` `/dance` `/angry` `/run` `/sleep` `/happy` `/cookie`"
+        "`/hug` `/kiss` `/dance` `/angry` `/run` `/sleep` `/happy` `/cookie` `/escupefuego`"
     ))
     if interaction.channel.is_nsfw():
         embed.add_field(name="NSFW", inline=False, value=(
@@ -785,6 +785,22 @@ async def cry_cmd(interaction: discord.Interaction):
 async def smile_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, "reacciones"): return
     embed = _embed(BotConfig.t(interaction.guild_id, "smile", user=interaction.user.display_name), Feels.reactionImage("smile"))
+    await interaction.response.send_message(embed=embed)
+
+
+@tree.command(name="escupefuego", description="Escupe fuego (menciona al bot para que responda)")
+@app_commands.describe(usuario="Usuario objetivo (opcional)")
+async def escupefuego_cmd(interaction: discord.Interaction, usuario: discord.Member = None):
+    if not await _check_module(interaction, "reacciones"): return
+    if usuario and usuario.id == client.user.id:
+        titulo = BotConfig.t(interaction.guild_id, "firebreath_bot",
+                             user=interaction.user.display_name, bot=client.user.display_name)
+    elif usuario:
+        titulo = BotConfig.t(interaction.guild_id, "firebreath_con",
+                             user=interaction.user.display_name, target=usuario.display_name)
+    else:
+        titulo = BotConfig.t(interaction.guild_id, "firebreath", user=interaction.user.display_name)
+    embed = _embed(titulo, Feels.reactionImage("firebreath"))
     await interaction.response.send_message(embed=embed)
 
 
