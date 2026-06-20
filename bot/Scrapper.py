@@ -157,17 +157,20 @@ def mangaScrap(urlb=""):
 # ── Steam ─────────────────────────────────────────────────────────────────────
 
 def steamSearch(busqueda: str):
-    search = requests.get(
-        "https://store.steampowered.com/api/storesearch/",
-        params={"term": busqueda, "l": "english", "cc": "US"},
-        timeout=10,
-    )
-    if search.status_code != 200:
-        return None
-    items = search.json().get("items", [])
-    if not items:
-        return None
-    appid = items[0]["id"]
+    if busqueda.isdigit():
+        appid = int(busqueda)
+    else:
+        search = requests.get(
+            "https://store.steampowered.com/api/storesearch/",
+            params={"term": busqueda, "l": "english", "cc": "US"},
+            timeout=10,
+        )
+        if search.status_code != 200:
+            return None
+        items = search.json().get("items", [])
+        if not items:
+            return None
+        appid = items[0]["id"]
 
     detail = requests.get(
         "https://store.steampowered.com/api/appdetails",
@@ -201,6 +204,25 @@ def steamSearch(busqueda: str):
         "price": price,
         "image": d.get("header_image", ""),
     }
+
+
+def steamSuggest(busqueda: str) -> list:
+    try:
+        resp = requests.get(
+            "https://store.steampowered.com/api/storesearch/",
+            params={"term": busqueda, "l": "english", "cc": "US"},
+            timeout=5,
+        )
+        if resp.status_code != 200:
+            return []
+        return [
+            {"id": str(item["id"]), "name": item["name"]}
+            for item in resp.json().get("items", [])
+            if item.get("type") == "app"
+        ][:10]
+    except Exception:
+        return []
+
 
 #Hentai Scrapping
 NH_REST = "https://nhentai.rest"

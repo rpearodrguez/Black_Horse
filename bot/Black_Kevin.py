@@ -1,3 +1,4 @@
+import asyncio
 import discord
 from discord import app_commands
 import Scrapper
@@ -537,8 +538,17 @@ async def manga_cmd(interaction: discord.Interaction, nombre: str):
         await interaction.followup.send(str(resultado[0]))
 
 
+async def _steam_autocomplete(interaction: discord.Interaction, current: str):
+    if len(current) < 2:
+        return []
+    loop = asyncio.get_event_loop()
+    items = await loop.run_in_executor(None, lambda: Scrapper.steamSuggest(current))
+    return [app_commands.Choice(name=item["name"][:100], value=item["id"]) for item in items]
+
+
 @tree.command(name="steam", description="Busca informacion de un juego en Steam")
 @app_commands.describe(juego="Nombre del juego")
+@app_commands.autocomplete(juego=_steam_autocomplete)
 async def steam_cmd(interaction: discord.Interaction, juego: str):
     if not await _check_module(interaction, "entretenimiento"): return
     await interaction.response.defer()
