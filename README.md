@@ -30,6 +30,10 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/poketype [tipo]` | Pokémon aleatorio de un tipo (autocompletado bilingüe con los 18 tipos) |
 | `/vn [título]` | Información de una novela visual (VNDB) |
 | `/hora` | Hora actual en múltiples zonas horarias del mundo |
+| `/horoscopo [signo]` | Horóscopo del día (autocompletado bilingüe con los 12 signos) |
+| `/personaje [nombre]` | Información de un personaje de anime o manga (Jikan/MAL) |
+| `/pelicula [título]` | Información de una película — rating IMDb, reparto, sinopsis (requiere `OMDB_KEY`) |
+| `/receta [platillo]` | Receta de cocina con ingredientes e instrucciones (TheMealDB) |
 
 ### Juegos
 | Comando | Descripción |

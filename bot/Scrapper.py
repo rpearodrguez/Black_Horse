@@ -732,3 +732,103 @@ def triviaQuestion(category_id: int = None) -> dict | None:
         "difficulty": q["difficulty"],
         "category":   decode(q["category"]),
     }
+
+
+def horoscopoSearch(sign: str) -> dict | None:
+    try:
+        r = requests.get(
+            'https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily',
+            params={'sign': sign, 'day': 'today'},
+            timeout=10,
+        )
+        data = r.json()
+        if not data.get('success'):
+            return None
+        return {'sign': sign, 'date': data['data']['date'], 'text': data['data']['horoscope_data']}
+    except Exception:
+        return None
+
+
+def personajeSearch(query: str) -> dict | None:
+    try:
+        r = requests.get(
+            'https://api.jikan.moe/v4/characters',
+            params={'q': query, 'limit': 1, 'order_by': 'favorites', 'sort': 'desc'},
+            timeout=10,
+        )
+        data = r.json()
+        if not data.get('data'):
+            return None
+        c = data['data'][0]
+        anime_list = [a['anime']['title'] for a in c.get('anime', [])[:4]]
+        return {
+            'name':  c['name'],
+            'kanji': c.get('name_kanji', ''),
+            'image': c['images']['jpg']['image_url'],
+            'url':   c['url'],
+            'favs':  c.get('favorites', 0),
+            'anime': anime_list,
+            'about': (c.get('about') or '')[:400],
+        }
+    except Exception:
+        return None
+
+
+def peliculaSearch(titulo: str) -> dict | None:
+    key = os.getenv('OMDB_KEY', '')
+    if not key:
+        return None
+    try:
+        r = requests.get(
+            'http://www.omdbapi.com/',
+            params={'t': titulo, 'apikey': key, 'plot': 'short'},
+            timeout=10,
+        )
+        d = r.json()
+        if d.get('Response') == 'False':
+            return None
+        clean = lambda v: v if v and v != 'N/A' else ''
+        return {
+            'title':    clean(d.get('Title')),
+            'year':     clean(d.get('Year')),
+            'genre':    clean(d.get('Genre')),
+            'director': clean(d.get('Director')),
+            'actors':   clean(d.get('Actors')),
+            'plot':     clean(d.get('Plot')),
+            'poster':   clean(d.get('Poster')),
+            'imdb':     clean(d.get('imdbRating')),
+            'runtime':  clean(d.get('Runtime')),
+            'country':  clean(d.get('Country')),
+        }
+    except Exception:
+        return None
+
+
+def recetaSearch(busqueda: str) -> dict | None:
+    try:
+        r = requests.get(
+            'https://www.themealdb.com/api/json/v1/1/search.php',
+            params={'s': busqueda},
+            timeout=10,
+        )
+        meals = r.json().get('meals')
+        if not meals:
+            return None
+        m = meals[0]
+        ings = []
+        for i in range(1, 21):
+            ing = (m.get(f'strIngredient{i}') or '').strip()
+            msr = (m.get(f'strMeasure{i}') or '').strip()
+            if ing:
+                ings.append(f'{msr} {ing}'.strip())
+        return {
+            'name':         m['strMeal'],
+            'category':     m.get('strCategory', ''),
+            'area':         m.get('strArea', ''),
+            'instructions': (m.get('strInstructions') or '')[:600],
+            'image':        m.get('strMealThumb', ''),
+            'ingredients':  ings[:12],
+            'youtube':      m.get('strYoutube', ''),
+        }
+    except Exception:
+        return None

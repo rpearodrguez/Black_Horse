@@ -376,3 +376,19 @@ HANGMAN_WORDS = [
     "obsidiana", "turquesa", "amatista", "esmeralda", "zafiro",
     "voleibol", "baloncesto", "ciclismo", "atletismo", "natacion",
 ]
+
+# (api_key, nombre_es, nombre_en, emoji)
+HOROSCOPE_SIGNS = [
+    ('aries',       'Aries',       'Aries',        '♈'),
+    ('taurus',      'Tauro',       'Taurus',       '♉'),
+    ('gemini',      'Géminis',     'Gemini',       '♊'),
+    ('cancer',      'Cáncer',      'Cancer',       '♋'),
+    ('leo',         'Leo',         'Leo',          '♌'),
+    ('virgo',       'Virgo',       'Virgo',        '♍'),
+    ('libra',       'Libra',       'Libra',        '♎'),
+    ('scorpio',     'Escorpio',    'Scorpio',      '♏'),
+    ('sagittarius', 'Sagitario',   'Sagittarius',  '♐'),
+    ('capricorn',   'Capricornio', 'Capricorn',    '♑'),
+    ('aquarius',    'Acuario',     'Aquarius',     '♒'),
+    ('pisces',      'Piscis',      'Pisces',       '♓'),
+]

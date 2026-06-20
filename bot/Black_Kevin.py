@@ -211,7 +211,11 @@ async def help_cmd(interaction: discord.Interaction):
         "`/hora` Hora actual en distintas zonas horarias\n"
         "`/pokemon` Info de un Pokemon (nombre, numero o 'random')\n"
         "`/poketype` Pokemon aleatorio de un tipo (con autocompletado)\n"
-        "`/vn` Informacion de una novela visual (VNDB)"
+        "`/vn` Informacion de una novela visual (VNDB)\n"
+        "`/horoscopo` Horoscopo del dia\n"
+        "`/personaje` Informacion de un personaje de anime\n"
+        "`/pelicula` Informacion de una pelicula (IMDb)\n"
+        "`/receta` Receta de cocina"
     ))
     embed.add_field(name="Juegos", inline=False, value=(
         "`/calcular` Evalua una expresion matematica directamente\n"
@@ -542,6 +546,126 @@ async def buscaminas_cmd(interaction: discord.Interaction):
     view = _Minesweeper(interaction.guild_id, interaction.user.id)
     await interaction.response.send_message(embed=view._build_embed(), view=view)
     view.message = await interaction.original_response()
+
+
+# Horoscopo
+async def _horoscopo_ac(interaction: discord.Interaction, current: str):
+    lang = BotConfig.get_language(interaction.guild_id)
+    choices = []
+    for api, es, en, emoji in D.HOROSCOPE_SIGNS:
+        label = f'{emoji} {es if lang == "es" else en}'
+        if not current or current.lower() in label.lower() or current.lower() in api:
+            choices.append(app_commands.Choice(name=label, value=api))
+    return choices[:25]
+
+
+@tree.command(name='horoscopo', description='Horoscopo del dia segun tu signo zodiacal')
+@app_commands.describe(signo='Tu signo zodiacal')
+@app_commands.autocomplete(signo=_horoscopo_ac)
+async def horoscopo_cmd(interaction: discord.Interaction, signo: str):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    await interaction.response.defer()
+    result = Scrapper.horoscopoSearch(signo)
+    if not result:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, 'sin_resultados')); return
+    lang = BotConfig.get_language(interaction.guild_id)
+    info = next((s for s in D.HOROSCOPE_SIGNS if s[0] == signo), None)
+    emoji = info[3] if info else '⭐'
+    name  = info[1] if lang == 'es' else info[2] if info else signo.capitalize()
+    text  = result['text']
+    if lang == 'es':
+        try: text = Scrapper.translate(text, dest='es')
+        except Exception: pass
+    embed = discord.Embed(title=f'{emoji} {name}', description=text, color=0x9B59B6)
+    embed.set_footer(text=result['date'])
+    await interaction.followup.send(embed=embed)
+
+
+@tree.command(name='personaje', description='Informacion de un personaje de anime o manga')
+@app_commands.describe(nombre='Nombre del personaje')
+async def personaje_cmd(interaction: discord.Interaction, nombre: str):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    await interaction.response.defer()
+    result = Scrapper.personajeSearch(nombre)
+    if not result:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, 'sin_resultados')); return
+    lang  = BotConfig.get_language(interaction.guild_id)
+    title = result['name'] + (f' ({result["kanji"]})' if result['kanji'] else '')
+    embed = discord.Embed(title=title, color=0xE74C3C, url=result['url'])
+    if result['about']:
+        desc = result['about']
+        if lang == 'es':
+            try: desc = Scrapper.translate(desc, dest='es')
+            except Exception: pass
+        embed.description = desc
+    if result['anime']:
+        label = 'Aparece en' if lang == 'es' else 'Appears in'
+        embed.add_field(name=label, value='\n'.join(result['anime']), inline=False)
+    embed.add_field(name='Favoritos' if lang == 'es' else 'Favorites',
+                    value=f'❤️ {result["favs"]:,}', inline=True)
+    if result['image']:
+        embed.set_thumbnail(url=result['image'])
+    await interaction.followup.send(embed=embed)
+
+
+@tree.command(name='pelicula', description='Busca informacion de una pelicula (IMDb/OMDB)')
+@app_commands.describe(titulo='Titulo de la pelicula')
+async def pelicula_cmd(interaction: discord.Interaction, titulo: str):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    await interaction.response.defer()
+    result = Scrapper.peliculaSearch(titulo)
+    if not result:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, 'sin_resultados')); return
+    lang  = BotConfig.get_language(interaction.guild_id)
+    year  = f' ({result["year"]})' if result['year'] else ''
+    embed = discord.Embed(title=f'🎬 {result["title"]}{year}', color=0xE67E22)
+    if result['plot']:
+        plot = result['plot']
+        if lang == 'es':
+            try: plot = Scrapper.translate(plot, dest='es')
+            except Exception: pass
+        embed.description = plot
+    if result['poster']:
+        embed.set_thumbnail(url=result['poster'])
+    if result['imdb']:
+        embed.add_field(name='IMDb', value=f'⭐ {result["imdb"]}/10', inline=True)
+    if result['runtime']:
+        embed.add_field(name='Duracion' if lang == 'es' else 'Runtime', value=result['runtime'], inline=True)
+    if result['genre']:
+        embed.add_field(name='Genero' if lang == 'es' else 'Genre', value=result['genre'], inline=False)
+    if result['director']:
+        embed.add_field(name='Director', value=result['director'], inline=True)
+    if result['actors']:
+        embed.add_field(name='Reparto' if lang == 'es' else 'Cast', value=result['actors'], inline=False)
+    await interaction.followup.send(embed=embed)
+
+
+@tree.command(name='receta', description='Busca una receta de cocina')
+@app_commands.describe(busqueda='Nombre del platillo (en ingles da mejores resultados)')
+async def receta_cmd(interaction: discord.Interaction, busqueda: str):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    await interaction.response.defer()
+    result = Scrapper.recetaSearch(busqueda)
+    if not result:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, 'sin_resultados')); return
+    lang  = BotConfig.get_language(interaction.guild_id)
+    embed = discord.Embed(title=f'🍽️ {result["name"]}', color=0x2ECC71)
+    cat = result['category'] + (' · ' + result['area'] if result['area'] else '')
+    if cat: embed.description = cat
+    if result['image']: embed.set_thumbnail(url=result['image'])
+    if result['ingredients']:
+        label = 'Ingredientes' if lang == 'es' else 'Ingredients'
+        embed.add_field(name=label, value='\n'.join(f'• {i}' for i in result['ingredients']), inline=False)
+    if result['instructions']:
+        instr = result['instructions']
+        if lang == 'es':
+            try: instr = Scrapper.translate(instr, dest='es')
+            except Exception: pass
+        label = 'Instrucciones' if lang == 'es' else 'Instructions'
+        embed.add_field(name=label, value=instr[:1000], inline=False)
+    if result['youtube']:
+        embed.add_field(name='Video', value=result['youtube'], inline=False)
+    await interaction.followup.send(embed=embed)
 
 
 # ──────────────────────────────────────────────
