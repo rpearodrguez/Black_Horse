@@ -220,6 +220,12 @@ async def help_cmd(interaction: discord.Interaction):
         "`/epitafio` El epitafio de la Bruja Dorada\n"
         "`/invite` Invita al bot a tu servidor"
     ))
+    embed.add_field(name="Utilidades", inline=False, value=(
+        "`/diccionario` Busca una palabra en el diccionario de la RAE\n"
+        "`/hora` Hora actual en distintas zonas horarias\n"
+        "`/calcular` Evalua una expresion matematica directamente\n"
+        "`/calc` Calculadora interactiva con botones"
+    ))
     embed.add_field(name="Entretenimiento", inline=False, value=(
         "`/anime` Informacion de un anime\n"
         "`/manga` Informacion de un manga\n"
@@ -228,8 +234,7 @@ async def help_cmd(interaction: discord.Interaction):
         "`/cc` Meme aleatorio de CuantoCabron\n"
         "`/scp` Entrada de la SCP Foundation Wiki\n"
         "`/convert` Conversion de divisas\n"
-        "`/hora` Hora actual en distintas zonas horarias\n"
-        "`/pokemon` Info de un Pokemon (nombre, numero o 'random')\n"
+                "`/pokemon` Info de un Pokemon (nombre, numero o 'random')\n"
         "`/poketype` Pokemon aleatorio de un tipo (con autocompletado)\n"
         "`/vn` Informacion de una novela visual (VNDB)\n"
         "`/horoscopo` Horoscopo del dia\n"
@@ -239,9 +244,7 @@ async def help_cmd(interaction: discord.Interaction):
         "`/caracola` Consulta a la Caracola Magica"
     ))
     embed.add_field(name="Juegos", inline=False, value=(
-        "`/calcular` Evalua una expresion matematica directamente\n"
-        "`/calc` Calculadora con botones\n"
-        "`/gato` Tic-tac-toe — vs otro usuario o vs el bot\n"
+                "`/gato` Tic-tac-toe — vs otro usuario o vs el bot\n"
         "`/ppt` Piedra Papel Tijeras — vs otro usuario o vs el bot\n"
         "`/trivia` Pregunta de trivia con 4 opciones (13 categorias)\n"
         "`/dungeon` Dungeon crawler de 3 niveles\n"
@@ -398,7 +401,7 @@ async def _hora_autocomplete(interaction: discord.Interaction, current: str) -> 
 @app_commands.describe(zona="Ciudad (opcional — autocompletado disponible)")
 @app_commands.autocomplete(zona=_hora_autocomplete)
 async def hora_cmd(interaction: discord.Interaction, zona: str = None):
-    if not await _check_module(interaction, "general"): return
+    if not await _check_module(interaction, "utilidades"): return
     lang = BotConfig.get_language(interaction.guild_id)
     days = D.DAYS[lang]
     now_utc = datetime.datetime.now(datetime.timezone.utc)
@@ -440,7 +443,7 @@ async def hora_cmd(interaction: discord.Interaction, zona: str = None):
 
 @tree.command(name="calc", description="Calculadora interactiva")
 async def calc_cmd(interaction: discord.Interaction):
-    if not await _check_module(interaction, "general"): return
+    if not await _check_module(interaction, "utilidades"): return
     view = _Calculator()
     await interaction.response.send_message(embed=view._build_embed(), view=view)
 
@@ -528,7 +531,7 @@ async def dosmil_cmd(interaction: discord.Interaction):
 @tree.command(name='calcular', description='Evalua una expresion matematica')
 @app_commands.describe(expresion='Expresion a calcular (ej: 2+2, 10/3, (5+3)*2, 2**8)')
 async def calcular_cmd(interaction: discord.Interaction, expresion: str):
-    if not await _check_module(interaction, 'entretenimiento'): return
+    if not await _check_module(interaction, 'utilidades'): return
     if len(expresion) > 200:
         await interaction.response.send_message('Expresion demasiado larga.', ephemeral=True)
         return
@@ -539,6 +542,31 @@ async def calcular_cmd(interaction: discord.Interaction, expresion: str):
     embed.add_field(name='Expresion', value='`' + expresion + '`', inline=False)
     embed.add_field(name='Resultado', value='`' + result + '`', inline=False)
     await interaction.response.send_message(embed=embed)
+
+
+@tree.command(name='diccionario', description='Busca una palabra en el Diccionario de la RAE')
+@app_commands.describe(palabra='Palabra a buscar')
+async def diccionario_cmd(interaction: discord.Interaction, palabra: str):
+    if not await _check_module(interaction, 'utilidades'): return
+    await interaction.response.defer()
+    result = Scrapper.raeSearch(palabra)
+    if not result:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, 'sin_resultados'))
+        return
+    lang = BotConfig.get_language(interaction.guild_id)
+    embed = discord.Embed(
+        title=f'📖 {result["palabra"]}',
+        color=0x2C3E50,
+        url=result['url'],
+    )
+    desc = '\n\n'.join(result['definiciones'])
+    if lang == 'en':
+        label = 'Definitions (RAE — Spanish only)'
+        embed.add_field(name=label, value=desc[:1024], inline=False)
+    else:
+        embed.description = desc[:4096]
+    embed.set_footer(text='Fuente: Diccionario de la lengua espanola (RAE)')
+    await interaction.followup.send(embed=embed)
 
 
 @tree.command(name='ppt', description='Piedra, Papel o Tijeras')
@@ -694,8 +722,9 @@ class _RecetaSelect(discord.ui.View):
             embed.add_field(name=label, value=str(detail['servings']), inline=True)
         if detail['ingredients']:
             label = 'Ingredientes' if lang == 'es' else 'Ingredients'
+            ings_display = Scrapper.translate_ingredients(detail['ingredients'], lang)
             embed.add_field(name=label,
-                            value='\n'.join(f'\u2022 {i}' for i in detail['ingredients']),
+                            value='\n'.join(f'\u2022 {i}' for i in ings_display)[:1024],
                             inline=False)
         if detail['instructions']:
             instr = detail['instructions']

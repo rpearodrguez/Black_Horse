@@ -16,6 +16,14 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/say [mensaje]` | El bot repite tu mensaje |
 | `/genshingift [codigos]` | Convierte códigos de regalo de Genshin Impact en links de canjeo |
 
+### Utilidades
+| Comando | Descripción |
+|---|---|
+| `/diccionario [palabra]` | Definición en el Diccionario de la lengua española (RAE) |
+| `/hora` | Hora actual en múltiples zonas horarias del mundo |
+| `/calcular [expresion]` | Evalúa una expresión matemática directamente (ej: `2+2`, `(5+3)*2`, `2**8`) |
+| `/calc` | Calculadora interactiva con botones |
+
 ### Entretenimiento
 | Comando | Descripción |
 |---|---|
@@ -29,7 +37,6 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/pokemon [nombre\|número\|random]` | Info de un Pokémon; autocompletado muestra formas alternativas |
 | `/poketype [tipo]` | Pokémon aleatorio de un tipo (autocompletado bilingüe con los 18 tipos) |
 | `/vn [título]` | Información de una novela visual (VNDB) |
-| `/hora` | Hora actual en múltiples zonas horarias del mundo |
 | `/horoscopo [signo]` | Horóscopo del día (autocompletado bilingüe con los 12 signos) |
 | `/personaje [nombre]` | Información de un personaje de anime o manga (Jikan/MAL) |
 | `/pelicula [título]` | Información de una película — rating IMDb, reparto, sinopsis (requiere `OMDB_KEY`) |
@@ -39,8 +46,6 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 ### Juegos
 | Comando | Descripción |
 |---|---|
-| `/calcular [expresion]` | Evalúa una expresión matemática directamente (ej: `2+2`, `(5+3)*2`, `2**8`) |
-| `/calc` | Calculadora interactiva con botones |
 | `/gato [@oponente]` | Tic-tac-toe 3×3 — contra otro usuario o contra el bot (minimax) |
 | `/ppt [@oponente]` | Piedra Papel Tijeras — contra otro usuario (elección secreta) o contra el bot |
 | `/trivia [categoría]` | Pregunta de trivia con 4 opciones (Open Trivia DB, 13 categorías) |

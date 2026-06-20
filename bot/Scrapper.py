@@ -23,6 +23,48 @@ def translate(text, dest='es'):
         return text
 
 
+# Abreviaciones de cocina que Google Translate no maneja bien.
+# Las que pueden llevar punto final usan lookahead (?=\s|,|$) en vez de \b
+# para que el punto sea consumido sin problema de word-boundary.
+_COOKING_SUBS = [
+    (r'\bfl\.?\s*oz\.?(?=\s|,|$)',  'onza fluida'),   # antes que \boz
+    (r'\btbsp?\.?(?=\s|,|$)',       'cucharada'),      # tbsp, tbs
+    (r'\btsp\.?(?=\s|,|$)',         'cucharadita'),
+    (r'\bcups?(?=\s|,|$)',          'taza'),
+    (r'\boz\.?(?=\s|,|$)',          'onza'),
+    (r'\blbs?\.?(?=\s|,|$)',        'libra'),
+    (r'\bpkgs?\.?(?=\s|,|$)',       'paquete'),
+    (r'\bpinch(?:es)?\b',           'pizca'),
+    (r'\bdash(?:es)?\b',            'chorrito'),
+    (r'\bto\s+taste\b',             'al gusto'),
+    (r'\bas\s+needed\b',            'al gusto'),
+    (r'\bqts?\.?(?=\s|,|$)',        'cuarto de litro'),
+    (r'\bpts?\.?(?=\s|,|$)',        'pinta'),
+]
+
+
+def _norm_cooking(text: str) -> str:
+    for pat, rep in _COOKING_SUBS:
+        text = re.sub(pat, rep, text, flags=re.IGNORECASE)
+    return text
+
+
+def translate_ingredients(ings: list, dest: str = 'es') -> list:
+    if not ings or dest == 'en':
+        return ings
+    processed = [_norm_cooking(i) for i in ings]
+    try:
+        # Una sola llamada al traductor; Google preserva saltos de línea
+        result = translate('\n'.join(processed), dest=dest)
+        parts = [p.strip() for p in result.split('\n') if p.strip()]
+        if len(parts) == len(ings):
+            return parts
+    except Exception:
+        pass
+    # Fallback: traducción individual
+    return [translate(i, dest=dest) for i in processed]
+
+
 #Anime Scrapping
 def animeScrap(urlb=""):
     # url = the target we want to open
@@ -842,14 +884,32 @@ def spoonacularDetail(recipe_id: int) -> dict | None:
             timeout=10,
         )
         d = r.json()
-        ings = [i.get('original', '') for i in d.get('extendedIngredients', [])[:12]]
+        seen_ids: set = set()
+        ings: list = []
+        for i in d.get('extendedIngredients', []):
+            iid = i.get('id')
+            if iid in seen_ids:
+                continue
+            seen_ids.add(iid)
+            text = i.get('original') or i.get('originalString') or ''
+            if text:
+                ings.append(text)
+        # Fuente primaria: texto crudo de la página (más fiable para blogs/fuentes no estándar)
+        raw_html = d.get('instructions') or ''
+        if raw_html:
+            raw_text = BeautifulSoup(raw_html, 'html.parser').get_text('\n', strip=True).strip()
+            raw_text = re.sub(r'\n{3,}', '\n\n', raw_text)
+        else:
+            raw_text = ''
+        # Fuente secundaria: pasos analizados por Spoonacular (bueno para recetas de sitios conocidos)
         steps = []
         for block in d.get('analyzedInstructions', []):
             for step in block.get('steps', []):
-                steps.append(f"{step['number']}. {step['step']}")
-        instructions = '\n'.join(steps)[:800]
-        if not instructions:
-            instructions = (d.get('instructions') or '')[:800]
+                s = step.get('step', '').strip()
+                if s:
+                    steps.append(f"{step['number']}. {s}")
+        analyzed = '\n'.join(steps)
+        instructions = (raw_text or analyzed)[:900]
         return {
             'title':        d.get('title', ''),
             'image':        d.get('image', ''),
@@ -859,5 +919,39 @@ def spoonacularDetail(recipe_id: int) -> dict | None:
             'instructions': instructions,
             'url':          d.get('sourceUrl', ''),
         }
+    except Exception:
+        return None
+
+
+def raeSearch(palabra: str) -> dict | None:
+    try:
+        _headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept-Language': 'es-ES,es;q=0.9',
+            'Referer': 'https://dle.rae.es/',
+        }
+        # Normalizar a la forma canónica con tildes vía autocomplete
+        keys_r = requests.get('https://dle.rae.es/srv/keys', params={'q': palabra.strip().lower()},
+                              headers={**_headers, 'Accept': 'application/json',
+                                       'X-Requested-With': 'XMLHttpRequest'}, timeout=8)
+        if keys_r.status_code == 200 and keys_r.text.strip().startswith('['):
+            suggestions = json.loads(keys_r.text)
+            if suggestions:
+                palabra = suggestions[0].split('|')[0]
+        url = f'https://dle.rae.es/{urllib.parse.quote(palabra)}'
+        r = requests.get(url, headers={**_headers, 'Accept': 'text/html,application/xhtml+xml'}, timeout=10)
+        if r.status_code != 200:
+            return None
+        soup = BeautifulSoup(r.text, 'html.parser')
+        h1 = soup.find('h1', class_='c-page-header__title')
+        titulo = h1.get_text(strip=True) if h1 else palabra
+        defs = []
+        for div in soup.find_all('div', class_='c-definitions__item'):
+            texto = div.get_text(' ', strip=True)
+            if texto:
+                defs.append(texto)
+        if not defs:
+            return None
+        return {'palabra': titulo, 'definiciones': defs[:5], 'url': url}
     except Exception:
         return None

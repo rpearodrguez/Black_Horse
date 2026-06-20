@@ -3,7 +3,7 @@ import os
 
 _PATH = os.path.join(os.path.dirname(__file__), "config.json")
 
-MODULES = ["general", "entretenimiento", "roleplay", "reacciones", "nsfw"]
+MODULES = ["general", "utilidades", "entretenimiento", "roleplay", "reacciones", "nsfw"]
 LANGUAGES = ["es", "en"]
 
 _GUILD_DEFAULT = {
