@@ -33,7 +33,7 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/horoscopo [signo]` | Horóscopo del día (autocompletado bilingüe con los 12 signos) |
 | `/personaje [nombre]` | Información de un personaje de anime o manga (Jikan/MAL) |
 | `/pelicula [título]` | Información de una película — rating IMDb, reparto, sinopsis (requiere `OMDB_KEY`) |
-| `/receta [platillo]` | Receta de cocina con ingredientes e instrucciones (TheMealDB) |
+| `/receta [ingrediente]` | Recetas que usan ese ingrediente — elige de hasta 5 resultados (Spoonacular, requiere `SPOONACULAR_KEY`) |
 
 ### Juegos
 | Comando | Descripción |
@@ -132,6 +132,8 @@ ID_BUSCADOR_GOOGLE=     # ID del Custom Search Engine (para /img)
 DANBOORU_LOGIN=         # Usuario de Danbooru (para /danbooru)
 DANBOORU_KEY=           # API key de Danbooru (para /danbooru)
 OPEN_EXCHANGE=          # API key de OpenExchangeRates (para /convert)
+SPOONACULAR_KEY=        # API key de Spoonacular (para /receta, 150 req/día gratis)
+OMDB_KEY=               # API key de OMDB (para /pelicula, 1000 req/día gratis)
 ```
 
 `DISCORD_TOKEN` y `ADMIN_ID` son obligatorias. El resto son opcionales — el bot arranca sin ellas, solo esos comandos específicos fallarán.

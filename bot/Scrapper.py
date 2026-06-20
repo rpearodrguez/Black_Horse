@@ -804,31 +804,60 @@ def peliculaSearch(titulo: str) -> dict | None:
         return None
 
 
-def recetaSearch(busqueda: str) -> dict | None:
+def spoonacularSearch(busqueda: str, number: int = 5) -> list | None:
+    key = os.getenv('SPOONACULAR_KEY', '')
+    if not key:
+        return None
     try:
+        query = busqueda
+        try:
+            en = translate(busqueda, dest='en')
+            if en.strip():
+                query = en
+        except Exception:
+            pass
         r = requests.get(
-            'https://www.themealdb.com/api/json/v1/1/search.php',
-            params={'s': busqueda},
+            'https://api.spoonacular.com/recipes/findByIngredients',
+            params={'ingredients': query, 'number': number, 'ranking': 1,
+                    'ignorePantry': True, 'apiKey': key},
             timeout=10,
         )
-        meals = r.json().get('meals')
-        if not meals:
+        data = r.json()
+        if not isinstance(data, list) or not data:
             return None
-        m = meals[0]
-        ings = []
-        for i in range(1, 21):
-            ing = (m.get(f'strIngredient{i}') or '').strip()
-            msr = (m.get(f'strMeasure{i}') or '').strip()
-            if ing:
-                ings.append(f'{msr} {ing}'.strip())
+        return [{'id': m['id'], 'title': m['title'], 'image': m.get('image', '')}
+                for m in data]
+    except Exception:
+        return None
+
+
+def spoonacularDetail(recipe_id: int) -> dict | None:
+    key = os.getenv('SPOONACULAR_KEY', '')
+    if not key:
+        return None
+    try:
+        r = requests.get(
+            f'https://api.spoonacular.com/recipes/{recipe_id}/information',
+            params={'apiKey': key},
+            timeout=10,
+        )
+        d = r.json()
+        ings = [i.get('original', '') for i in d.get('extendedIngredients', [])[:12]]
+        steps = []
+        for block in d.get('analyzedInstructions', []):
+            for step in block.get('steps', []):
+                steps.append(f"{step['number']}. {step['step']}")
+        instructions = '\n'.join(steps)[:800]
+        if not instructions:
+            instructions = (d.get('instructions') or '')[:800]
         return {
-            'name':         m['strMeal'],
-            'category':     m.get('strCategory', ''),
-            'area':         m.get('strArea', ''),
-            'instructions': (m.get('strInstructions') or '')[:600],
-            'image':        m.get('strMealThumb', ''),
-            'ingredients':  ings[:12],
-            'youtube':      m.get('strYoutube', ''),
+            'title':        d.get('title', ''),
+            'image':        d.get('image', ''),
+            'readyIn':      d.get('readyInMinutes', 0),
+            'servings':     d.get('servings', 0),
+            'ingredients':  ings,
+            'instructions': instructions,
+            'url':          d.get('sourceUrl', ''),
         }
     except Exception:
         return None

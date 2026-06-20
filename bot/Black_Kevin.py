@@ -661,33 +661,69 @@ async def pelicula_cmd(interaction: discord.Interaction, titulo: str):
     await interaction.followup.send(embed=embed)
 
 
-@tree.command(name='receta', description='Busca una receta de cocina')
-@app_commands.describe(busqueda='Nombre del platillo (en ingles da mejores resultados)')
+class _RecetaSelect(discord.ui.View):
+    def __init__(self, resultados: list, guild_id: int):
+        super().__init__(timeout=60)
+        self.guild_id = guild_id
+        lang = BotConfig.get_language(guild_id)
+        ph = 'Elige una receta...' if lang == 'es' else 'Choose a recipe...'
+        opts = [discord.SelectOption(label=r['title'][:100], value=str(r['id']))
+                for r in resultados]
+        sel = discord.ui.Select(placeholder=ph, options=opts)
+        sel.callback = self._on_select
+        self.add_item(sel)
+
+    async def _on_select(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        recipe_id = int(interaction.data['values'][0])
+        detail = Scrapper.spoonacularDetail(recipe_id)
+        lang = BotConfig.get_language(interaction.guild_id)
+        if not detail:
+            await interaction.followup.send(
+                BotConfig.t(interaction.guild_id, 'sin_resultados'), ephemeral=True)
+            return
+        embed = discord.Embed(title=f'\U0001f37d\ufe0f {detail["title"]}', color=0x2ECC71,
+                              url=detail['url'] or None)
+        if detail['image']:
+            embed.set_thumbnail(url=detail['image'])
+        if detail['readyIn']:
+            embed.add_field(name='\u23f1\ufe0f',
+                            value=f'{detail["readyIn"]} min', inline=True)
+        if detail['servings']:
+            label = 'Porciones' if lang == 'es' else 'Servings'
+            embed.add_field(name=label, value=str(detail['servings']), inline=True)
+        if detail['ingredients']:
+            label = 'Ingredientes' if lang == 'es' else 'Ingredients'
+            embed.add_field(name=label,
+                            value='\n'.join(f'\u2022 {i}' for i in detail['ingredients']),
+                            inline=False)
+        if detail['instructions']:
+            instr = detail['instructions']
+            if lang == 'es':
+                try: instr = Scrapper.translate(instr, dest='es')
+                except Exception: pass
+            label = 'Instrucciones' if lang == 'es' else 'Instructions'
+            embed.add_field(name=label, value=instr[:1000], inline=False)
+        await interaction.message.edit(embed=embed, view=None)
+
+
+@tree.command(name='receta', description='Busca recetas por ingrediente o nombre de plato')
+@app_commands.describe(busqueda='Ingrediente o plato a buscar (funciona en espanol e ingles)')
 async def receta_cmd(interaction: discord.Interaction, busqueda: str):
     if not await _check_module(interaction, 'entretenimiento'): return
     await interaction.response.defer()
-    result = Scrapper.recetaSearch(busqueda)
-    if not result:
-        await interaction.followup.send(BotConfig.t(interaction.guild_id, 'sin_resultados')); return
-    lang  = BotConfig.get_language(interaction.guild_id)
-    embed = discord.Embed(title=f'🍽️ {result["name"]}', color=0x2ECC71)
-    cat = result['category'] + (' · ' + result['area'] if result['area'] else '')
-    if cat: embed.description = cat
-    if result['image']: embed.set_thumbnail(url=result['image'])
-    if result['ingredients']:
-        label = 'Ingredientes' if lang == 'es' else 'Ingredients'
-        embed.add_field(name=label, value='\n'.join(f'• {i}' for i in result['ingredients']), inline=False)
-    if result['instructions']:
-        instr = result['instructions']
-        if lang == 'es':
-            try: instr = Scrapper.translate(instr, dest='es')
-            except Exception: pass
-        label = 'Instrucciones' if lang == 'es' else 'Instructions'
-        embed.add_field(name=label, value=instr[:1000], inline=False)
-    if result['youtube']:
-        embed.add_field(name='Video', value=result['youtube'], inline=False)
-    await interaction.followup.send(embed=embed)
-
+    resultados = Scrapper.spoonacularSearch(busqueda)
+    if not resultados:
+        await interaction.followup.send(BotConfig.t(interaction.guild_id, 'sin_resultados'))
+        return
+    lang = BotConfig.get_language(interaction.guild_id)
+    n = len(resultados)
+    desc = (f'Se encontraron **{n}** recetas con ese ingrediente. Elige una:'
+            if lang == 'es' else
+            f'Found **{n}** recipes with that ingredient. Choose one:')
+    embed = discord.Embed(title=f'\U0001f37d\ufe0f {busqueda.title()}',
+                          description=desc, color=0x2ECC71)
+    await interaction.followup.send(embed=embed, view=_RecetaSelect(resultados, interaction.guild_id))
 
 @tree.command(name='caracola', description='Consulta a la Caracola Magica')
 @app_commands.describe(pregunta='Tu pregunta para la Caracola Magica (opcional)')
