@@ -460,6 +460,18 @@ async def trivia_cmd(interaction: discord.Interaction, categoria: str = None):
         await interaction.followup.send(BotConfig.t(interaction.guild_id, "sin_resultados"))
         return
     lang = BotConfig.get_language(interaction.guild_id)
+    if lang == 'es':
+        try:
+            parts = [q['question'], q['correct']] + q['incorrect']
+            joined = '\n||||\n'.join(parts)
+            translated = Scrapper.translate(joined, dest='es')
+            t_parts = translated.split('\n||||\n')
+            if len(t_parts) == 5:
+                q['question']  = t_parts[0]
+                q['correct']   = t_parts[1]
+                q['incorrect'] = t_parts[2:]
+        except Exception:
+            pass
     view = _Trivia(q, interaction.guild_id)
     msg = await interaction.followup.send(embed=view._question_embed(lang), view=view)
     view.message = msg
