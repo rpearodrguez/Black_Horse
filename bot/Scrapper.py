@@ -526,25 +526,42 @@ def SCP_Search(busqueda: str = "173") -> list:
     soup = BeautifulSoup(resp.text, 'html.parser')
     result = []
 
-    # Imagen: primer <img> dentro del bloque de imagen
+    # Imagen: buscar en scp-image-block, luego cualquier img del contenido
+    def _norm_url(src: str) -> str:
+        if src.startswith('//'):
+            return 'https:' + src
+        if src.startswith('http://'):
+            return 'https://' + src[7:]
+        if src.startswith('/'):
+            return 'https://scp-wiki.wikidot.com' + src
+        return src
+
     img_url = ''
+    content = soup.find('div', id='page-content')
+
     img_block = soup.find('div', class_='scp-image-block')
     if img_block:
         img_tag = img_block.find('img')
-        if img_tag and img_tag.get('src'):
-            src = img_tag['src']
-            if src.startswith('//'):
-                src = 'https:' + src
-            elif src.startswith('http://'):
-                src = 'https://' + src[7:]
-            img_url = src
+        logger.info(f'SCP image-block found, img tag: {img_tag}')
+        if img_tag:
+            src = img_tag.get('src') or img_tag.get('data-src', '')
+            if src:
+                img_url = _norm_url(src)
+
+    if not img_url and content:
+        for img in content.find_all('img'):
+            src = img.get('src') or img.get('data-src', '')
+            if src and not src.endswith('.gif'):
+                img_url = _norm_url(src)
+                logger.info(f'SCP image fallback: {img_url!r}')
+                break
+
     if not img_url:
         img_url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/SCP_Foundation_%28emblem%29.svg/200px-SCP_Foundation_%28emblem%29.svg.png'
-    logger.info(f'SCP image: {img_url!r}')
+    logger.info(f'SCP image final: {img_url!r}')
     result.append(img_url)
 
     # Campos de texto del artículo
-    content = soup.find('div', id='page-content')
     if content:
         for p in content.find_all('p', limit=8):
             text = re.sub(r'\s+', ' ', p.get_text(' ', strip=True)).strip()
