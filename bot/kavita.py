@@ -188,6 +188,24 @@ def _get_cover(series_id: int) -> bytes | None:
     return None
 
 
+# ─── library name cache ───────────────────────────────────────────────────────
+# recently-updated-series doesn't include libraryName, so we cache it from /api/Library.
+
+_lib_cache: dict[int, str] = {}
+
+
+def _fetch_lib_cache() -> None:
+    data = _get("/api/Library")
+    if isinstance(data, list):
+        for lib in data:
+            _lib_cache[lib["id"]] = lib.get("name", str(lib["id"]))
+        log.info("[Kavita] Library cache: %s", _lib_cache)
+
+
+def _lib_name(lib_id: int) -> str:
+    return _lib_cache.get(lib_id, f"Biblioteca {lib_id}")
+
+
 # ─── filtering / deduplication ────────────────────────────────────────────────
 
 def _wanted(item: dict) -> bool:
@@ -195,8 +213,8 @@ def _wanted(item: dict) -> bool:
 
 
 def _chapter_key(s: dict) -> str:
-    # Composite key: seriesId + lastChapterAdded — changes whenever a new chapter arrives.
-    return f"{s.get('id', '')}:{s.get('lastChapterAdded', '')}"
+    # Composite key: seriesId + created — changes whenever a new chapter arrives.
+    return f"{s.get('seriesId', '')}:{s.get('created', '')}"
 
 
 def _new_series() -> list[dict]:
@@ -250,19 +268,21 @@ def _make_series_embed(s: dict) -> tuple[discord.Embed, str]:
 
 
 def _make_chapter_embed(s: dict) -> tuple[discord.Embed, str]:
-    # recently-updated-series returns series objects, not individual chapters.
-    summary = (s.get("summary") or "").strip()
+    # recently-updated-series uses seriesName/seriesId, no libraryName.
+    name    = s.get("seriesName", "Actualización")
+    sid     = s.get("seriesId", 0)
+    lib_id  = s.get("libraryId", 0)
+    lib     = _lib_name(lib_id)
     embed = discord.Embed(
-        title=s.get("name", "Actualización"),
-        url=_series_url(s["id"], s.get("libraryId", 0)),
-        description=summary[:300] if summary else None,
-        color=_lib_color(s.get("libraryName", "")),
+        title=name,
+        url=_series_url(sid, lib_id),
+        color=_lib_color(lib),
     )
-    embed.add_field(name="Biblioteca", value=s.get("libraryName", "—"), inline=True)
+    embed.add_field(name="Biblioteca", value=lib, inline=True)
     embed.add_field(name="Formato",    value=_fmt_format(s.get("format", 0)), inline=True)
-    if s.get("lastChapterAdded"):
-        embed.add_field(name="Actualizado", value=_fmt_date(s["lastChapterAdded"]), inline=True)
-    content = f"**{s.get('libraryName', 'Kavita')}:** {s.get('name', '')} tiene nuevo contenido en Kavita."
+    if s.get("created"):
+        embed.add_field(name="Actualizado", value=_fmt_date(s["created"]), inline=True)
+    content = f"**{lib}:** {name} tiene nuevo contenido en Kavita."
     return embed, content
 
 
@@ -282,38 +302,31 @@ _BATCH_THRESHOLD = 3
 
 
 async def _send_batch(channel: discord.TextChannel, items: list[dict], kind: str) -> None:
-    """Send a summary embed when there are more than _BATCH_THRESHOLD items."""
-    icon  = "📚" if kind == "series" else "📖"
-    label = f"{len(items)} nuevas series en Kavita" if kind == "series" else f"{len(items)} series actualizadas en Kavita"
+    """Send one summary embed per library when there are more than _BATCH_THRESHOLD items."""
+    is_chapters = kind == "chapters"
+    icon = "📚" if kind == "series" else "📖"
 
     by_lib: dict[str, list] = {}
     for item in items:
-        by_lib.setdefault(item.get("libraryName", "—"), []).append(item)
-
-    color = _lib_color(items[0].get("libraryName", "")) if len(by_lib) == 1 else 0x95A5A6
-    embed = discord.Embed(title=f"{icon} {label}", color=color)
+        lib = _lib_name(item.get("libraryId", 0)) if is_chapters else item.get("libraryName", "—")
+        by_lib.setdefault(lib, []).append(item)
 
     for lib_name, lib_items in by_lib.items():
-        lines = [f"• [{i.get('name', '?')}]({_series_url(i['id'], i.get('libraryId', 0))})" for i in lib_items]
-        # Split into chunks to stay under Discord's 1024-char field value limit.
-        chunk: list[str] = []
-        chunk_len = 0
-        chunks: list[list[str]] = []
-        for line in lines:
-            if chunk_len + len(line) + 1 > 1000:
-                chunks.append(chunk)
-                chunk, chunk_len = [line], len(line)
-            else:
-                chunk.append(line)
-                chunk_len += len(line) + 1
-        if chunk:
-            chunks.append(chunk)
-
-        for idx, ch in enumerate(chunks):
-            name = lib_name if idx == 0 else f"{lib_name} (cont.)"
-            embed.add_field(name=name, value="\n".join(ch), inline=False)
-
-    await channel.send(embed=embed)
+        n = len(lib_items)
+        label = f"{n} nuevas series" if kind == "series" else f"{n} series actualizadas"
+        if is_chapters:
+            lines = [f"• [{i.get('seriesName', '?')}]({_series_url(i.get('seriesId', 0), i.get('libraryId', 0))})" for i in lib_items]
+        else:
+            lines = [f"• [{i.get('name', '?')}]({_series_url(i['id'], i.get('libraryId', 0))})" for i in lib_items]
+        desc = "\n".join(lines)
+        if len(desc) > 4096:
+            desc = desc[:4093] + "…"
+        embed = discord.Embed(
+            title=f"{icon} {label} — {lib_name}",
+            description=desc,
+            color=_lib_color(lib_name),
+        )
+        await channel.send(embed=embed)
 
 
 async def _post_all(
@@ -348,7 +361,7 @@ async def _post_all(
         for c in chapters:
             try:
                 embed, content = _make_chapter_embed(c)
-                await _send(channel, embed, c.get("id", 0), content=content)
+                await _send(channel, embed, c.get("seriesId", 0), content=content)
                 _seen["chapters"].append(_chapter_key(c))
             except Exception as e:
                 log.error("[Kavita] chapter %s: %s", c.get("id"), e)
@@ -368,6 +381,9 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
     if not _jwt:
         if not await asyncio.to_thread(_authenticate):
             return 0, 0
+
+    if not _lib_cache:
+        await asyncio.to_thread(_fetch_lib_cache)
 
     series   = await asyncio.to_thread(_new_series)
     chapters = await asyncio.to_thread(_new_chapters)
