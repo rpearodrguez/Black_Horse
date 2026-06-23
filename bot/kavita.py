@@ -341,6 +341,10 @@ async def _post_all(
     series: list[dict],
     chapters: list[dict],
 ) -> None:
+    # A newly-added series also appears in recently-updated; keep it only in series.
+    new_series_ids = {s["id"] for s in series}
+    chapters = [c for c in chapters if c.get("seriesId") not in new_series_ids]
+
     if len(series) > _BATCH_THRESHOLD:
         try:
             await _send_batch(channel, series, "series")
