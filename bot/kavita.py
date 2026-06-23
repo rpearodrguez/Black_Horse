@@ -278,26 +278,64 @@ async def _send(channel: discord.TextChannel, embed: discord.Embed, series_id: i
         await channel.send(content=content, embed=embed)
 
 
+_BATCH_THRESHOLD = 3
+
+
+async def _send_batch(channel: discord.TextChannel, items: list[dict], kind: str) -> None:
+    """Send a single summary embed when there are more than _BATCH_THRESHOLD items."""
+    icon  = "📚" if kind == "series" else "📖"
+    label = f"{len(items)} nuevas series en Kavita" if kind == "series" else f"{len(items)} series actualizadas en Kavita"
+
+    by_lib: dict[str, list] = {}
+    for item in items:
+        by_lib.setdefault(item.get("libraryName", "—"), []).append(item)
+
+    color = _lib_color(items[0].get("libraryName", "")) if len(by_lib) == 1 else 0x95A5A6
+    embed = discord.Embed(title=f"{icon} {label}", color=color)
+
+    for lib_name, lib_items in by_lib.items():
+        lines = [f"• [{i.get('name', '?')}]({_series_url(i['id'], i.get('libraryId', 0))})" for i in lib_items]
+        embed.add_field(name=lib_name, value="\n".join(lines), inline=False)
+
+    await channel.send(embed=embed)
+
+
 async def _post_all(
     channel: discord.TextChannel,
     series: list[dict],
     chapters: list[dict],
 ) -> None:
-    for s in series:
+    if len(series) > _BATCH_THRESHOLD:
         try:
-            embed, content = _make_series_embed(s)
-            await _send(channel, embed, s["id"], content=content)
+            await _send_batch(channel, series, "series")
+        except Exception as e:
+            log.error("[Kavita] batch series: %s", e)
+        for s in series:
             _seen["series"].append(str(s["id"]))
-        except Exception as e:
-            log.error("[Kavita] series %s: %s", s.get("id"), e)
+    else:
+        for s in series:
+            try:
+                embed, content = _make_series_embed(s)
+                await _send(channel, embed, s["id"], content=content)
+                _seen["series"].append(str(s["id"]))
+            except Exception as e:
+                log.error("[Kavita] series %s: %s", s.get("id"), e)
 
-    for c in chapters:
+    if len(chapters) > _BATCH_THRESHOLD:
         try:
-            embed, content = _make_chapter_embed(c)
-            await _send(channel, embed, c.get("id", 0), content=content)
-            _seen["chapters"].append(_chapter_key(c))
+            await _send_batch(channel, chapters, "chapters")
         except Exception as e:
-            log.error("[Kavita] chapter %s: %s", c.get("id"), e)
+            log.error("[Kavita] batch chapters: %s", e)
+        for c in chapters:
+            _seen["chapters"].append(_chapter_key(c))
+    else:
+        for c in chapters:
+            try:
+                embed, content = _make_chapter_embed(c)
+                await _send(channel, embed, c.get("id", 0), content=content)
+                _seen["chapters"].append(_chapter_key(c))
+            except Exception as e:
+                log.error("[Kavita] chapter %s: %s", c.get("id"), e)
 
     _save()
 
@@ -322,7 +360,7 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
         for s in series:
             _seen["series"].append(str(s["id"]))
         for c in chapters:
-            _seen["chapters"].append(_chapter_id(c))
+            _seen["chapters"].append(_chapter_key(c))
         _seen["initialized"] = True
         _save()
         log.info("[Kavita] First-run snapshot: %d series, %d chapters.", len(series), len(chapters))
