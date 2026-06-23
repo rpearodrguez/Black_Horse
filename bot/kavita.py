@@ -3,7 +3,6 @@
 Owner-only: configured entirely via env vars. No guild BotConfig integration.
 The bot downloads cover images directly (Kavita server may not be publicly reachable).
 """
-import io
 import json
 import logging
 import asyncio
@@ -177,33 +176,17 @@ def _post(path: str, body: dict = None, **kwargs):
     return None
 
 
-def _get_cover(series_id: int) -> bytes | None:
-    """Download cover bytes from Kavita (bot fetches it; Kavita may not be public)."""
-    for ep in ("/api/Image/series-cover", "/api/Image/cover"):
-        try:
-            r = requests.get(
-                f"{_URL}{ep}",
-                headers=_headers(),
-                params={"seriesId": series_id},
-                timeout=15,
-            )
-            if r.ok and r.content:
-                return r.content
-            log.warning("[Kavita] Cover %s (series %s) → %s", ep, series_id, r.status_code)
-        except Exception as e:
-            log.warning("[Kavita] Cover %s (series %s) error: %s", ep, series_id, e)
-        if _API_KEY:
-            try:
-                r = requests.get(
-                    f"{_URL}{ep}",
-                    params={"seriesId": series_id, "apiKey": _API_KEY},
-                    timeout=15,
-                )
-                if r.ok and r.content:
-                    return r.content
-            except Exception:
-                pass
-    log.warning("[Kavita] Could not download cover for series %s.", series_id)
+def _mal_cover_url(mal_id: int) -> str | None:
+    """Return the MAL cover URL via Jikan API (no key required)."""
+    if not mal_id:
+        return None
+    try:
+        r = requests.get(f"https://api.jikan.moe/v4/manga/{mal_id}", timeout=10)
+        if r.ok:
+            imgs = r.json().get("data", {}).get("images", {})
+            return (imgs.get("webp") or imgs.get("jpg") or {}).get("large_image_url")
+    except Exception as e:
+        log.warning("[Kavita] Jikan cover (mal %s): %s", mal_id, e)
     return None
 
 
@@ -264,18 +247,38 @@ def _series_url(series_id: int, lib_id: int) -> str:
     return f"{_URL}/library/{lib_id}/series/{series_id}"
 
 
+def _cover_color(s: dict) -> int:
+    raw = (s.get("primaryColor") or "").lstrip("#")
+    try:
+        return int(raw, 16) if len(raw) == 6 else _lib_color(s.get("libraryName", ""))
+    except ValueError:
+        return _lib_color(s.get("libraryName", ""))
+
+
+def _external_links(s: dict) -> str | None:
+    parts = []
+    if s.get("malId"):
+        parts.append(f"[MyAnimeList](https://myanimelist.net/manga/{s['malId']})")
+    if s.get("aniListId"):
+        parts.append(f"[AniList](https://anilist.co/manga/{s['aniListId']})")
+    return " · ".join(parts) if parts else None
+
+
 def _make_series_embed(s: dict) -> tuple[discord.Embed, str]:
     summary = (s.get("summary") or "").strip()
     embed = discord.Embed(
         title=s.get("name", "Nueva serie"),
         url=_series_url(s["id"], s.get("libraryId", 0)),
         description=summary[:300] if summary else None,
-        color=_lib_color(s.get("libraryName", "")),
+        color=_cover_color(s),
     )
     embed.add_field(name="Biblioteca", value=s.get("libraryName", "—"), inline=True)
     embed.add_field(name="Formato",    value=_fmt_format(s.get("format", 0)), inline=True)
     if s.get("created"):
         embed.add_field(name="Agregado", value=_fmt_date(s["created"]), inline=True)
+    links = _external_links(s)
+    if links:
+        embed.add_field(name="Links", value=links, inline=False)
     content = f"**{s.get('libraryName', 'Kavita')}:** {s.get('name', '')} se acaba de añadir a Kavita."
     return embed, content
 
@@ -301,14 +304,12 @@ def _make_chapter_embed(s: dict) -> tuple[discord.Embed, str]:
 
 # ─── posting ─────────────────────────────────────────────────────────────────
 
-async def _send(channel: discord.TextChannel, embed: discord.Embed, series_id: int, content: str = None) -> None:
-    cover = await asyncio.to_thread(_get_cover, series_id)
-    if cover:
-        f = discord.File(io.BytesIO(cover), filename="cover.jpg")
-        embed.set_thumbnail(url="attachment://cover.jpg")
-        await channel.send(content=content, file=f, embed=embed)
-    else:
-        await channel.send(content=content, embed=embed)
+async def _send(channel: discord.TextChannel, embed: discord.Embed, mal_id: int = 0, content: str = None) -> None:
+    if mal_id:
+        cover_url = await asyncio.to_thread(_mal_cover_url, mal_id)
+        if cover_url:
+            embed.set_thumbnail(url=cover_url)
+    await channel.send(content=content, embed=embed)
 
 
 _BATCH_THRESHOLD = 3
@@ -367,7 +368,7 @@ async def _post_all(
         for s in series:
             try:
                 embed, content = _make_series_embed(s)
-                await _send(channel, embed, s["id"], content=content)
+                await _send(channel, embed, s.get("malId", 0), content=content)
                 _seen["series"].append(str(s["id"]))
             except Exception as e:
                 log.error("[Kavita] series %s: %s", s.get("id"), e)
@@ -383,7 +384,7 @@ async def _post_all(
         for c in chapters:
             try:
                 embed, content = _make_chapter_embed(c)
-                await _send(channel, embed, c.get("seriesId", 0), content=content)
+                await _send(channel, embed, content=content)
                 _seen["chapters"].append(_chapter_key(c))
             except Exception as e:
                 log.error("[Kavita] chapter %s: %s", c.get("id"), e)
