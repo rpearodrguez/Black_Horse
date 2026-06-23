@@ -1,0 +1,350 @@
+"""Kavita integration — polls for new series/chapters and posts embeds to a private channel.
+
+Owner-only: configured entirely via env vars. No guild BotConfig integration.
+The bot downloads cover images directly (Kavita server may not be publicly reachable).
+"""
+import io
+import json
+import logging
+import asyncio
+import datetime
+import os
+
+import requests
+import discord
+from discord.ext import tasks
+
+log = logging.getLogger(__name__)
+
+# ─── env config ──────────────────────────────────────────────────────────────
+_URL      = (os.getenv("KAVITA_URL") or "").rstrip("/")
+_API_KEY  = os.getenv("KAVITA_API_KEY", "")
+_USER     = os.getenv("KAVITA_USER", "")
+_PASS     = os.getenv("KAVITA_PASSWORD", "")
+_CHANNEL  = int(os.getenv("KAVITA_DISCORD_CHANNEL_ID") or 0)
+_INTERVAL = int(os.getenv("KAVITA_POLL_INTERVAL") or 30)
+_LIB_IDS  = {int(x) for x in os.getenv("KAVITA_LIBRARIES", "").split(",") if x.strip().isdigit()}
+
+_SEEN_FILE = "kavita_seen.json"
+_seen: dict = {"initialized": False, "series": [], "chapters": []}
+_jwt: str = ""
+
+# Exposed so on_ready() can call poll manually via force_poll()
+_poll_task = None
+
+
+# ─── library colors ──────────────────────────────────────────────────────────
+
+def _lib_color(name: str) -> int:
+    n = name.lower()
+    if "manga" in n:
+        return 0xE74C3C   # red
+    if "comic" in n:
+        return 0x3498DB   # blue
+    if "book" in n or "libro" in n:
+        return 0x2ECC71   # green
+    return 0x95A5A6       # grey
+
+
+# ─── persistence ─────────────────────────────────────────────────────────────
+
+def _load() -> None:
+    global _seen
+    if not os.path.exists(_SEEN_FILE):
+        return
+    try:
+        with open(_SEEN_FILE, encoding="utf-8") as f:
+            _seen = json.load(f)
+        _seen.setdefault("initialized", False)
+        _seen.setdefault("series", [])
+        _seen.setdefault("chapters", [])
+    except Exception as e:
+        log.warning("[Kavita] Could not load seen file: %s", e)
+
+
+def _save() -> None:
+    try:
+        with open(_SEEN_FILE, "w", encoding="utf-8") as f:
+            json.dump(_seen, f)
+    except Exception as e:
+        log.warning("[Kavita] Could not save seen file: %s", e)
+
+
+def reset_seen() -> None:
+    """Clear seen cache so the next poll re-announces everything."""
+    global _seen
+    _seen = {"initialized": False, "series": [], "chapters": []}
+    _save()
+
+
+# ─── authentication ───────────────────────────────────────────────────────────
+
+def _authenticate() -> bool:
+    global _jwt
+    if not _URL:
+        return False
+
+    # Primary: exchange API key for JWT (Kavita 0.8+)
+    if _API_KEY:
+        try:
+            r = requests.post(
+                f"{_URL}/api/Account/authenticate",
+                json={"apiKey": _API_KEY},
+                timeout=10,
+            )
+            if r.ok:
+                _jwt = r.json().get("token", "")
+                if _jwt:
+                    log.info("[Kavita] Authenticated via API key.")
+                    return True
+        except Exception:
+            pass
+
+    # Fallback: username / password
+    if _USER and _PASS:
+        try:
+            r = requests.post(
+                f"{_URL}/api/Account/login",
+                json={"username": _USER, "password": _PASS},
+                timeout=10,
+            )
+            if r.ok:
+                _jwt = r.json().get("token", "")
+                if _jwt:
+                    log.info("[Kavita] Authenticated via username/password.")
+                    return True
+        except Exception:
+            pass
+
+    log.warning("[Kavita] Authentication failed.")
+    return False
+
+
+def _headers() -> dict:
+    return {"Authorization": f"Bearer {_jwt}"} if _jwt else {}
+
+
+# ─── API helpers ──────────────────────────────────────────────────────────────
+
+def _get(path: str, **kwargs):
+    """GET from Kavita API, refreshing JWT once on 401."""
+    for attempt in range(2):
+        try:
+            r = requests.get(f"{_URL}{path}", headers=_headers(), timeout=15, **kwargs)
+            if r.status_code == 401 and attempt == 0:
+                _authenticate()
+                continue
+            if r.ok:
+                return r.json()
+        except Exception as e:
+            log.warning("[Kavita] GET %s: %s", path, e)
+    return None
+
+
+def _get_cover(series_id: int) -> bytes | None:
+    """Download cover bytes from Kavita (bot fetches it; Kavita may not be public)."""
+    for ep in ("/api/Image/series-cover", "/api/Image/cover"):
+        try:
+            r = requests.get(
+                f"{_URL}{ep}",
+                headers=_headers(),
+                params={"seriesId": series_id},
+                timeout=15,
+            )
+            if r.ok and r.content:
+                return r.content
+        except Exception:
+            pass
+        if _API_KEY:
+            try:
+                r = requests.get(
+                    f"{_URL}{ep}",
+                    params={"seriesId": series_id, "apiKey": _API_KEY},
+                    timeout=15,
+                )
+                if r.ok and r.content:
+                    return r.content
+            except Exception:
+                pass
+    return None
+
+
+# ─── filtering / deduplication ────────────────────────────────────────────────
+
+def _wanted(item: dict) -> bool:
+    return not _LIB_IDS or item.get("libraryId") in _LIB_IDS
+
+
+def _chapter_id(c: dict) -> str:
+    return str(c.get("chapterId") or c.get("id", ""))
+
+
+def _new_series() -> list[dict]:
+    data = _get("/api/Series/recently-added", params={"pageSize": 30})
+    if not isinstance(data, list):
+        data = (data or {}).get("content", [])
+    seen_set = set(_seen["series"])
+    return [s for s in data if str(s.get("id", "")) not in seen_set and _wanted(s)]
+
+
+def _new_chapters() -> list[dict]:
+    data = _get("/api/Series/recently-added-chapters", params={"pageSize": 30})
+    if not isinstance(data, list):
+        data = (data or {}).get("content", [])
+    seen_set = set(_seen["chapters"])
+    return [c for c in data if _chapter_id(c) not in seen_set and _wanted(c)]
+
+
+# ─── embed builders ───────────────────────────────────────────────────────────
+
+def _fmt_date(iso: str) -> str:
+    try:
+        dt = datetime.datetime.fromisoformat(iso.replace("Z", "+00:00"))
+        return dt.strftime("%d/%m/%Y")
+    except Exception:
+        return iso[:10]
+
+
+def _fmt_format(fmt: int) -> str:
+    return {0: "—", 1: "Archive", 2: "Imágenes", 3: "ePub", 4: "PDF"}.get(fmt, str(fmt))
+
+
+def _series_url(series_id: int, lib_id: int) -> str:
+    return f"{_URL}/library/{lib_id}/series/{series_id}"
+
+
+def _make_series_embed(s: dict) -> discord.Embed:
+    embed = discord.Embed(
+        title=s.get("name", "Nueva serie"),
+        url=_series_url(s["id"], s.get("libraryId", 0)),
+        color=_lib_color(s.get("libraryName", "")),
+    )
+    embed.set_author(name="📚 Nueva serie en Kavita")
+    embed.add_field(name="Biblioteca", value=s.get("libraryName", "—"), inline=True)
+    embed.add_field(name="Formato",    value=_fmt_format(s.get("format", 0)), inline=True)
+    if s.get("created"):
+        embed.add_field(name="Agregado", value=_fmt_date(s["created"]), inline=True)
+    return embed
+
+
+def _make_chapter_embed(c: dict) -> discord.Embed:
+    series_name = c.get("seriesName") or c.get("series", "—")
+    series_id   = c.get("seriesId", 0)
+    lib_id      = c.get("libraryId", 0)
+
+    vol  = c.get("volumeTitle") or c.get("volume")
+    chap = c.get("number") or c.get("range") or c.get("chapterNumber")
+
+    parts = []
+    if vol  and str(vol)  not in ("0", "0.0", ""):
+        parts.append(f"Vol. {vol}")
+    if chap and str(chap) not in ("0", "0.0", ""):
+        parts.append(f"Cap. {chap}")
+
+    embed = discord.Embed(
+        title=series_name,
+        url=_series_url(series_id, lib_id),
+        color=_lib_color(c.get("libraryName", "")),
+    )
+    embed.set_author(name="📖 Nuevo contenido en Kavita")
+    if parts:
+        embed.add_field(name="Contenido", value=" · ".join(parts), inline=True)
+    embed.add_field(name="Biblioteca", value=c.get("libraryName", "—"), inline=True)
+    if c.get("created"):
+        embed.add_field(name="Agregado", value=_fmt_date(c["created"]), inline=True)
+    return embed
+
+
+# ─── posting ─────────────────────────────────────────────────────────────────
+
+async def _send(channel: discord.TextChannel, embed: discord.Embed, series_id: int) -> None:
+    cover = await asyncio.to_thread(_get_cover, series_id)
+    if cover:
+        f = discord.File(io.BytesIO(cover), filename="cover.jpg")
+        embed.set_thumbnail(url="attachment://cover.jpg")
+        await channel.send(file=f, embed=embed)
+    else:
+        await channel.send(embed=embed)
+
+
+async def _post_all(
+    channel: discord.TextChannel,
+    series: list[dict],
+    chapters: list[dict],
+) -> None:
+    for s in series:
+        try:
+            await _send(channel, _make_series_embed(s), s["id"])
+            _seen["series"].append(str(s["id"]))
+        except Exception as e:
+            log.error("[Kavita] series %s: %s", s.get("id"), e)
+
+    for c in chapters:
+        try:
+            await _send(channel, _make_chapter_embed(c), c.get("seriesId", 0))
+            _seen["chapters"].append(_chapter_id(c))
+        except Exception as e:
+            log.error("[Kavita] chapter %s: %s", c.get("id"), e)
+
+    _save()
+
+
+# ─── public API ──────────────────────────────────────────────────────────────
+
+async def run_poll(client: discord.Client) -> tuple[int, int]:
+    """Run one poll cycle. Returns (new_series_count, new_chapters_count)."""
+    channel = client.get_channel(_CHANNEL)
+    if not channel:
+        log.warning("[Kavita] Channel %s not found.", _CHANNEL)
+        return 0, 0
+
+    if not _jwt:
+        if not await asyncio.to_thread(_authenticate):
+            return 0, 0
+
+    series   = await asyncio.to_thread(_new_series)
+    chapters = await asyncio.to_thread(_new_chapters)
+
+    if not _seen["initialized"]:
+        for s in series:
+            _seen["series"].append(str(s["id"]))
+        for c in chapters:
+            _seen["chapters"].append(_chapter_id(c))
+        _seen["initialized"] = True
+        _save()
+        log.info("[Kavita] First-run snapshot: %d series, %d chapters.", len(series), len(chapters))
+        return 0, 0
+
+    if series or chapters:
+        log.info("[Kavita] %d new series, %d new chapters.", len(series), len(chapters))
+        await _post_all(channel, series, chapters)
+
+    return len(series), len(chapters)
+
+
+def setup_kavita_poller(client: discord.Client) -> bool:
+    """
+    Start the background polling loop.
+    Returns True if started, False if env vars are missing.
+    Call from on_ready().
+    """
+    global _poll_task
+
+    if not (_URL and (_API_KEY or (_USER and _PASS)) and _CHANNEL):
+        log.info("[Kavita] Not configured — poller disabled.")
+        return False
+
+    _load()
+
+    @tasks.loop(minutes=_INTERVAL)
+    async def _loop() -> None:
+        await run_poll(client)
+
+    @_loop.before_loop
+    async def _before() -> None:
+        await client.wait_until_ready()
+
+    _loop.start()
+    _poll_task = _loop
+    log.info("[Kavita] Poller started (interval: %d min, channel: %s).", _INTERVAL, _CHANNEL)
+    return True

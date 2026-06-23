@@ -20,5 +20,8 @@ shmal.py
 # Configuración local del bot (específica por servidor)
 bot/config.json
 
+# Estado de runtime del poller de Kavita
+bot/kavita_seen.json
+
 # Notas internas del proyecto
 CLAUDE.md

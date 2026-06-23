@@ -11,6 +11,7 @@ import Scrapper
 import Roleplay
 import Feels
 import BotConfig
+import kavita
 import os
 import logging
 from collections import deque
@@ -61,6 +62,7 @@ logging.getLogger('discord').setLevel(logging.WARNING)
 
 logger = logging.getLogger('bot')
 logger.addHandler(_buf_handler)
+logging.getLogger('kavita').addHandler(_buf_handler)
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -75,6 +77,7 @@ async def on_ready():
     for guild in client.guilds:
         logger.info(f'  [{guild.id}] {guild.name} — {guild.member_count} miembros')
     logger.info('Slash commands sincronizados.')
+    kavita.setup_kavita_poller(client)
 
 
 # ──────────────────────────────────────────────
@@ -146,6 +149,60 @@ async def sync_cmd(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
     await tree.sync()
     await interaction.followup.send(BotConfig.t(interaction.guild_id, "sync_ok"), ephemeral=True)
+
+
+# ── /kavita ────────────────────────────────────
+
+kavita_group = app_commands.Group(name="kavita", description="Control del poller de Kavita (solo admin)")
+tree.add_command(kavita_group)
+
+
+@kavita_group.command(name="check", description="Fuerza un ciclo de polling ahora")
+async def kavita_check_cmd(interaction: discord.Interaction):
+    if not _is_bot_admin(interaction):
+        await interaction.response.send_message("Solo el admin del bot puede usar este comando.", ephemeral=True)
+        return
+    await interaction.response.defer(ephemeral=True)
+    n_series, n_chapters = await kavita.run_poll(client)
+    if n_series == 0 and n_chapters == 0:
+        await interaction.followup.send("Sin novedades (o poller no configurado).", ephemeral=True)
+    else:
+        await interaction.followup.send(
+            f"✅ Posteado: **{n_series}** serie(s) nueva(s), **{n_chapters}** capítulo(s) nuevo(s).",
+            ephemeral=True,
+        )
+
+
+@kavita_group.command(name="reset", description="Limpia el cache de vistos (el siguiente check re-anuncia todo)")
+async def kavita_reset_cmd(interaction: discord.Interaction):
+    if not _is_bot_admin(interaction):
+        await interaction.response.send_message("Solo el admin del bot puede usar este comando.", ephemeral=True)
+        return
+    kavita.reset_seen()
+    await interaction.response.send_message("🗑️ Cache de Kavita borrado. El próximo ciclo comenzará desde cero.", ephemeral=True)
+
+
+@kavita_group.command(name="status", description="Muestra el estado del poller de Kavita")
+async def kavita_status_cmd(interaction: discord.Interaction):
+    if not _is_bot_admin(interaction):
+        await interaction.response.send_message("Solo el admin del bot puede usar este comando.", ephemeral=True)
+        return
+    enabled = bool(kavita._poll_task and kavita._poll_task.is_running())
+    seen_s = len(kavita._seen.get("series", []))
+    seen_c = len(kavita._seen.get("chapters", []))
+    init   = kavita._seen.get("initialized", False)
+    url    = kavita._URL or "—"
+    ch     = kavita._CHANNEL or "—"
+    interval = kavita._INTERVAL
+
+    embed = discord.Embed(title="Kavita Poller", color=0x2ECC71 if enabled else 0xE74C3C)
+    embed.add_field(name="Estado",    value="✅ Activo" if enabled else "❌ Inactivo", inline=True)
+    embed.add_field(name="Intervalo", value=f"{interval} min",  inline=True)
+    embed.add_field(name="Canal",     value=f"<#{ch}>" if ch != "—" else "—", inline=True)
+    embed.add_field(name="Servidor",  value=url, inline=False)
+    embed.add_field(name="Inicializado", value="Sí" if init else "No (próximo ciclo hace snapshot)", inline=True)
+    embed.add_field(name="Vistos",    value=f"{seen_s} series · {seen_c} capítulos", inline=True)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 # ── /config ────────────────────────────────────
