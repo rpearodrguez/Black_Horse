@@ -273,7 +273,6 @@ def _make_series_embed(s: dict) -> tuple[discord.Embed, str]:
         color=_cover_color(s),
     )
     embed.add_field(name="Biblioteca", value=s.get("libraryName", "—"), inline=True)
-    embed.add_field(name="Formato",    value=_fmt_format(s.get("format", 0)), inline=True)
     if s.get("created"):
         embed.add_field(name="Agregado", value=_fmt_date(s["created"]), inline=True)
     links = _external_links(s)
@@ -308,7 +307,7 @@ async def _send(channel: discord.TextChannel, embed: discord.Embed, mal_id: int 
     if mal_id:
         cover_url = await asyncio.to_thread(_mal_cover_url, mal_id)
         if cover_url:
-            embed.set_thumbnail(url=cover_url)
+            embed.set_image(url=cover_url)
     await channel.send(content=content, embed=embed)
 
 
