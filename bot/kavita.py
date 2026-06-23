@@ -348,8 +348,13 @@ async def _post_all(
     chapters: list[dict],
 ) -> None:
     # A newly-added series also appears in recently-updated; keep it only in series.
+    # Mark the skipped chapters as seen so they don't reappear on the next poll cycle.
     new_series_ids = {s["id"] for s in series}
-    chapters = [c for c in chapters if c.get("seriesId") not in new_series_ids]
+    skipped, chapters = [], []
+    for c in chapters:
+        (skipped if c.get("seriesId") in new_series_ids else chapters).append(c)
+    for c in skipped:
+        _seen["chapters"].append(_chapter_key(c))
 
     if len(series) > _BATCH_THRESHOLD:
         try:
