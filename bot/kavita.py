@@ -282,7 +282,7 @@ _BATCH_THRESHOLD = 3
 
 
 async def _send_batch(channel: discord.TextChannel, items: list[dict], kind: str) -> None:
-    """Send a single summary embed when there are more than _BATCH_THRESHOLD items."""
+    """Send a summary embed when there are more than _BATCH_THRESHOLD items."""
     icon  = "📚" if kind == "series" else "📖"
     label = f"{len(items)} nuevas series en Kavita" if kind == "series" else f"{len(items)} series actualizadas en Kavita"
 
@@ -295,7 +295,23 @@ async def _send_batch(channel: discord.TextChannel, items: list[dict], kind: str
 
     for lib_name, lib_items in by_lib.items():
         lines = [f"• [{i.get('name', '?')}]({_series_url(i['id'], i.get('libraryId', 0))})" for i in lib_items]
-        embed.add_field(name=lib_name, value="\n".join(lines), inline=False)
+        # Split into chunks to stay under Discord's 1024-char field value limit.
+        chunk: list[str] = []
+        chunk_len = 0
+        chunks: list[list[str]] = []
+        for line in lines:
+            if chunk_len + len(line) + 1 > 1000:
+                chunks.append(chunk)
+                chunk, chunk_len = [line], len(line)
+            else:
+                chunk.append(line)
+                chunk_len += len(line) + 1
+        if chunk:
+            chunks.append(chunk)
+
+        for idx, ch in enumerate(chunks):
+            name = lib_name if idx == 0 else f"{lib_name} (cont.)"
+            embed.add_field(name=name, value="\n".join(ch), inline=False)
 
     await channel.send(embed=embed)
 
