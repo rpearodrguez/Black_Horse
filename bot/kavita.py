@@ -25,6 +25,19 @@ _CHANNEL  = int(os.getenv("KAVITA_DISCORD_CHANNEL_ID") or 0)
 _INTERVAL = int(os.getenv("KAVITA_POLL_INTERVAL") or 30)
 _LIB_IDS  = {int(x) for x in os.getenv("KAVITA_LIBRARIES", "").split(",") if x.strip().isdigit()}
 
+# Pre-populate library name cache from KAVITA_LIBRARY_NAMES=1:Manga,2:Novelas Ligeras,5:Comics
+def _parse_lib_names(raw: str) -> dict[int, str]:
+    result: dict[int, str] = {}
+    for entry in raw.split(","):
+        entry = entry.strip()
+        if ":" in entry:
+            lid, _, lname = entry.partition(":")
+            if lid.strip().isdigit():
+                result[int(lid.strip())] = lname.strip()
+    return result
+
+_lib_cache: dict[int, str] = _parse_lib_names(os.getenv("KAVITA_LIBRARY_NAMES", ""))
+
 _SEEN_FILE = "kavita_seen.json"
 _seen: dict = {"initialized": False, "series": [], "chapters": []}
 _jwt: str = ""
@@ -189,18 +202,7 @@ def _get_cover(series_id: int) -> bytes | None:
 
 
 # ─── library name cache ───────────────────────────────────────────────────────
-# recently-updated-series doesn't include libraryName, so we cache it from /api/Library.
-
-_lib_cache: dict[int, str] = {}
-
-
-def _fetch_lib_cache() -> None:
-    data = _get("/api/Library")
-    if isinstance(data, list):
-        for lib in data:
-            _lib_cache[lib["id"]] = lib.get("name", str(lib["id"]))
-        log.info("[Kavita] Library cache: %s", _lib_cache)
-
+# Seeded from KAVITA_LIBRARY_NAMES env var; enriched at runtime from recently-added-v2.
 
 def _lib_name(lib_id: int) -> str:
     return _lib_cache.get(lib_id, f"Biblioteca {lib_id}")
@@ -221,6 +223,11 @@ def _new_series() -> list[dict]:
     data = _post("/api/Series/recently-added-v2", params={"pageNumber": 1, "pageSize": 30})
     if not isinstance(data, list):
         data = (data or {}).get("content", [])
+    # Enrich library cache from API data; env-configured names take precedence.
+    for s in data:
+        lib_id, lib_name = s.get("libraryId", 0), s.get("libraryName", "")
+        if lib_id and lib_name and lib_id not in _lib_cache:
+            _lib_cache[lib_id] = lib_name
     seen_set = set(_seen["series"])
     return [s for s in data if str(s.get("id", "")) not in seen_set and _wanted(s)]
 
@@ -381,9 +388,6 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
     if not _jwt:
         if not await asyncio.to_thread(_authenticate):
             return 0, 0
-
-    if not _lib_cache:
-        await asyncio.to_thread(_fetch_lib_cache)
 
     series   = await asyncio.to_thread(_new_series)
     chapters = await asyncio.to_thread(_new_chapters)
