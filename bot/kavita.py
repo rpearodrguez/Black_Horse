@@ -233,45 +233,49 @@ def _series_url(series_id: int, lib_id: int) -> str:
     return f"{_URL}/library/{lib_id}/series/{series_id}"
 
 
-def _make_series_embed(s: dict) -> discord.Embed:
+def _make_series_embed(s: dict) -> tuple[discord.Embed, str]:
+    summary = (s.get("summary") or "").strip()
     embed = discord.Embed(
         title=s.get("name", "Nueva serie"),
         url=_series_url(s["id"], s.get("libraryId", 0)),
+        description=summary[:300] if summary else None,
         color=_lib_color(s.get("libraryName", "")),
     )
-    embed.set_author(name="📚 Nueva serie en Kavita")
     embed.add_field(name="Biblioteca", value=s.get("libraryName", "—"), inline=True)
     embed.add_field(name="Formato",    value=_fmt_format(s.get("format", 0)), inline=True)
     if s.get("created"):
         embed.add_field(name="Agregado", value=_fmt_date(s["created"]), inline=True)
-    return embed
+    content = f"**{s.get('libraryName', 'Kavita')}:** {s.get('name', '')} se acaba de añadir a Kavita."
+    return embed, content
 
 
-def _make_chapter_embed(s: dict) -> discord.Embed:
+def _make_chapter_embed(s: dict) -> tuple[discord.Embed, str]:
     # recently-updated-series returns series objects, not individual chapters.
+    summary = (s.get("summary") or "").strip()
     embed = discord.Embed(
         title=s.get("name", "Actualización"),
         url=_series_url(s["id"], s.get("libraryId", 0)),
+        description=summary[:300] if summary else None,
         color=_lib_color(s.get("libraryName", "")),
     )
-    embed.set_author(name="📖 Nuevo contenido en Kavita")
     embed.add_field(name="Biblioteca", value=s.get("libraryName", "—"), inline=True)
     embed.add_field(name="Formato",    value=_fmt_format(s.get("format", 0)), inline=True)
     if s.get("lastChapterAdded"):
         embed.add_field(name="Actualizado", value=_fmt_date(s["lastChapterAdded"]), inline=True)
-    return embed
+    content = f"**{s.get('libraryName', 'Kavita')}:** {s.get('name', '')} tiene nuevo contenido en Kavita."
+    return embed, content
 
 
 # ─── posting ─────────────────────────────────────────────────────────────────
 
-async def _send(channel: discord.TextChannel, embed: discord.Embed, series_id: int) -> None:
+async def _send(channel: discord.TextChannel, embed: discord.Embed, series_id: int, content: str = None) -> None:
     cover = await asyncio.to_thread(_get_cover, series_id)
     if cover:
         f = discord.File(io.BytesIO(cover), filename="cover.jpg")
         embed.set_thumbnail(url="attachment://cover.jpg")
-        await channel.send(file=f, embed=embed)
+        await channel.send(content=content, file=f, embed=embed)
     else:
-        await channel.send(embed=embed)
+        await channel.send(content=content, embed=embed)
 
 
 async def _post_all(
@@ -281,14 +285,16 @@ async def _post_all(
 ) -> None:
     for s in series:
         try:
-            await _send(channel, _make_series_embed(s), s["id"])
+            embed, content = _make_series_embed(s)
+            await _send(channel, embed, s["id"], content=content)
             _seen["series"].append(str(s["id"]))
         except Exception as e:
             log.error("[Kavita] series %s: %s", s.get("id"), e)
 
     for c in chapters:
         try:
-            await _send(channel, _make_chapter_embed(c), c.get("id", 0))
+            embed, content = _make_chapter_embed(c)
+            await _send(channel, embed, c.get("id", 0), content=content)
             _seen["chapters"].append(_chapter_key(c))
         except Exception as e:
             log.error("[Kavita] chapter %s: %s", c.get("id"), e)
