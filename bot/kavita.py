@@ -73,7 +73,7 @@ def _save() -> None:
 def reset_seen() -> None:
     """Clear seen cache so the next poll re-announces everything."""
     global _seen
-    _seen = {"initialized": False, "series": [], "chapters": []}
+    _seen = {"initialized": True, "series": [], "chapters": []}
     _save()
 
 
