@@ -140,6 +140,24 @@ def _get(path: str, **kwargs):
     return None
 
 
+def _post(path: str, body: dict = None, **kwargs):
+    """POST to Kavita API, refreshing JWT once on 401."""
+    url = f"{_URL}{path}"
+    for attempt in range(2):
+        try:
+            r = requests.post(url, headers=_headers(), json=body or {}, timeout=15, **kwargs)
+            if r.status_code == 401 and attempt == 0:
+                log.warning("[Kavita] 401 on %s — refreshing JWT.", path)
+                _authenticate()
+                continue
+            if r.ok:
+                return r.json()
+            log.warning("[Kavita] POST %s → %s: %s", path, r.status_code, r.text[:200])
+        except Exception as e:
+            log.warning("[Kavita] POST %s error: %s", path, e)
+    return None
+
+
 def _get_cover(series_id: int) -> bytes | None:
     """Download cover bytes from Kavita (bot fetches it; Kavita may not be public)."""
     for ep in ("/api/Image/series-cover", "/api/Image/cover"):
@@ -176,12 +194,13 @@ def _wanted(item: dict) -> bool:
     return not _LIB_IDS or item.get("libraryId") in _LIB_IDS
 
 
-def _chapter_id(c: dict) -> str:
-    return str(c.get("chapterId") or c.get("id", ""))
+def _chapter_key(s: dict) -> str:
+    # Composite key: seriesId + lastChapterAdded — changes whenever a new chapter arrives.
+    return f"{s.get('id', '')}:{s.get('lastChapterAdded', '')}"
 
 
 def _new_series() -> list[dict]:
-    data = _get("/api/Series/recently-added", params={"pageSize": 30})
+    data = _post("/api/Series/recently-added-v2", params={"pageNumber": 1, "pageSize": 30})
     if not isinstance(data, list):
         data = (data or {}).get("content", [])
     seen_set = set(_seen["series"])
@@ -189,11 +208,11 @@ def _new_series() -> list[dict]:
 
 
 def _new_chapters() -> list[dict]:
-    data = _get("/api/Series/recently-added-chapters", params={"pageSize": 30})
+    data = _post("/api/Series/recently-updated-series", params={"pageNumber": 1, "pageSize": 30})
     if not isinstance(data, list):
         data = (data or {}).get("content", [])
     seen_set = set(_seen["chapters"])
-    return [c for c in data if _chapter_id(c) not in seen_set and _wanted(c)]
+    return [s for s in data if _chapter_key(s) not in seen_set and _wanted(s)]
 
 
 # ─── embed builders ───────────────────────────────────────────────────────────
@@ -228,31 +247,18 @@ def _make_series_embed(s: dict) -> discord.Embed:
     return embed
 
 
-def _make_chapter_embed(c: dict) -> discord.Embed:
-    series_name = c.get("seriesName") or c.get("series", "—")
-    series_id   = c.get("seriesId", 0)
-    lib_id      = c.get("libraryId", 0)
-
-    vol  = c.get("volumeTitle") or c.get("volume")
-    chap = c.get("number") or c.get("range") or c.get("chapterNumber")
-
-    parts = []
-    if vol  and str(vol)  not in ("0", "0.0", ""):
-        parts.append(f"Vol. {vol}")
-    if chap and str(chap) not in ("0", "0.0", ""):
-        parts.append(f"Cap. {chap}")
-
+def _make_chapter_embed(s: dict) -> discord.Embed:
+    # recently-updated-series returns series objects, not individual chapters.
     embed = discord.Embed(
-        title=series_name,
-        url=_series_url(series_id, lib_id),
-        color=_lib_color(c.get("libraryName", "")),
+        title=s.get("name", "Actualización"),
+        url=_series_url(s["id"], s.get("libraryId", 0)),
+        color=_lib_color(s.get("libraryName", "")),
     )
     embed.set_author(name="📖 Nuevo contenido en Kavita")
-    if parts:
-        embed.add_field(name="Contenido", value=" · ".join(parts), inline=True)
-    embed.add_field(name="Biblioteca", value=c.get("libraryName", "—"), inline=True)
-    if c.get("created"):
-        embed.add_field(name="Agregado", value=_fmt_date(c["created"]), inline=True)
+    embed.add_field(name="Biblioteca", value=s.get("libraryName", "—"), inline=True)
+    embed.add_field(name="Formato",    value=_fmt_format(s.get("format", 0)), inline=True)
+    if s.get("lastChapterAdded"):
+        embed.add_field(name="Actualizado", value=_fmt_date(s["lastChapterAdded"]), inline=True)
     return embed
 
 
@@ -282,8 +288,8 @@ async def _post_all(
 
     for c in chapters:
         try:
-            await _send(channel, _make_chapter_embed(c), c.get("seriesId", 0))
-            _seen["chapters"].append(_chapter_id(c))
+            await _send(channel, _make_chapter_embed(c), c.get("id", 0))
+            _seen["chapters"].append(_chapter_key(c))
         except Exception as e:
             log.error("[Kavita] chapter %s: %s", c.get("id"), e)
 
