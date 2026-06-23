@@ -86,37 +86,33 @@ def _authenticate() -> bool:
 
     # Primary: exchange API key for JWT (Kavita 0.8+)
     if _API_KEY:
+        url = f"{_URL}/api/Account/authenticate"
         try:
-            r = requests.post(
-                f"{_URL}/api/Account/authenticate",
-                json={"apiKey": _API_KEY},
-                timeout=10,
-            )
+            r = requests.post(url, json={"apiKey": _API_KEY}, timeout=10)
             if r.ok:
                 _jwt = r.json().get("token", "")
                 if _jwt:
                     log.info("[Kavita] Authenticated via API key.")
                     return True
-        except Exception:
-            pass
+            log.warning("[Kavita] API key auth failed: %s %s — %s", r.status_code, url, r.text[:200])
+        except Exception as e:
+            log.warning("[Kavita] API key auth error: %s — %s", url, e)
 
     # Fallback: username / password
     if _USER and _PASS:
+        url = f"{_URL}/api/Account/login"
         try:
-            r = requests.post(
-                f"{_URL}/api/Account/login",
-                json={"username": _USER, "password": _PASS},
-                timeout=10,
-            )
+            r = requests.post(url, json={"username": _USER, "password": _PASS}, timeout=10)
             if r.ok:
                 _jwt = r.json().get("token", "")
                 if _jwt:
                     log.info("[Kavita] Authenticated via username/password.")
                     return True
-        except Exception:
-            pass
+            log.warning("[Kavita] Login failed: %s %s — %s", r.status_code, url, r.text[:200])
+        except Exception as e:
+            log.warning("[Kavita] Login error: %s — %s", url, e)
 
-    log.warning("[Kavita] Authentication failed.")
+    log.warning("[Kavita] Authentication failed. Check KAVITA_USER/KAVITA_PASSWORD in .env.")
     return False
 
 
@@ -128,16 +124,19 @@ def _headers() -> dict:
 
 def _get(path: str, **kwargs):
     """GET from Kavita API, refreshing JWT once on 401."""
+    url = f"{_URL}{path}"
     for attempt in range(2):
         try:
-            r = requests.get(f"{_URL}{path}", headers=_headers(), timeout=15, **kwargs)
+            r = requests.get(url, headers=_headers(), timeout=15, **kwargs)
             if r.status_code == 401 and attempt == 0:
+                log.warning("[Kavita] 401 on %s — refreshing JWT.", path)
                 _authenticate()
                 continue
             if r.ok:
                 return r.json()
+            log.warning("[Kavita] GET %s → %s: %s", path, r.status_code, r.text[:200])
         except Exception as e:
-            log.warning("[Kavita] GET %s: %s", path, e)
+            log.warning("[Kavita] GET %s error: %s", path, e)
     return None
 
 
@@ -153,8 +152,9 @@ def _get_cover(series_id: int) -> bytes | None:
             )
             if r.ok and r.content:
                 return r.content
-        except Exception:
-            pass
+            log.warning("[Kavita] Cover %s (series %s) → %s", ep, series_id, r.status_code)
+        except Exception as e:
+            log.warning("[Kavita] Cover %s (series %s) error: %s", ep, series_id, e)
         if _API_KEY:
             try:
                 r = requests.get(
@@ -166,6 +166,7 @@ def _get_cover(series_id: int) -> bytes | None:
                     return r.content
             except Exception:
                 pass
+    log.warning("[Kavita] Could not download cover for series %s.", series_id)
     return None
 
 
