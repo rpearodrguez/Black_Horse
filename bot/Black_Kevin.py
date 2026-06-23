@@ -192,7 +192,7 @@ async def kavita_status_cmd(interaction: discord.Interaction):
     seen_c = len(kavita._seen.get("chapters", []))
     init   = kavita._seen.get("initialized", False)
     url    = kavita._URL or "—"
-    ch     = kavita._CHANNEL or "—"
+    ch     = kavita._seen.get("channel_id") or "—"
     interval = kavita._INTERVAL
 
     embed = discord.Embed(title="Kavita Poller", color=0x2ECC71 if enabled else 0xE74C3C)
@@ -203,6 +203,16 @@ async def kavita_status_cmd(interaction: discord.Interaction):
     embed.add_field(name="Inicializado", value="Sí" if init else "No (próximo ciclo hace snapshot)", inline=True)
     embed.add_field(name="Vistos",    value=f"{seen_s} series · {seen_c} capítulos", inline=True)
     await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+@kavita_group.command(name="canal", description="Establece el canal de notificaciones de Kavita")
+@app_commands.describe(canal="Canal donde se publicarán las novedades")
+async def kavita_canal_cmd(interaction: discord.Interaction, canal: discord.TextChannel):
+    if not _is_bot_admin(interaction):
+        await interaction.response.send_message("Solo el admin del bot puede usar este comando.", ephemeral=True)
+        return
+    kavita.set_channel(canal.id)
+    await interaction.response.send_message(f"✅ Canal de Kavita configurado: <#{canal.id}>", ephemeral=True)
 
 
 # ── /config ────────────────────────────────────

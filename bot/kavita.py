@@ -21,7 +21,6 @@ _URL      = (os.getenv("KAVITA_URL") or "").rstrip("/")
 _API_KEY  = os.getenv("KAVITA_API_KEY", "")
 _USER     = os.getenv("KAVITA_USER", "")
 _PASS     = os.getenv("KAVITA_PASSWORD", "")
-_CHANNEL  = int(os.getenv("KAVITA_DISCORD_CHANNEL_ID") or 0)
 _INTERVAL = int(os.getenv("KAVITA_POLL_INTERVAL") or 30)
 _LIB_IDS  = {int(x) for x in os.getenv("KAVITA_LIBRARIES", "").split(",") if x.strip().isdigit()}
 
@@ -39,7 +38,7 @@ def _parse_lib_names(raw: str) -> dict[int, str]:
 _lib_cache: dict[int, str] = _parse_lib_names(os.getenv("KAVITA_LIBRARY_NAMES", ""))
 
 _SEEN_FILE = "kavita_seen.json"
-_seen: dict = {"initialized": False, "series": [], "chapters": []}
+_seen: dict = {"initialized": False, "channel_id": 0, "series": [], "chapters": []}
 _jwt: str = ""
 
 # Exposed so on_ready() can call poll manually via force_poll()
@@ -69,6 +68,7 @@ def _load() -> None:
         with open(_SEEN_FILE, encoding="utf-8") as f:
             _seen = json.load(f)
         _seen.setdefault("initialized", False)
+        _seen.setdefault("channel_id", 0)
         _seen.setdefault("series", [])
         _seen.setdefault("chapters", [])
     except Exception as e:
@@ -86,7 +86,13 @@ def _save() -> None:
 def reset_seen() -> None:
     """Clear seen cache so the next poll re-announces everything."""
     global _seen
-    _seen = {"initialized": True, "series": [], "chapters": []}
+    _seen = {"initialized": True, "channel_id": _seen.get("channel_id", 0), "series": [], "chapters": []}
+    _save()
+
+
+def set_channel(channel_id: int) -> None:
+    """Persist the notification channel ID chosen by the owner."""
+    _seen["channel_id"] = channel_id
     _save()
 
 
@@ -384,9 +390,13 @@ async def _post_all(
 
 async def run_poll(client: discord.Client) -> tuple[int, int]:
     """Run one poll cycle. Returns (new_series_count, new_chapters_count)."""
-    channel = client.get_channel(_CHANNEL)
+    ch_id = _seen.get("channel_id", 0)
+    if not ch_id:
+        log.warning("[Kavita] No notification channel set. Use /kavita canal to configure.")
+        return 0, 0
+    channel = client.get_channel(ch_id)
     if not channel:
-        log.warning("[Kavita] Channel %s not found.", _CHANNEL)
+        log.warning("[Kavita] Channel %s not found.", ch_id)
         return 0, 0
 
     if not _jwt:
@@ -421,7 +431,7 @@ def setup_kavita_poller(client: discord.Client) -> bool:
     """
     global _poll_task
 
-    if not (_URL and (_API_KEY or (_USER and _PASS)) and _CHANNEL):
+    if not (_URL and (_API_KEY or (_USER and _PASS))):
         log.info("[Kavita] Not configured — poller disabled.")
         return False
 
@@ -437,5 +447,5 @@ def setup_kavita_poller(client: discord.Client) -> bool:
 
     _loop.start()
     _poll_task = _loop
-    log.info("[Kavita] Poller started (interval: %d min, channel: %s).", _INTERVAL, _CHANNEL)
+    log.info("[Kavita] Poller started (interval: %d min, channel: %s).", _INTERVAL, _seen.get("channel_id", "not set"))
     return True
