@@ -36,7 +36,8 @@ def _parse_lib_names(raw: str) -> dict[int, str]:
 
 _lib_cache: dict[int, str] = _parse_lib_names(os.getenv("KAVITA_LIBRARY_NAMES", ""))
 
-_SEEN_FILE = "kavita_seen.json"
+_SEEN_FILE    = "kavita_seen.json"
+_PENDING_FILE = "pending_notifications.json"
 _seen: dict = {"initialized": False, "channel_id": 0, "last_poll_time": ""}
 _jwt: str = ""
 
@@ -296,6 +297,84 @@ def _make_chapter_embed(s: dict) -> tuple[discord.Embed, str]:
     return embed, content
 
 
+# ─── episode-catcher pending notifications ───────────────────────────────────
+
+def _read_pending() -> list[dict]:
+    """Read and atomically clear pending_notifications.json written by Kavita Episode Catcher."""
+    if not os.path.exists(_PENDING_FILE):
+        return []
+    try:
+        with open(_PENDING_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+        os.remove(_PENDING_FILE)
+        return data if isinstance(data, list) else []
+    except Exception as e:
+        log.warning("[Kavita] Could not read pending notifications: %s", e)
+        return []
+
+
+def _fetch_series_info(series_id: int) -> dict | None:
+    """Fetch full series metadata from Kavita by series ID."""
+    try:
+        r = requests.get(
+            f"{_URL}/api/Series/{series_id}",
+            headers={"Authorization": f"Bearer {_jwt}"},
+            timeout=10,
+        )
+        if r.ok:
+            return r.json()
+        log.warning("[Kavita] Series %s fetch: HTTP %s", series_id, r.status_code)
+    except Exception as e:
+        log.warning("[Kavita] Series %s fetch: %s", series_id, e)
+    return None
+
+
+def _make_pending_embed(info: dict, chapters_added: int) -> tuple[discord.Embed, str]:
+    """Build embed for a series notified via Episode Catcher (chapter upload event)."""
+    name   = info.get("name", "Actualización")
+    sid    = info.get("id", 0)
+    lib_id = info.get("libraryId", 0)
+    lib    = info.get("libraryName") or _lib_name(lib_id)
+    embed = discord.Embed(
+        title=name,
+        url=_series_url(sid, lib_id),
+        color=_cover_color(info),
+    )
+    embed.add_field(name="Biblioteca",        value=lib,                   inline=True)
+    embed.add_field(name="Capítulos subidos", value=str(chapters_added),   inline=True)
+    links = _external_links(info)
+    if links:
+        embed.add_field(name="Links", value=links, inline=False)
+    content = f"**{lib}:** {name} — {chapters_added} capítulo(s) nuevo(s) disponible(s)."
+    return embed, content
+
+
+async def _process_pending(channel: discord.TextChannel) -> int:
+    """Process pending notifications from Episode Catcher. Returns count of notifications sent."""
+    items = await asyncio.to_thread(_read_pending)
+    if not items:
+        return 0
+    sent = 0
+    for item in items:
+        kavita_id     = item.get("kavita_id", 0)
+        chapters_added = item.get("chapters_added", 0)
+        name          = item.get("name", "?")
+        if not kavita_id:
+            log.warning("[Kavita] Pending item '%s' has no kavita_id — skipping.", name)
+            continue
+        try:
+            info = await asyncio.to_thread(_fetch_series_info, kavita_id)
+            if not info:
+                log.warning("[Kavita] Could not fetch series info for kavita_id=%s (%s).", kavita_id, name)
+                continue
+            embed, content = _make_pending_embed(info, chapters_added)
+            await _send(channel, embed, info.get("malId", 0), content=content)
+            sent += 1
+        except Exception as e:
+            log.error("[Kavita] pending '%s': %s", name, e)
+    return sent
+
+
 # ─── posting ─────────────────────────────────────────────────────────────────
 
 async def _send(channel: discord.TextChannel, embed: discord.Embed, mal_id: int = 0, content: str = None) -> None:
@@ -408,6 +487,11 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
         log.info("[Kavita] %d new series, %d new chapters.", len(series), len(chapters))
         await _post_all(channel, series, chapters)
 
+    pending = await _process_pending(channel)
+    if pending:
+        log.info("[Kavita] %d pending notification(s) from Episode Catcher sent.", pending)
+
+    _save()
     return len(series), len(chapters)
 
 
