@@ -217,13 +217,6 @@ def _new_series() -> list[dict]:
     return [s for s in data if _wanted(s) and (not last_poll or s.get("created", "") > last_poll)]
 
 
-def _new_chapters() -> list[dict]:
-    data = _post("/api/Series/recently-updated-series", params={"pageNumber": 1, "pageSize": 30})
-    if not isinstance(data, list):
-        data = (data or {}).get("content", [])
-    last_poll = _seen.get("last_poll_time", "")
-    return [s for s in data if _wanted(s) and (not last_poll or s.get("created", "") > last_poll)]
-
 
 # ─── embed builders ───────────────────────────────────────────────────────────
 
@@ -234,9 +227,6 @@ def _fmt_date(iso: str) -> str:
     except Exception:
         return iso[:10]
 
-
-def _fmt_format(fmt: int) -> str:
-    return {0: "—", 1: "Archive", 2: "Imágenes", 3: "ePub", 4: "PDF"}.get(fmt, str(fmt))
 
 
 def _series_url(series_id: int, lib_id: int) -> str:
@@ -277,24 +267,6 @@ def _make_series_embed(s: dict) -> tuple[discord.Embed, str]:
     content = f"**{s.get('libraryName', 'Kavita')}:** {s.get('name', '')} se acaba de añadir a Kavita."
     return embed, content
 
-
-def _make_chapter_embed(s: dict) -> tuple[discord.Embed, str]:
-    # recently-updated-series uses seriesName/seriesId, no libraryName.
-    name    = s.get("seriesName", "Actualización")
-    sid     = s.get("seriesId", 0)
-    lib_id  = s.get("libraryId", 0)
-    lib     = _lib_name(lib_id)
-    embed = discord.Embed(
-        title=name,
-        url=_series_url(sid, lib_id),
-        color=_lib_color(lib),
-    )
-    embed.add_field(name="Biblioteca", value=lib, inline=True)
-    embed.add_field(name="Formato",    value=_fmt_format(s.get("format", 0)), inline=True)
-    if s.get("created"):
-        embed.add_field(name="Actualizado", value=_fmt_date(s["created"]), inline=True)
-    content = f"**{lib}:** {name} tiene nuevo contenido en Kavita."
-    return embed, content
 
 
 # ─── episode-catcher pending notifications ───────────────────────────────────
@@ -388,46 +360,31 @@ async def _send(channel: discord.TextChannel, embed: discord.Embed, mal_id: int 
 _BATCH_THRESHOLD = 3
 
 
-async def _send_batch(channel: discord.TextChannel, items: list[dict], kind: str) -> None:
-    """Send one summary embed per library when there are more than _BATCH_THRESHOLD items."""
-    is_chapters = kind == "chapters"
-    icon = "📚" if kind == "series" else "📖"
-
+async def _send_batch(channel: discord.TextChannel, series: list[dict]) -> None:
+    """Send one summary embed per library when there are more than _BATCH_THRESHOLD new series."""
     by_lib: dict[str, list] = {}
-    for item in items:
-        lib = _lib_name(item.get("libraryId", 0)) if is_chapters else item.get("libraryName", "—")
-        by_lib.setdefault(lib, []).append(item)
+    for s in series:
+        lib = s.get("libraryName", "—")
+        by_lib.setdefault(lib, []).append(s)
 
     for lib_name, lib_items in by_lib.items():
         n = len(lib_items)
-        label = f"{n} nuevas series" if kind == "series" else f"{n} series actualizadas"
-        if is_chapters:
-            lines = [f"• [{i.get('seriesName', '?')}]({_series_url(i.get('seriesId', 0), i.get('libraryId', 0))})" for i in lib_items]
-        else:
-            lines = [f"• [{i.get('name', '?')}]({_series_url(i['id'], i.get('libraryId', 0))})" for i in lib_items]
+        lines = [f"• [{i.get('name', '?')}]({_series_url(i['id'], i.get('libraryId', 0))})" for i in lib_items]
         desc = "\n".join(lines)
         if len(desc) > 4096:
             desc = desc[:4093] + "…"
         embed = discord.Embed(
-            title=f"{icon} {label} — {lib_name}",
+            title=f"📚 {n} nuevas series — {lib_name}",
             description=desc,
             color=_lib_color(lib_name),
         )
         await channel.send(embed=embed)
 
 
-async def _post_all(
-    channel: discord.TextChannel,
-    series: list[dict],
-    chapters: list[dict],
-) -> None:
-    # A newly-added series also appears in recently-updated; keep it only in series.
-    new_series_ids = {s["id"] for s in series}
-    chapters = [c for c in chapters if c.get("seriesId") not in new_series_ids]
-
+async def _post_series(channel: discord.TextChannel, series: list[dict]) -> None:
     if len(series) > _BATCH_THRESHOLD:
         try:
-            await _send_batch(channel, series, "series")
+            await _send_batch(channel, series)
         except Exception as e:
             log.error("[Kavita] batch series: %s", e)
     else:
@@ -437,21 +394,6 @@ async def _post_all(
                 await _send(channel, embed, s.get("malId", 0), content=content)
             except Exception as e:
                 log.error("[Kavita] series %s: %s", s.get("id"), e)
-
-    if len(chapters) > _BATCH_THRESHOLD:
-        try:
-            await _send_batch(channel, chapters, "chapters")
-        except Exception as e:
-            log.error("[Kavita] batch chapters: %s", e)
-    else:
-        for c in chapters:
-            try:
-                embed, content = _make_chapter_embed(c)
-                await _send(channel, embed, content=content)
-            except Exception as e:
-                log.error("[Kavita] chapter %s: %s", c.get("id"), e)
-
-    _save()
 
 
 # ─── public API ──────────────────────────────────────────────────────────────
@@ -474,8 +416,7 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
     # Stamp the poll time before fetching so anything added during this cycle is caught next time.
     _seen["last_poll_time"] = datetime.datetime.utcnow().isoformat()
 
-    series   = await asyncio.to_thread(_new_series)
-    chapters = await asyncio.to_thread(_new_chapters)
+    series = await asyncio.to_thread(_new_series)
 
     if not _seen["initialized"]:
         _seen["initialized"] = True
@@ -483,16 +424,16 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
         log.info("[Kavita] First-run snapshot complete. Next poll will report new content.")
         return 0, 0
 
-    if series or chapters:
-        log.info("[Kavita] %d new series, %d new chapters.", len(series), len(chapters))
-        await _post_all(channel, series, chapters)
+    if series:
+        log.info("[Kavita] %d new series.", len(series))
+        await _post_series(channel, series)
 
     pending = await _process_pending(channel)
     if pending:
         log.info("[Kavita] %d pending notification(s) from Episode Catcher sent.", pending)
 
     _save()
-    return len(series), len(chapters)
+    return len(series), pending
 
 
 def setup_kavita_poller(client: discord.Client) -> bool:
