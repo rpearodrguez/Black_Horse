@@ -187,21 +187,20 @@ async def kavita_status_cmd(interaction: discord.Interaction):
     if not _is_bot_admin(interaction):
         await interaction.response.send_message("Solo el admin del bot puede usar este comando.", ephemeral=True)
         return
-    enabled = bool(kavita._poll_task and kavita._poll_task.is_running())
-    seen_s = len(kavita._seen.get("series", []))
-    seen_c = len(kavita._seen.get("chapters", []))
-    init   = kavita._seen.get("initialized", False)
-    url    = kavita._URL or "—"
-    ch     = kavita._seen.get("channel_id") or "—"
-    interval = kavita._INTERVAL
+    enabled   = bool(kavita._poll_task and kavita._poll_task.is_running())
+    init      = kavita._seen.get("initialized", False)
+    last_poll = kavita._seen.get("last_poll_time") or "—"
+    url       = kavita._URL or "—"
+    ch        = kavita._seen.get("channel_id") or "—"
+    interval  = kavita._INTERVAL
 
     embed = discord.Embed(title="Kavita Poller", color=0x2ECC71 if enabled else 0xE74C3C)
-    embed.add_field(name="Estado",    value="✅ Activo" if enabled else "❌ Inactivo", inline=True)
-    embed.add_field(name="Intervalo", value=f"{interval} min",  inline=True)
-    embed.add_field(name="Canal",     value=f"<#{ch}>" if ch != "—" else "—", inline=True)
-    embed.add_field(name="Servidor",  value=url, inline=False)
+    embed.add_field(name="Estado",       value="✅ Activo" if enabled else "❌ Inactivo", inline=True)
+    embed.add_field(name="Intervalo",    value=f"{interval} min", inline=True)
+    embed.add_field(name="Canal",        value=f"<#{ch}>" if ch != "—" else "—", inline=True)
+    embed.add_field(name="Servidor",     value=url, inline=False)
     embed.add_field(name="Inicializado", value="Sí" if init else "No (próximo ciclo hace snapshot)", inline=True)
-    embed.add_field(name="Vistos",    value=f"{seen_s} series · {seen_c} capítulos", inline=True)
+    embed.add_field(name="Último poll",  value=last_poll[:19].replace("T", " ") + " UTC" if last_poll != "—" else "—", inline=True)
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 

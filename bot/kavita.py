@@ -37,7 +37,7 @@ def _parse_lib_names(raw: str) -> dict[int, str]:
 _lib_cache: dict[int, str] = _parse_lib_names(os.getenv("KAVITA_LIBRARY_NAMES", ""))
 
 _SEEN_FILE = "kavita_seen.json"
-_seen: dict = {"initialized": False, "channel_id": 0, "last_poll_time": "", "series": [], "chapters": []}
+_seen: dict = {"initialized": False, "channel_id": 0, "last_poll_time": ""}
 _jwt: str = ""
 
 # Exposed so on_ready() can call poll manually via force_poll()
@@ -69,8 +69,6 @@ def _load() -> None:
         _seen.setdefault("initialized", False)
         _seen.setdefault("channel_id", 0)
         _seen.setdefault("last_poll_time", "")
-        _seen.setdefault("series", [])
-        _seen.setdefault("chapters", [])
     except Exception as e:
         log.warning("[Kavita] Could not load seen file: %s", e)
 
@@ -86,7 +84,7 @@ def _save() -> None:
 def reset_seen() -> None:
     """Clear seen cache so the next poll re-announces everything."""
     global _seen
-    _seen = {"initialized": True, "channel_id": _seen.get("channel_id", 0), "series": [], "chapters": []}
+    _seen = {"initialized": True, "channel_id": _seen.get("channel_id", 0), "last_poll_time": ""}
     _save()
 
 
@@ -204,10 +202,6 @@ def _wanted(item: dict) -> bool:
     return not _LIB_IDS or item.get("libraryId") in _LIB_IDS
 
 
-def _chapter_key(s: dict) -> str:
-    # Composite key: seriesId + created — changes whenever a new chapter arrives.
-    return f"{s.get('seriesId', '')}:{s.get('created', '')}"
-
 
 def _new_series() -> list[dict]:
     data = _post("/api/Series/recently-added-v2", params={"pageNumber": 1, "pageSize": 30})
@@ -218,24 +212,16 @@ def _new_series() -> list[dict]:
         lib_id, lib_name = s.get("libraryId", 0), s.get("libraryName", "")
         if lib_id and lib_name and lib_id not in _lib_cache:
             _lib_cache[lib_id] = lib_name
-    seen_set = set(_seen["series"])
-    return [s for s in data if str(s.get("id", "")) not in seen_set and _wanted(s)]
+    last_poll = _seen.get("last_poll_time", "")
+    return [s for s in data if _wanted(s) and (not last_poll or s.get("created", "") > last_poll)]
 
 
 def _new_chapters() -> list[dict]:
     data = _post("/api/Series/recently-updated-series", params={"pageNumber": 1, "pageSize": 30})
     if not isinstance(data, list):
         data = (data or {}).get("content", [])
-    seen_set   = set(_seen["chapters"])
-    last_poll  = _seen.get("last_poll_time", "")
-    result = []
-    for s in data:
-        if _chapter_key(s) in seen_set or not _wanted(s):
-            continue
-        if last_poll and s.get("created", "") <= last_poll:
-            continue  # updated before the last poll — already handled or irrelevant
-        result.append(s)
-    return result
+    last_poll = _seen.get("last_poll_time", "")
+    return [s for s in data if _wanted(s) and (not last_poll or s.get("created", "") > last_poll)]
 
 
 # ─── embed builders ───────────────────────────────────────────────────────────
@@ -357,27 +343,19 @@ async def _post_all(
     chapters: list[dict],
 ) -> None:
     # A newly-added series also appears in recently-updated; keep it only in series.
-    # Mark the skipped chapters as seen so they don't reappear on the next poll cycle.
     new_series_ids = {s["id"] for s in series}
-    skipped, chapters = [], []
-    for c in chapters:
-        (skipped if c.get("seriesId") in new_series_ids else chapters).append(c)
-    for c in skipped:
-        _seen["chapters"].append(_chapter_key(c))
+    chapters = [c for c in chapters if c.get("seriesId") not in new_series_ids]
 
     if len(series) > _BATCH_THRESHOLD:
         try:
             await _send_batch(channel, series, "series")
         except Exception as e:
             log.error("[Kavita] batch series: %s", e)
-        for s in series:
-            _seen["series"].append(str(s["id"]))
     else:
         for s in series:
             try:
                 embed, content = _make_series_embed(s)
                 await _send(channel, embed, s.get("malId", 0), content=content)
-                _seen["series"].append(str(s["id"]))
             except Exception as e:
                 log.error("[Kavita] series %s: %s", s.get("id"), e)
 
@@ -386,14 +364,11 @@ async def _post_all(
             await _send_batch(channel, chapters, "chapters")
         except Exception as e:
             log.error("[Kavita] batch chapters: %s", e)
-        for c in chapters:
-            _seen["chapters"].append(_chapter_key(c))
     else:
         for c in chapters:
             try:
                 embed, content = _make_chapter_embed(c)
                 await _send(channel, embed, content=content)
-                _seen["chapters"].append(_chapter_key(c))
             except Exception as e:
                 log.error("[Kavita] chapter %s: %s", c.get("id"), e)
 
@@ -424,13 +399,9 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
     chapters = await asyncio.to_thread(_new_chapters)
 
     if not _seen["initialized"]:
-        for s in series:
-            _seen["series"].append(str(s["id"]))
-        for c in chapters:
-            _seen["chapters"].append(_chapter_key(c))
         _seen["initialized"] = True
         _save()
-        log.info("[Kavita] First-run snapshot: %d series, %d chapters.", len(series), len(chapters))
+        log.info("[Kavita] First-run snapshot complete. Next poll will report new content.")
         return 0, 0
 
     if series or chapters:
