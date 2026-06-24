@@ -37,7 +37,7 @@ def _parse_lib_names(raw: str) -> dict[int, str]:
 _lib_cache: dict[int, str] = _parse_lib_names(os.getenv("KAVITA_LIBRARY_NAMES", ""))
 
 _SEEN_FILE = "kavita_seen.json"
-_seen: dict = {"initialized": False, "channel_id": 0, "series": [], "chapters": []}
+_seen: dict = {"initialized": False, "channel_id": 0, "last_poll_time": "", "series": [], "chapters": []}
 _jwt: str = ""
 
 # Exposed so on_ready() can call poll manually via force_poll()
@@ -68,6 +68,7 @@ def _load() -> None:
             _seen = json.load(f)
         _seen.setdefault("initialized", False)
         _seen.setdefault("channel_id", 0)
+        _seen.setdefault("last_poll_time", "")
         _seen.setdefault("series", [])
         _seen.setdefault("chapters", [])
     except Exception as e:
@@ -225,8 +226,16 @@ def _new_chapters() -> list[dict]:
     data = _post("/api/Series/recently-updated-series", params={"pageNumber": 1, "pageSize": 30})
     if not isinstance(data, list):
         data = (data or {}).get("content", [])
-    seen_set = set(_seen["chapters"])
-    return [s for s in data if _chapter_key(s) not in seen_set and _wanted(s)]
+    seen_set   = set(_seen["chapters"])
+    last_poll  = _seen.get("last_poll_time", "")
+    result = []
+    for s in data:
+        if _chapter_key(s) in seen_set or not _wanted(s):
+            continue
+        if last_poll and s.get("created", "") <= last_poll:
+            continue  # updated before the last poll — already handled or irrelevant
+        result.append(s)
+    return result
 
 
 # ─── embed builders ───────────────────────────────────────────────────────────
@@ -407,6 +416,9 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
     if not _jwt:
         if not await asyncio.to_thread(_authenticate):
             return 0, 0
+
+    # Stamp the poll time before fetching so anything added during this cycle is caught next time.
+    _seen["last_poll_time"] = datetime.datetime.utcnow().isoformat()
 
     series   = await asyncio.to_thread(_new_series)
     chapters = await asyncio.to_thread(_new_chapters)
