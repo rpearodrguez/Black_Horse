@@ -425,7 +425,8 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
         return 0, 0
 
     if series:
-        log.info("[Kavita] %d new series.", len(series))
+        names = ", ".join(s.get("name", "?") for s in series)
+        log.info("[Kavita] %d new series: %s", len(series), names)
         await _post_series(channel, series)
 
     pending = await _process_pending(channel)
@@ -462,3 +463,11 @@ def setup_kavita_poller(client: discord.Client) -> bool:
     _poll_task = _loop
     log.info("[Kavita] Poller started (interval: %d min, channel: %s).", _INTERVAL, _seen.get("channel_id", "not set"))
     return True
+
+
+def fetch_recent_series(limit: int = 15) -> list[dict]:
+    """Return the most recently added series from Kavita (for the /kavita series command)."""
+    data = _post("/api/Series/recently-added-v2", params={"pageNumber": 1, "pageSize": limit})
+    if not isinstance(data, list):
+        data = (data or {}).get("content", [])
+    return [s for s in data if _wanted(s)]

@@ -204,6 +204,39 @@ async def kavita_status_cmd(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
+@kavita_group.command(name="series", description="Lista las series agregadas recientemente en Kavita")
+@app_commands.describe(cantidad="Cuántas series mostrar (default: 15, máx: 30)")
+async def kavita_series_cmd(interaction: discord.Interaction, cantidad: int = 15):
+    if not _is_bot_admin(interaction):
+        await interaction.response.send_message("Solo el admin del bot puede usar este comando.", ephemeral=True)
+        return
+    await interaction.response.defer(ephemeral=True)
+    cantidad = max(1, min(cantidad, 30))
+    series = await asyncio.to_thread(kavita.fetch_recent_series, cantidad)
+    if not series:
+        await interaction.followup.send("No se encontraron series.", ephemeral=True)
+        return
+    lines = []
+    for s in series:
+        name    = s.get("name", "?")
+        lib     = s.get("libraryName", "—")
+        created = s.get("created", "")
+        ts      = ""
+        if created:
+            try:
+                import datetime as _dt
+                dt = _dt.datetime.fromisoformat(created.replace("Z", "+00:00"))
+                ts = f" · <t:{int(dt.timestamp())}:f>"
+            except Exception:
+                pass
+        lines.append(f"• **{name}** ({lib}){ts}")
+    desc = "\n".join(lines)
+    if len(desc) > 4096:
+        desc = desc[:4093] + "…"
+    embed = discord.Embed(title=f"📚 {len(series)} series recientes en Kavita", description=desc, color=0x3498DB)
+    await interaction.followup.send(embed=embed, ephemeral=True)
+
+
 @kavita_group.command(name="canal", description="Establece el canal de notificaciones de Kavita")
 @app_commands.describe(canal="Canal donde se publicarán las novedades")
 async def kavita_canal_cmd(interaction: discord.Interaction, canal: discord.TextChannel):
