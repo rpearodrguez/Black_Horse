@@ -39,7 +39,8 @@ _lib_cache: dict[int, str] = _parse_lib_names(os.getenv("KAVITA_LIBRARY_NAMES", 
 
 _SEEN_FILE    = "kavita_seen.json"
 _PENDING_FILE = "pending_notifications.json"
-_seen: dict = {"initialized": False, "channel_id": 0, "last_poll_time": ""}
+_seen: dict = {"initialized": False, "channel_id": 0, "last_poll_time": "", "notified": {}}
+_NOTIFY_TTL = datetime.timedelta(hours=24)
 _jwt: str = ""
 
 # Exposed so on_ready() can call poll manually via force_poll()
@@ -71,6 +72,8 @@ def _load() -> None:
         _seen.setdefault("initialized", False)
         _seen.setdefault("channel_id", 0)
         _seen.setdefault("last_poll_time", "")
+        _seen.setdefault("notified", {})
+        _purge_notified()
     except Exception as e:
         log.warning("[Kavita] Could not load seen file: %s", e)
 
@@ -86,7 +89,7 @@ def _save() -> None:
 def reset_seen() -> None:
     """Clear seen cache so the next poll re-announces everything."""
     global _seen
-    _seen = {"initialized": True, "channel_id": _seen.get("channel_id", 0), "last_poll_time": ""}
+    _seen = {"initialized": True, "channel_id": _seen.get("channel_id", 0), "last_poll_time": "", "notified": {}}
     _save()
 
 
@@ -200,6 +203,22 @@ def _lib_name(lib_id: int) -> str:
 
 # ─── filtering / deduplication ────────────────────────────────────────────────
 
+def _purge_notified() -> None:
+    cutoff = datetime.datetime.utcnow() - _NOTIFY_TTL
+    _seen["notified"] = {
+        sid: ts for sid, ts in _seen.get("notified", {}).items()
+        if datetime.datetime.fromisoformat(ts) > cutoff
+    }
+
+def _already_notified(series_id: int) -> bool:
+    ts = _seen.get("notified", {}).get(str(series_id))
+    if not ts:
+        return False
+    return datetime.datetime.fromisoformat(ts) > datetime.datetime.utcnow() - _NOTIFY_TTL
+
+def _mark_notified(series_id: int) -> None:
+    _seen.setdefault("notified", {})[str(series_id)] = datetime.datetime.utcnow().isoformat()
+
 def _wanted(item: dict) -> bool:
     return not _LIB_IDS or item.get("libraryId") in _LIB_IDS
 
@@ -217,7 +236,12 @@ def _new_series() -> tuple[list[dict], str]:
             _lib_cache[lib_id] = lib_name
     max_ts    = max((s.get("created", "") for s in data), default="")
     last_poll = _seen.get("last_poll_time", "")
-    filtered  = [s for s in data if _wanted(s) and (not last_poll or s.get("created", "") > last_poll)]
+    filtered  = [
+        s for s in data
+        if _wanted(s)
+        and (not last_poll or s.get("created", "") > last_poll)
+        and not _already_notified(s.get("id", 0))
+    ]
     return filtered, max_ts
 
 
@@ -392,6 +416,8 @@ async def _post_series(channel: discord.TextChannel, series: list[dict]) -> None
     if len(series) > _BATCH_THRESHOLD:
         try:
             await _send_batch(channel, series)
+            for s in series:
+                _mark_notified(s.get("id", 0))
         except Exception as e:
             log.error("[Kavita] batch series: %s", e)
     else:
@@ -399,6 +425,7 @@ async def _post_series(channel: discord.TextChannel, series: list[dict]) -> None
             try:
                 embed, content = _make_series_embed(s)
                 await _send(channel, embed, s.get("malId", 0), content=content)
+                _mark_notified(s.get("id", 0))
             except Exception as e:
                 log.error("[Kavita] series %s: %s", s.get("id"), e)
 
