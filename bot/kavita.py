@@ -20,7 +20,8 @@ _URL      = (os.getenv("KAVITA_URL") or "").rstrip("/")
 _API_KEY  = os.getenv("KAVITA_API_KEY", "")
 _USER     = os.getenv("KAVITA_USER", "")
 _PASS     = os.getenv("KAVITA_PASSWORD", "")
-_INTERVAL = int(os.getenv("KAVITA_POLL_INTERVAL") or 30)
+_INTERVAL  = int(os.getenv("KAVITA_POLL_INTERVAL") or 30)
+_TZ_OFFSET = int(os.getenv("KAVITA_TZ_OFFSET", "0"))  # Kavita server UTC offset in hours (Ultra.cc = 2)
 _LIB_IDS  = {int(x) for x in os.getenv("KAVITA_LIBRARIES", "").split(",") if x.strip().isdigit()}
 
 # Pre-populate library name cache from KAVITA_LIBRARY_NAMES=1:Manga,2:Novelas Ligeras,5:Comics
@@ -227,7 +228,8 @@ def _fmt_date(iso: str) -> str:
     try:
         dt = datetime.datetime.fromisoformat(iso.replace("Z", "+00:00"))
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=datetime.timezone.utc)
+            tz = datetime.timezone(datetime.timedelta(hours=_TZ_OFFSET))
+            dt = dt.replace(tzinfo=tz)
         return f"<t:{int(dt.timestamp())}:f>"
     except Exception:
         return iso[:16]
