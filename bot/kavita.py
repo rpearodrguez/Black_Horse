@@ -223,9 +223,9 @@ def _new_series() -> list[dict]:
 def _fmt_date(iso: str) -> str:
     try:
         dt = datetime.datetime.fromisoformat(iso.replace("Z", "+00:00"))
-        return dt.strftime("%d/%m/%Y")
+        return dt.strftime("%d/%m/%Y %H:%M")
     except Exception:
-        return iso[:10]
+        return iso[:16]
 
 
 
