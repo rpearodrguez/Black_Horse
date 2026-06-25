@@ -425,8 +425,15 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
         return 0, 0
 
     if series:
-        names = ", ".join(s.get("name", "?") for s in series)
-        log.info("[Kavita] %d new series: %s", len(series), names)
+        def _label(s: dict) -> str:
+            name = s.get("name", "?")
+            iso  = s.get("created", "")
+            try:
+                dt = datetime.datetime.fromisoformat(iso.replace("Z", "+00:00"))
+                return f"{name} ({dt.strftime('%H:%M')})"
+            except Exception:
+                return name
+        log.info("[Kavita] %d new series: %s", len(series), ", ".join(_label(s) for s in series))
         await _post_series(channel, series)
 
     pending = await _process_pending(channel)
