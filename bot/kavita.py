@@ -223,7 +223,8 @@ def _new_series() -> list[dict]:
 def _fmt_date(iso: str) -> str:
     try:
         dt = datetime.datetime.fromisoformat(iso.replace("Z", "+00:00"))
-        return dt.strftime("%d/%m/%Y %H:%M")
+        ts = int(dt.timestamp())
+        return f"<t:{ts}:f>"
     except Exception:
         return iso[:16]
 
