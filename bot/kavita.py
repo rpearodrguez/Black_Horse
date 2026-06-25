@@ -433,7 +433,7 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
                 return f"{name} ({dt.strftime('%H:%M')})"
             except Exception:
                 return name
-        log.info("[Kavita] %d new series: %s", len(series), ", ".join(_label(s) for s in series))
+        log.info("[Kavita] %d new series:\n  %s", len(series), "\n  ".join(_label(s) for s in series))
         await _post_series(channel, series)
 
     pending = await _process_pending(channel)
