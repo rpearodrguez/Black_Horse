@@ -204,7 +204,8 @@ def _wanted(item: dict) -> bool:
 
 
 
-def _new_series() -> list[dict]:
+def _new_series() -> tuple[list[dict], str]:
+    """Returns (new_series, max_created_timestamp_in_kavita_tz)."""
     data = _post("/api/Series/recently-added-v2", params={"pageNumber": 1, "pageSize": 30})
     if not isinstance(data, list):
         data = (data or {}).get("content", [])
@@ -213,8 +214,10 @@ def _new_series() -> list[dict]:
         lib_id, lib_name = s.get("libraryId", 0), s.get("libraryName", "")
         if lib_id and lib_name and lib_id not in _lib_cache:
             _lib_cache[lib_id] = lib_name
+    max_ts    = max((s.get("created", "") for s in data), default="")
     last_poll = _seen.get("last_poll_time", "")
-    return [s for s in data if _wanted(s) and (not last_poll or s.get("created", "") > last_poll)]
+    filtered  = [s for s in data if _wanted(s) and (not last_poll or s.get("created", "") > last_poll)]
+    return filtered, max_ts
 
 
 
@@ -223,8 +226,7 @@ def _new_series() -> list[dict]:
 def _fmt_date(iso: str) -> str:
     try:
         dt = datetime.datetime.fromisoformat(iso.replace("Z", "+00:00"))
-        ts = int(dt.timestamp())
-        return f"<t:{ts}:f>"
+        return dt.strftime("%d/%m/%Y %H:%M")
     except Exception:
         return iso[:16]
 
@@ -414,9 +416,9 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
         if not await asyncio.to_thread(_authenticate):
             return 0, 0
 
-    series = await asyncio.to_thread(_new_series)
-    # Update stamp after fetching — _new_series() uses the previous value to filter.
-    _seen["last_poll_time"] = datetime.datetime.utcnow().isoformat()
+    series, max_ts = await asyncio.to_thread(_new_series)
+    # Use Kavita's own timestamp so last_poll_time and created are always in the same timezone.
+    _seen["last_poll_time"] = max_ts or datetime.datetime.utcnow().isoformat()
 
     if not _seen["initialized"]:
         _seen["initialized"] = True
