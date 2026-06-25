@@ -226,7 +226,9 @@ def _new_series() -> tuple[list[dict], str]:
 def _fmt_date(iso: str) -> str:
     try:
         dt = datetime.datetime.fromisoformat(iso.replace("Z", "+00:00"))
-        return dt.strftime("%d/%m/%Y %H:%M")
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return f"<t:{int(dt.timestamp())}:f>"
     except Exception:
         return iso[:16]
 
