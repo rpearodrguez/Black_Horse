@@ -413,10 +413,9 @@ async def run_poll(client: discord.Client) -> tuple[int, int]:
         if not await asyncio.to_thread(_authenticate):
             return 0, 0
 
-    # Stamp the poll time before fetching so anything added during this cycle is caught next time.
-    _seen["last_poll_time"] = datetime.datetime.utcnow().isoformat()
-
     series = await asyncio.to_thread(_new_series)
+    # Update stamp after fetching — _new_series() uses the previous value to filter.
+    _seen["last_poll_time"] = datetime.datetime.utcnow().isoformat()
 
     if not _seen["initialized"]:
         _seen["initialized"] = True
