@@ -41,6 +41,7 @@ _SEEN_FILE    = "kavita_seen.json"
 _PENDING_FILE = "pending_notifications.json"
 _seen: dict = {"initialized": False, "channel_id": 0, "last_poll_time": "", "notified": {}}
 _NOTIFY_TTL = datetime.timedelta(hours=24)
+_NO_NOTIFY_LIBS: set[int] = {3}   # library IDs silenciadas (se consumen del queue pero no se postean)
 _jwt: str = ""
 
 # Exposed so on_ready() can call poll manually via force_poll()
@@ -375,6 +376,9 @@ async def _process_pending(channel: discord.TextChannel) -> int:
         name          = item.get("name", "?")
         if not kavita_id:
             log.warning("[Kavita] Pending item '%s' has no kavita_id — skipping.", name)
+            continue
+        if item.get("no_notify") or item.get("library_id") in _NO_NOTIFY_LIBS:
+            log.info("[Kavita] Silenced '%s' (no_notify or excluded library).", name)
             continue
         try:
             info = await asyncio.to_thread(_fetch_series_info, kavita_id)
