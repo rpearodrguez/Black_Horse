@@ -3,6 +3,7 @@
 Owner-only: configured entirely via env vars. No guild BotConfig integration.
 The bot downloads cover images directly (Kavita server may not be publicly reachable).
 """
+import io
 import json
 import logging
 import asyncio
@@ -188,8 +189,28 @@ def _mal_cover_url(mal_id: int) -> str | None:
         if r.ok:
             imgs = r.json().get("data", {}).get("images", {})
             return (imgs.get("webp") or imgs.get("jpg") or {}).get("large_image_url")
+        log.warning("[Kavita] Jikan cover (mal %s): HTTP %s", mal_id, r.status_code)
     except Exception as e:
         log.warning("[Kavita] Jikan cover (mal %s): %s", mal_id, e)
+    return None
+
+
+def _kavita_cover_bytes(series_id: int) -> bytes | None:
+    """Download cover image bytes from Kavita (fallback when Jikan fails or MAL ID missing)."""
+    if not series_id:
+        return None
+    try:
+        r = requests.get(
+            f"{_URL}/api/Image/series-cover",
+            headers=_headers(),
+            params={"seriesId": series_id},
+            timeout=15,
+        )
+        if r.ok and r.content:
+            return r.content
+        log.warning("[Kavita] Kavita cover series %s: HTTP %s", series_id, r.status_code)
+    except Exception as e:
+        log.warning("[Kavita] Kavita cover series %s: %s", series_id, e)
     return None
 
 
@@ -361,7 +382,7 @@ async def _process_pending(channel: discord.TextChannel) -> int:
                 log.warning("[Kavita] Could not fetch series info for kavita_id=%s (%s).", kavita_id, name)
                 continue
             embed, content = _make_pending_embed(info, chapters_added)
-            await _send(channel, embed, info.get("malId", 0), content=content)
+            await _send(channel, embed, info.get("malId", 0), content=content, series_id=kavita_id)
             sent += 1
         except Exception as e:
             log.error("[Kavita] pending '%s': %s", name, e)
@@ -370,12 +391,24 @@ async def _process_pending(channel: discord.TextChannel) -> int:
 
 # ─── posting ─────────────────────────────────────────────────────────────────
 
-async def _send(channel: discord.TextChannel, embed: discord.Embed, mal_id: int = 0, content: str = None) -> None:
+async def _send(channel: discord.TextChannel, embed: discord.Embed, mal_id: int = 0, content: str = None, series_id: int = 0) -> None:
+    cover_url = None
     if mal_id:
         cover_url = await asyncio.to_thread(_mal_cover_url, mal_id)
-        if cover_url:
-            embed.set_image(url=cover_url)
-    await channel.send(content=content, embed=embed)
+
+    if cover_url:
+        embed.set_image(url=cover_url)
+        await channel.send(content=content, embed=embed)
+    elif series_id:
+        cover_bytes = await asyncio.to_thread(_kavita_cover_bytes, series_id)
+        if cover_bytes:
+            f = discord.File(io.BytesIO(cover_bytes), filename="cover.jpg")
+            embed.set_image(url="attachment://cover.jpg")
+            await channel.send(content=content, embed=embed, file=f)
+        else:
+            await channel.send(content=content, embed=embed)
+    else:
+        await channel.send(content=content, embed=embed)
 
 
 _BATCH_THRESHOLD = 3
@@ -414,7 +447,7 @@ async def _post_series(channel: discord.TextChannel, series: list[dict]) -> None
         for s in series:
             try:
                 embed, content = _make_series_embed(s)
-                await _send(channel, embed, s.get("malId", 0), content=content)
+                await _send(channel, embed, s.get("malId", 0), content=content, series_id=s.get("id", 0))
                 _mark_notified(s.get("id", 0))
             except Exception as e:
                 log.error("[Kavita] series %s: %s", s.get("id"), e)
