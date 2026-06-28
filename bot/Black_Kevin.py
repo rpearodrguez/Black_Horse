@@ -1102,7 +1102,7 @@ async def vn_cmd(interaction: discord.Interaction, busqueda: str):
         titulo += " / " + resultado["alttitle"]
     embed = discord.Embed(title=titulo, description=resultado["description"] or None, color=0x2B4C7E)
     if resultado["image"]:
-        embed.set_thumbnail(url=resultado["image"])
+        embed.set_image(url=resultado["image"])
     embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_lanzamiento"), value=resultado["released"], inline=True)
     embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_calificacion"), value=resultado["rating"], inline=True)
     embed.add_field(name=BotConfig.t(interaction.guild_id, "vn_duracion"), value=resultado["length"], inline=True)
