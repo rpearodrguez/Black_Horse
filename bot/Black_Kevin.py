@@ -52,13 +52,22 @@ class _BufferHandler(logging.Handler):
     def emit(self, record):
         _log_buffer.append(self.format(record))
 
+class _AnsiFormatter(logging.Formatter):
+    _C = {'DEBUG': '[36m', 'INFO': '[32m', 'WARNING': '[33m', 'ERROR': '[31m', 'CRITICAL': '[35m'}
+    _RST = '[0m'; _DIM = '[2;37m'
+    def format(self, record):
+        t = self.formatTime(record, self.datefmt)
+        c = self._C.get(record.levelname, '')
+        return f"{self._DIM}{t}{self._RST} {c}[{record.levelname}]{self._RST} {record.name}: {record.getMessage()}"
+
 _fmt = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s', datefmt='%H:%M:%S')
 _buf_handler = _BufferHandler()
-_buf_handler.setFormatter(_fmt)
+_buf_handler.setFormatter(_AnsiFormatter(datefmt='%H:%M:%S'))
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s', datefmt='%H:%M:%S')
 logging.getLogger('discord').addHandler(_buf_handler)
 logging.getLogger('discord').setLevel(logging.WARNING)
+logging.getLogger('kavita').addHandler(_buf_handler)
 
 logger = logging.getLogger('bot')
 logger.addHandler(_buf_handler)
@@ -138,7 +147,7 @@ async def logs_cmd(interaction: discord.Interaction):
         await interaction.response.send_message(BotConfig.t(interaction.guild_id, "no_logs"), ephemeral=True)
         return
     texto = "\n".join(list(_log_buffer)[-20:])
-    await interaction.response.send_message(f"```\n{texto[-1900:]}\n```", ephemeral=True)
+    await interaction.response.send_message(f"```ansi\n{texto[-1900:]}\n```", ephemeral=True)
 
 
 @tree.command(name="sync", description="Sincroniza los slash commands con Discord (solo admin)")
