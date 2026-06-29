@@ -526,6 +526,35 @@ async def lista_buscar_cmd(interaction: discord.Interaction, nombre: str):
     view = _ListaBuscarView(interaction.guild_id, nombre)
     await interaction.response.send_message("Selecciona los usuarios para filtrar:", view=view, ephemeral=True)
 
+@lista_group.command(name="editar", description="Edita el texto o enlace de un item existente")
+@app_commands.describe(
+    nombre="Nombre de la lista",
+    numero="Número del item a editar",
+    texto="Nuevo texto (opcional, deja vacío para no cambiar)",
+    enlace="Nuevo enlace URL (opcional, escribe 'quitar' para eliminarlo)",
+)
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_editar_cmd(interaction: discord.Interaction, nombre: str, numero: int, texto: str = None, enlace: str = None):
+    if not await _check_module(interaction, "lista"): return
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    items = _guild_listas(interaction.guild_id)[nombre]["items"]
+    if numero < 1 or numero > len(items):
+        await interaction.response.send_message(f"Número inválido. La lista tiene {len(items)} item(s).", ephemeral=True)
+        return
+    if texto is None and enlace is None:
+        await interaction.response.send_message("Indica al menos un campo a editar (`texto` o `enlace`).", ephemeral=True)
+        return
+    item = items[numero - 1]
+    if texto is not None:
+        item["texto"] = texto
+    if enlace is not None:
+        item["url"] = "" if enlace.lower() == "quitar" else enlace
+    _listas_save()
+    url_txt = f" · <{item['url']}>" if item.get("url") else ""
+    await interaction.response.send_message(f"✏️ Item #{numero} actualizado: **{item['texto']}**{url_txt}", ephemeral=True)
+
 @lista_group.command(name="quitar", description="Quita un item de la lista por número")
 @app_commands.describe(nombre="Nombre de la lista", numero="Número del item a quitar")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
@@ -657,6 +686,7 @@ async def help_cmd(interaction: discord.Interaction):
         embed.add_field(name="Listas colaborativas", inline=False, value=(
             "`/lista ver` Muestra una lista con filtros y paginacion\n"
             "`/lista agregar` Agrega un item a la lista\n"
+            "`/lista editar` Edita el texto o enlace de un item\n"
             "`/lista tengo` Marca/desmarca que tienes un item\n"
             "`/lista buscar` Filtra items por usuarios (selector multiple)\n"
             "`/lista quitar` Quita un item por numero\n"
