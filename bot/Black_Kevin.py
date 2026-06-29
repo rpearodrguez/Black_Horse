@@ -306,12 +306,14 @@ class _ListaView(discord.ui.View):
     def _items(self):
         return _guild_listas(self.guild_id).get(self.nombre, {}).get("items", [])
 
-    def _render(self) -> discord.Embed:
+    def _render(self, user_id: int = 0) -> discord.Embed:
         all_items = list(enumerate(self._items(), 1))
         if self.filtro == "alguno":
             shown = [(i, it) for i, it in all_items if it.get("tienen")]
         elif self.filtro == "nadie":
             shown = [(i, it) for i, it in all_items if not it.get("tienen")]
+        elif self.filtro == "yo":
+            shown = [(i, it) for i, it in all_items if any(t["id"] == user_id for t in it.get("tienen", []))]
         else:
             shown = all_items
         if not shown:
@@ -342,6 +344,11 @@ class _ListaView(discord.ui.View):
     async def btn_nadie(self, interaction: discord.Interaction, _):
         self.filtro = "nadie"
         await interaction.response.edit_message(embed=self._render(), view=self)
+
+    @discord.ui.button(label="Yo lo tengo", style=discord.ButtonStyle.primary, emoji="🎮")
+    async def btn_yo(self, interaction: discord.Interaction, _):
+        self.filtro = "yo"
+        await interaction.response.edit_message(embed=self._render(interaction.user.id), view=self)
 
     async def on_timeout(self):
         for child in self.children:
