@@ -294,6 +294,65 @@ def _lista_access(interaction: discord.Interaction, nombre: str) -> bool:
 
 _listas_load()
 
+
+class _ListaView(discord.ui.View):
+    def __init__(self, guild_id: int, nombre: str):
+        super().__init__(timeout=120)
+        self.guild_id = guild_id
+        self.nombre = nombre
+        self.filtro = "todos"
+        self.message = None
+
+    def _items(self):
+        return _guild_listas(self.guild_id).get(self.nombre, {}).get("items", [])
+
+    def _render(self) -> discord.Embed:
+        all_items = list(enumerate(self._items(), 1))
+        if self.filtro == "alguno":
+            shown = [(i, it) for i, it in all_items if it.get("tienen")]
+        elif self.filtro == "nadie":
+            shown = [(i, it) for i, it in all_items if not it.get("tienen")]
+        else:
+            shown = all_items
+        if not shown:
+            desc = "*No hay items en esta vista.*"
+        else:
+            lines = []
+            for i, it in shown:
+                texto = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
+                tienen = it.get("tienen", [])
+                duenos = ("  ·  👤 " + ", ".join(t["nombre"] for t in tienen)) if tienen else ""
+                lines.append(f"`{i}.` {texto}{duenos}  — *{it['autor']}*")
+            desc = "\n".join(lines)
+        embed = discord.Embed(title=f"📋 {self.nombre}", description=desc[:4096], color=0x5865F2)
+        embed.set_footer(text=f"{len(all_items)} item(s)")
+        return embed
+
+    @discord.ui.button(label="Todos", style=discord.ButtonStyle.secondary, emoji="📋")
+    async def btn_todos(self, interaction: discord.Interaction, _):
+        self.filtro = "todos"
+        await interaction.response.edit_message(embed=self._render(), view=self)
+
+    @discord.ui.button(label="Alguno lo tiene", style=discord.ButtonStyle.success, emoji="👥")
+    async def btn_alguno(self, interaction: discord.Interaction, _):
+        self.filtro = "alguno"
+        await interaction.response.edit_message(embed=self._render(), view=self)
+
+    @discord.ui.button(label="Nadie lo tiene", style=discord.ButtonStyle.danger, emoji="❓")
+    async def btn_nadie(self, interaction: discord.Interaction, _):
+        self.filtro = "nadie"
+        await interaction.response.edit_message(embed=self._render(), view=self)
+
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+        if self.message:
+            try:
+                await self.message.edit(view=self)
+            except Exception:
+                pass
+
+
 lista_group = app_commands.Group(name="lista", description="Listas colaborativas por rol")
 tree.add_command(lista_group)
 
@@ -357,17 +416,35 @@ async def lista_ver_cmd(interaction: discord.Interaction, nombre: str):
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
-    items = _guild_listas(interaction.guild_id)[nombre]["items"]
-    if not items:
+    if not _guild_listas(interaction.guild_id).get(nombre, {}).get("items"):
         await interaction.response.send_message(f"La lista **{nombre}** está vacía.", ephemeral=True)
         return
-    def _fmt(i, it):
-        texto = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
-        return f"`{i}.` {texto}  — *{it['autor']}*"
-    lineas = [_fmt(i, it) for i, it in enumerate(items, 1)]
-    embed = discord.Embed(title=f"📋 {nombre}", description="\n".join(lineas), color=0x5865F2)
-    embed.set_footer(text=f"{len(items)} item(s)")
-    await interaction.response.send_message(embed=embed)
+    view = _ListaView(interaction.guild_id, nombre)
+    await interaction.response.send_message(embed=view._render(), view=view)
+    view.message = await interaction.original_response()
+
+@lista_group.command(name="tengo", description="Marca o desmarca que tienes este item")
+@app_commands.describe(nombre="Nombre de la lista", numero="Número del item")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_tengo_cmd(interaction: discord.Interaction, nombre: str, numero: int):
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    items = _guild_listas(interaction.guild_id)[nombre]["items"]
+    if numero < 1 or numero > len(items):
+        await interaction.response.send_message(f"Número inválido. La lista tiene {len(items)} item(s).", ephemeral=True)
+        return
+    item = items[numero - 1]
+    tienen = item.setdefault("tienen", [])
+    existing = next((t for t in tienen if t["id"] == interaction.user.id), None)
+    if existing:
+        tienen.remove(existing)
+        msg = f"❌ Ya no tienes **{item['texto']}** marcado."
+    else:
+        tienen.append({"id": interaction.user.id, "nombre": interaction.user.display_name})
+        msg = f"✅ Marcaste que tienes **{item['texto']}**."
+    _listas_save()
+    await interaction.response.send_message(msg, ephemeral=True)
 
 @lista_group.command(name="quitar", description="Quita un item de la lista por número")
 @app_commands.describe(nombre="Nombre de la lista", numero="Número del item a quitar")
