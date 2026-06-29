@@ -13,6 +13,7 @@ import Feels
 import BotConfig
 import kavita
 import os
+import json
 import logging
 from collections import deque
 
@@ -256,7 +257,146 @@ async def kavita_canal_cmd(interaction: discord.Interaction, canal: discord.Text
     await interaction.response.send_message(f"✅ Canal de Kavita configurado: <#{canal.id}>", ephemeral=True)
 
 
-# ── /config ────────────────────────────────────
+# ── /lista ─────────────────────────────────────
+
+_LISTAS_FILE = "listas.json"
+_listas: dict = {}
+
+def _listas_load() -> None:
+    global _listas
+    try:
+        if os.path.exists(_LISTAS_FILE):
+            with open(_LISTAS_FILE, encoding="utf-8") as f:
+                _listas = json.load(f)
+    except Exception:
+        _listas = {}
+
+def _listas_save() -> None:
+    try:
+        with open(_LISTAS_FILE, "w", encoding="utf-8") as f:
+            json.dump(_listas, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+def _guild_listas(guild_id: int) -> dict:
+    return _listas.setdefault(str(guild_id), {})
+
+def _lista_access(interaction: discord.Interaction, nombre: str) -> bool:
+    lista = _guild_listas(interaction.guild_id).get(nombre)
+    if not lista:
+        return False
+    rol_id = lista.get("rol_id")
+    if not rol_id:
+        return True
+    if interaction.user.guild_permissions.manage_guild:
+        return True
+    return any(r.id == rol_id for r in interaction.user.roles)
+
+_listas_load()
+
+lista_group = app_commands.Group(name="lista", description="Listas colaborativas por rol")
+tree.add_command(lista_group)
+
+async def _lista_autocomplete(interaction: discord.Interaction, current: str):
+    nombres = list(_guild_listas(interaction.guild_id).keys())
+    return [app_commands.Choice(name=n, value=n) for n in nombres if current.lower() in n.lower()][:25]
+
+@lista_group.command(name="crear", description="Crea una nueva lista (solo admins del servidor)")
+@app_commands.describe(nombre="Nombre de la lista", rol="Rol que puede ver y editar la lista")
+async def lista_crear_cmd(interaction: discord.Interaction, nombre: str, rol: discord.Role = None):
+    if not interaction.user.guild_permissions.manage_guild:
+        await interaction.response.send_message("Solo los admins del servidor pueden crear listas.", ephemeral=True)
+        return
+    gl = _guild_listas(interaction.guild_id)
+    if nombre in gl:
+        await interaction.response.send_message(f"Ya existe una lista llamada **{nombre}**.", ephemeral=True)
+        return
+    gl[nombre] = {"rol_id": rol.id if rol else None, "items": []}
+    _listas_save()
+    rol_txt = f"Rol: {rol.mention}" if rol else "Sin restricción de rol (acceso público)"
+    await interaction.response.send_message(f"✅ Lista **{nombre}** creada. {rol_txt}", ephemeral=True)
+
+@lista_group.command(name="rol", description="Cambia el rol de acceso de una lista (solo admins)")
+@app_commands.describe(nombre="Nombre de la lista", rol="Nuevo rol (vacío = sin restricción)")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_rol_cmd(interaction: discord.Interaction, nombre: str, rol: discord.Role = None):
+    if not interaction.user.guild_permissions.manage_guild:
+        await interaction.response.send_message("Solo los admins del servidor pueden configurar roles.", ephemeral=True)
+        return
+    gl = _guild_listas(interaction.guild_id)
+    if nombre not in gl:
+        await interaction.response.send_message(f"No existe una lista llamada **{nombre}**.", ephemeral=True)
+        return
+    gl[nombre]["rol_id"] = rol.id if rol else None
+    _listas_save()
+    rol_txt = rol.mention if rol else "sin restricción"
+    await interaction.response.send_message(f"✅ Rol de **{nombre}** cambiado a {rol_txt}.", ephemeral=True)
+
+@lista_group.command(name="agregar", description="Agrega un item a la lista")
+@app_commands.describe(nombre="Nombre de la lista", item="Qué quieres agregar")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, item: str):
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    gl = _guild_listas(interaction.guild_id)
+    gl[nombre]["items"].append({
+        "texto": item,
+        "autor": interaction.user.display_name,
+        "fecha": str(datetime.date.today()),
+    })
+    _listas_save()
+    total = len(gl[nombre]["items"])
+    await interaction.response.send_message(f"✅ **{item}** agregado a **{nombre}** (#{total}).", ephemeral=True)
+
+@lista_group.command(name="ver", description="Muestra el contenido de una lista")
+@app_commands.describe(nombre="Nombre de la lista")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_ver_cmd(interaction: discord.Interaction, nombre: str):
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    items = _guild_listas(interaction.guild_id)[nombre]["items"]
+    if not items:
+        await interaction.response.send_message(f"La lista **{nombre}** está vacía.", ephemeral=True)
+        return
+    lineas = [f"`{i}.` {it['texto']}  — *{it['autor']}*" for i, it in enumerate(items, 1)]
+    embed = discord.Embed(title=f"📋 {nombre}", description="\n".join(lineas), color=0x5865F2)
+    embed.set_footer(text=f"{len(items)} item(s)")
+    await interaction.response.send_message(embed=embed)
+
+@lista_group.command(name="quitar", description="Quita un item de la lista por número")
+@app_commands.describe(nombre="Nombre de la lista", numero="Número del item a quitar")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_quitar_cmd(interaction: discord.Interaction, nombre: str, numero: int):
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    items = _guild_listas(interaction.guild_id)[nombre]["items"]
+    if numero < 1 or numero > len(items):
+        await interaction.response.send_message(f"Número inválido. La lista tiene {len(items)} item(s).", ephemeral=True)
+        return
+    removed = items.pop(numero - 1)
+    _listas_save()
+    await interaction.response.send_message(f"🗑️ **{removed['texto']}** quitado de **{nombre}**.", ephemeral=True)
+
+@lista_group.command(name="borrar", description="Elimina una lista completa (solo admins)")
+@app_commands.describe(nombre="Nombre de la lista a eliminar")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_borrar_cmd(interaction: discord.Interaction, nombre: str):
+    if not interaction.user.guild_permissions.manage_guild:
+        await interaction.response.send_message("Solo los admins del servidor pueden borrar listas.", ephemeral=True)
+        return
+    gl = _guild_listas(interaction.guild_id)
+    if nombre not in gl:
+        await interaction.response.send_message(f"No existe una lista llamada **{nombre}**.", ephemeral=True)
+        return
+    del gl[nombre]
+    _listas_save()
+    await interaction.response.send_message(f"🗑️ Lista **{nombre}** eliminada.", ephemeral=True)
+
+
+# ── /config ─────────────────────────────────────
 
 config_group = app_commands.Group(name="config", description="Configuracion del bot (solo admin)")
 tree.add_command(config_group)
