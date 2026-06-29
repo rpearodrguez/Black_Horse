@@ -42,6 +42,18 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/receta [ingrediente]` | Recetas que usan ese ingrediente — elige de hasta 5 resultados (Spoonacular, requiere `SPOONACULAR_KEY`) |
 | `/caracola [pregunta]` | Consulta a la Caracola Mágica de Bob Esponja |
 
+### Listas colaborativas
+| Comando | Descripción |
+|---|---|
+| `/lista ver [nombre]` | Muestra la lista con filtros (Todos / Alguno lo tiene / Yo lo tengo) y paginación de 10 items |
+| `/lista agregar [nombre] [item]` | Agrega un item; campo `enlace` opcional |
+| `/lista tengo [nombre] [número]` | Marca o desmarca que tienes ese item |
+| `/lista buscar [nombre]` | Selector múltiple de usuarios — muestra items que todos ellos tienen |
+| `/lista quitar [nombre] [número]` | Quita un item por número |
+| `/lista crear [nombre] [@rol]` | Crea una lista con rol de acceso opcional (solo admins del servidor) |
+| `/lista borrar [nombre]` | Elimina una lista completa (solo admins del servidor) |
+| `/lista rol [nombre] [@rol]` | Cambia el rol de acceso de una lista (solo admins del servidor) |
+
 ### Juegos
 | Comando | Descripción |
 |---|---|
@@ -118,6 +130,15 @@ Bot oficial del servidor [Stick Horse](https://www.stickhorse.cl). Desarrollado 
 | `/config modulo [nombre] [activar\|desactivar]` | Activa o desactiva un módulo de comandos |
 | `/config estado` | Muestra la configuración actual del servidor |
 
+### Kavita (solo el owner del bot)
+| Comando | Descripción |
+|---|---|
+| `/kavita status` | Estado del poller: canal configurado, servidor, último poll |
+| `/kavita canal #canal` | Configura el canal donde se publican las notificaciones |
+| `/kavita check` | Fuerza un ciclo de polling inmediato |
+| `/kavita reset` | Limpia el cache de series vistas (el siguiente check re-anuncia todo) |
+| `/kavita series [cantidad]` | Lista las series agregadas recientemente en Kavita (default: 15, máx: 30) |
+
 ---
 
 ## Setup
@@ -140,6 +161,14 @@ DANBOORU_KEY=           # API key de Danbooru (para /danbooru)
 OPEN_EXCHANGE=          # API key de OpenExchangeRates (para /convert)
 SPOONACULAR_KEY=        # API key de Spoonacular (para /receta, 150 req/día gratis)
 OMDB_KEY=               # API key de OMDB (para /pelicula, 1000 req/día gratis)
+
+# Kavita (opcional — solo para notificaciones de manga)
+KAVITA_URL=             # URL base del servidor Kavita (sin barra final)
+KAVITA_USER=            # Usuario de Kavita
+KAVITA_PASSWORD=        # Contraseña de Kavita
+KAVITA_POLL_INTERVAL=30 # Intervalo de polling en minutos (default: 30)
+KAVITA_LIBRARIES=       # IDs de bibliotecas a monitorear, separados por coma (vacío = todas)
+KAVITA_LIBRARY_NAMES=   # Mapeo id:nombre, ej: 1:Manga,2:Novelas Ligeras
 ```
 
 `DISCORD_TOKEN` y `ADMIN_ID` son obligatorias. El resto son opcionales — el bot arranca sin ellas, solo esos comandos específicos fallarán.

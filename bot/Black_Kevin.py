@@ -427,6 +427,7 @@ async def _lista_autocomplete(interaction: discord.Interaction, current: str):
 @lista_group.command(name="crear", description="Crea una nueva lista (solo admins del servidor)")
 @app_commands.describe(nombre="Nombre de la lista", rol="Rol que puede ver y editar la lista")
 async def lista_crear_cmd(interaction: discord.Interaction, nombre: str, rol: discord.Role = None):
+    if not await _check_module(interaction, "lista"): return
     if not interaction.user.guild_permissions.manage_guild:
         await interaction.response.send_message("Solo los admins del servidor pueden crear listas.", ephemeral=True)
         return
@@ -443,6 +444,7 @@ async def lista_crear_cmd(interaction: discord.Interaction, nombre: str, rol: di
 @app_commands.describe(nombre="Nombre de la lista", rol="Nuevo rol (vacío = sin restricción)")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
 async def lista_rol_cmd(interaction: discord.Interaction, nombre: str, rol: discord.Role = None):
+    if not await _check_module(interaction, "lista"): return
     if not interaction.user.guild_permissions.manage_guild:
         await interaction.response.send_message("Solo los admins del servidor pueden configurar roles.", ephemeral=True)
         return
@@ -459,6 +461,7 @@ async def lista_rol_cmd(interaction: discord.Interaction, nombre: str, rol: disc
 @app_commands.describe(nombre="Nombre de la lista", item="Qué quieres agregar", enlace="URL opcional (ej: link de Steam)")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
 async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, item: str, enlace: str = None):
+    if not await _check_module(interaction, "lista"): return
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
@@ -477,6 +480,7 @@ async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, item:
 @app_commands.describe(nombre="Nombre de la lista")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
 async def lista_ver_cmd(interaction: discord.Interaction, nombre: str):
+    if not await _check_module(interaction, "lista"): return
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
@@ -491,6 +495,7 @@ async def lista_ver_cmd(interaction: discord.Interaction, nombre: str):
 @app_commands.describe(nombre="Nombre de la lista", numero="Número del item")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
 async def lista_tengo_cmd(interaction: discord.Interaction, nombre: str, numero: int):
+    if not await _check_module(interaction, "lista"): return
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
@@ -514,6 +519,7 @@ async def lista_tengo_cmd(interaction: discord.Interaction, nombre: str, numero:
 @app_commands.describe(nombre="Nombre de la lista")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
 async def lista_buscar_cmd(interaction: discord.Interaction, nombre: str):
+    if not await _check_module(interaction, "lista"): return
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
@@ -524,6 +530,7 @@ async def lista_buscar_cmd(interaction: discord.Interaction, nombre: str):
 @app_commands.describe(nombre="Nombre de la lista", numero="Número del item a quitar")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
 async def lista_quitar_cmd(interaction: discord.Interaction, nombre: str, numero: int):
+    if not await _check_module(interaction, "lista"): return
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
@@ -539,6 +546,7 @@ async def lista_quitar_cmd(interaction: discord.Interaction, nombre: str, numero
 @app_commands.describe(nombre="Nombre de la lista a eliminar")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
 async def lista_borrar_cmd(interaction: discord.Interaction, nombre: str):
+    if not await _check_module(interaction, "lista"): return
     if not interaction.user.guild_permissions.manage_guild:
         await interaction.response.send_message("Solo los admins del servidor pueden borrar listas.", ephemeral=True)
         return
@@ -645,6 +653,17 @@ async def help_cmd(interaction: discord.Interaction):
         "`/receta` Receta de cocina\n"
         "`/caracola` Consulta a la Caracola Magica"
     ))
+    if BotConfig.module_enabled(interaction.guild_id, "lista"):
+        embed.add_field(name="Listas colaborativas", inline=False, value=(
+            "`/lista ver` Muestra una lista con filtros y paginacion\n"
+            "`/lista agregar` Agrega un item a la lista\n"
+            "`/lista tengo` Marca/desmarca que tienes un item\n"
+            "`/lista buscar` Filtra items por usuarios (selector multiple)\n"
+            "`/lista quitar` Quita un item por numero\n"
+            "`/lista crear` Crea una lista (solo admins)\n"
+            "`/lista borrar` Elimina una lista completa (solo admins)\n"
+            "`/lista rol` Cambia el rol de acceso de una lista (solo admins)"
+        ))
     embed.add_field(name="Juegos", inline=False, value=(
                 "`/gato` Tic-tac-toe — vs otro usuario o vs el bot\n"
         "`/ppt` Piedra Papel Tijeras — vs otro usuario o vs el bot\n"
