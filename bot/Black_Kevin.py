@@ -333,15 +333,16 @@ async def lista_rol_cmd(interaction: discord.Interaction, nombre: str, rol: disc
     await interaction.response.send_message(f"✅ Rol de **{nombre}** cambiado a {rol_txt}.", ephemeral=True)
 
 @lista_group.command(name="agregar", description="Agrega un item a la lista")
-@app_commands.describe(nombre="Nombre de la lista", item="Qué quieres agregar")
+@app_commands.describe(nombre="Nombre de la lista", item="Qué quieres agregar", enlace="URL opcional (ej: link de Steam)")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
-async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, item: str):
+async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, item: str, enlace: str = None):
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
     gl = _guild_listas(interaction.guild_id)
     gl[nombre]["items"].append({
         "texto": item,
+        "url": enlace or "",
         "autor": interaction.user.display_name,
         "fecha": str(datetime.date.today()),
     })
@@ -360,7 +361,10 @@ async def lista_ver_cmd(interaction: discord.Interaction, nombre: str):
     if not items:
         await interaction.response.send_message(f"La lista **{nombre}** está vacía.", ephemeral=True)
         return
-    lineas = [f"`{i}.` {it['texto']}  — *{it['autor']}*" for i, it in enumerate(items, 1)]
+    def _fmt(i, it):
+        texto = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
+        return f"`{i}.` {texto}  — *{it['autor']}*"
+    lineas = [_fmt(i, it) for i, it in enumerate(items, 1)]
     embed = discord.Embed(title=f"📋 {nombre}", description="\n".join(lineas), color=0x5865F2)
     embed.set_footer(text=f"{len(items)} item(s)")
     await interaction.response.send_message(embed=embed)
