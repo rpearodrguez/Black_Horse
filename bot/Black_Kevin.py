@@ -379,6 +379,44 @@ class _ListaView(discord.ui.View):
                 pass
 
 
+class _ListaBuscarView(discord.ui.View):
+    def __init__(self, guild_id: int, nombre: str):
+        super().__init__(timeout=60)
+        self.guild_id = guild_id
+        self.nombre   = nombre
+
+    @discord.ui.select(
+        cls=discord.ui.UserSelect,
+        placeholder="Selecciona uno o más usuarios...",
+        min_values=1,
+        max_values=10,
+    )
+    async def user_select(self, interaction: discord.Interaction, select: discord.ui.UserSelect):
+        ids = {u.id for u in select.values}
+        items = _guild_listas(self.guild_id)[self.nombre]["items"]
+        matching = [
+            (i, it) for i, it in enumerate(items, 1)
+            if ids.issubset({t["id"] for t in it.get("tienen", [])})
+        ]
+        nombres = ", ".join(u.display_name for u in select.values)
+        if not matching:
+            await interaction.response.send_message(
+                f"No hay items que **{nombres}** tengan todos.", ephemeral=True
+            )
+            return
+        lines = []
+        for i, it in matching:
+            texto  = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
+            tienen = it.get("tienen", [])
+            duenos = "  ·  👤 " + ", ".join(t["nombre"] for t in tienen)
+            lines.append(f"`{i}.` {texto}{duenos}  — *{it['autor']}*")
+        embed = discord.Embed(
+            title=f"📋 {self.nombre}", description="\n".join(lines)[:4096], color=0x5865F2
+        )
+        embed.set_footer(text=f"{len(matching)} item(s) · todos: {nombres}")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
 lista_group = app_commands.Group(name="lista", description="Listas colaborativas por rol")
 tree.add_command(lista_group)
 
@@ -471,6 +509,16 @@ async def lista_tengo_cmd(interaction: discord.Interaction, nombre: str, numero:
         msg = f"✅ Marcaste que tienes **{item['texto']}**."
     _listas_save()
     await interaction.response.send_message(msg, ephemeral=True)
+
+@lista_group.command(name="buscar", description="Busca items que un grupo de usuarios tienen en común")
+@app_commands.describe(nombre="Nombre de la lista")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_buscar_cmd(interaction: discord.Interaction, nombre: str):
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    view = _ListaBuscarView(interaction.guild_id, nombre)
+    await interaction.response.send_message("Selecciona los usuarios para filtrar:", view=view, ephemeral=True)
 
 @lista_group.command(name="quitar", description="Quita un item de la lista por número")
 @app_commands.describe(nombre="Nombre de la lista", numero="Número del item a quitar")
