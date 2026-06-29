@@ -336,7 +336,7 @@ class _ListaView(discord.ui.View):
                 texto  = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
                 tienen = it.get("tienen", [])
                 duenos = ("  ·  👤 " + ", ".join(t["nombre"] for t in tienen)) if tienen else ""
-                lines.append(f"`{i}.` {texto}{duenos}  — *{it['autor']}*")
+                lines.append(f"`{i}.` {texto}{duenos}")
             desc = "\n".join(lines)
 
         all_count = len(list(enumerate(self._items(), 1)))
@@ -417,6 +417,29 @@ class _ListaBuscarView(discord.ui.View):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
+class _ListaTengoView(discord.ui.View):
+    def __init__(self, guild_id: int, nombre: str, idx: int):
+        super().__init__(timeout=60)
+        self.guild_id = guild_id
+        self.nombre   = nombre
+        self.idx      = idx
+
+    @discord.ui.button(label="Lo tengo", style=discord.ButtonStyle.success, emoji="✅")
+    async def btn_tengo(self, interaction: discord.Interaction, _):
+        items = _guild_listas(self.guild_id)[self.nombre]["items"]
+        if self.idx >= len(items):
+            await interaction.response.edit_message(content="Item no encontrado.", view=None)
+            return
+        item  = items[self.idx]
+        tienen = item.setdefault("tienen", [])
+        if not any(t["id"] == interaction.user.id for t in tienen):
+            tienen.append({"id": interaction.user.id, "nombre": interaction.user.display_name})
+            _listas_save()
+        await interaction.response.edit_message(
+            content=f"✅ **{item['texto']}** agregado y marcado como tuyo.", view=None
+        )
+
+
 lista_group = app_commands.Group(name="lista", description="Listas colaborativas por rol")
 tree.add_command(lista_group)
 
@@ -474,7 +497,11 @@ async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, item:
     })
     _listas_save()
     total = len(gl[nombre]["items"])
-    await interaction.response.send_message(f"✅ **{item}** agregado a **{nombre}** (#{total}).", ephemeral=True)
+    view = _ListaTengoView(interaction.guild_id, nombre, total - 1)
+    await interaction.response.send_message(
+        f"✅ **{item}** agregado a **{nombre}** (#{total}). ¿Lo tienes?",
+        view=view, ephemeral=True
+    )
 
 @lista_group.command(name="ver", description="Muestra el contenido de una lista")
 @app_commands.describe(nombre="Nombre de la lista")
