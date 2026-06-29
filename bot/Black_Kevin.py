@@ -296,59 +296,78 @@ _listas_load()
 
 
 class _ListaView(discord.ui.View):
+    _PER_PAGE = 10
+
     def __init__(self, guild_id: int, nombre: str):
         super().__init__(timeout=120)
         self.guild_id = guild_id
-        self.nombre = nombre
-        self.filtro = "todos"
-        self.message = None
+        self.nombre   = nombre
+        self.filtro   = "todos"
+        self.page     = 0
+        self.message  = None
+        self._uid     = 0  # user id para el filtro "yo"
 
     def _items(self):
         return _guild_listas(self.guild_id).get(self.nombre, {}).get("items", [])
 
-    def _render(self, user_id: int = 0) -> discord.Embed:
+    def _filtered(self) -> list:
         all_items = list(enumerate(self._items(), 1))
         if self.filtro == "alguno":
-            shown = [(i, it) for i, it in all_items if it.get("tienen")]
-        elif self.filtro == "nadie":
-            shown = [(i, it) for i, it in all_items if not it.get("tienen")]
-        elif self.filtro == "yo":
-            shown = [(i, it) for i, it in all_items if any(t["id"] == user_id for t in it.get("tienen", []))]
-        else:
-            shown = all_items
-        if not shown:
+            return [(i, it) for i, it in all_items if it.get("tienen")]
+        if self.filtro == "yo":
+            return [(i, it) for i, it in all_items if any(t["id"] == self._uid for t in it.get("tienen", []))]
+        return all_items
+
+    def _render(self) -> discord.Embed:
+        shown       = self._filtered()
+        total       = len(shown)
+        total_pages = max(1, (total + self._PER_PAGE - 1) // self._PER_PAGE)
+        self.page   = max(0, min(self.page, total_pages - 1))
+
+        self.btn_prev.disabled = self.page == 0
+        self.btn_next.disabled = self.page >= total_pages - 1
+
+        chunk = shown[self.page * self._PER_PAGE : (self.page + 1) * self._PER_PAGE]
+        if not chunk:
             desc = "*No hay items en esta vista.*"
         else:
             lines = []
-            for i, it in shown:
-                texto = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
+            for i, it in chunk:
+                texto  = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
                 tienen = it.get("tienen", [])
                 duenos = ("  ·  👤 " + ", ".join(t["nombre"] for t in tienen)) if tienen else ""
                 lines.append(f"`{i}.` {texto}{duenos}  — *{it['autor']}*")
             desc = "\n".join(lines)
-        embed = discord.Embed(title=f"📋 {self.nombre}", description=desc[:4096], color=0x5865F2)
-        embed.set_footer(text=f"{len(all_items)} item(s)")
+
+        all_count = len(list(enumerate(self._items(), 1)))
+        embed = discord.Embed(title=f"📋 {self.nombre}", description=desc, color=0x5865F2)
+        embed.set_footer(text=f"{all_count} item(s)  ·  Página {self.page + 1}/{total_pages}")
         return embed
 
-    @discord.ui.button(label="Todos", style=discord.ButtonStyle.secondary, emoji="📋")
+    @discord.ui.button(label="Todos", style=discord.ButtonStyle.secondary, emoji="📋", row=0)
     async def btn_todos(self, interaction: discord.Interaction, _):
-        self.filtro = "todos"
+        self.filtro = "todos"; self.page = 0
         await interaction.response.edit_message(embed=self._render(), view=self)
 
-    @discord.ui.button(label="Alguno lo tiene", style=discord.ButtonStyle.success, emoji="👥")
+    @discord.ui.button(label="Alguno lo tiene", style=discord.ButtonStyle.success, emoji="👥", row=0)
     async def btn_alguno(self, interaction: discord.Interaction, _):
-        self.filtro = "alguno"
+        self.filtro = "alguno"; self.page = 0
         await interaction.response.edit_message(embed=self._render(), view=self)
 
-    @discord.ui.button(label="Nadie lo tiene", style=discord.ButtonStyle.danger, emoji="❓")
-    async def btn_nadie(self, interaction: discord.Interaction, _):
-        self.filtro = "nadie"
-        await interaction.response.edit_message(embed=self._render(), view=self)
-
-    @discord.ui.button(label="Yo lo tengo", style=discord.ButtonStyle.primary, emoji="🎮")
+    @discord.ui.button(label="Yo lo tengo", style=discord.ButtonStyle.primary, emoji="🎮", row=0)
     async def btn_yo(self, interaction: discord.Interaction, _):
-        self.filtro = "yo"
-        await interaction.response.edit_message(embed=self._render(interaction.user.id), view=self)
+        self.filtro = "yo"; self.page = 0; self._uid = interaction.user.id
+        await interaction.response.edit_message(embed=self._render(), view=self)
+
+    @discord.ui.button(label="◀", style=discord.ButtonStyle.secondary, row=1)
+    async def btn_prev(self, interaction: discord.Interaction, _):
+        self.page -= 1
+        await interaction.response.edit_message(embed=self._render(), view=self)
+
+    @discord.ui.button(label="▶", style=discord.ButtonStyle.secondary, row=1)
+    async def btn_next(self, interaction: discord.Interaction, _):
+        self.page += 1
+        await interaction.response.edit_message(embed=self._render(), view=self)
 
     async def on_timeout(self):
         for child in self.children:
