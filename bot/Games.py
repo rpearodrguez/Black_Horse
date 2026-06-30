@@ -2,9 +2,60 @@ import ast as _ast
 import operator as _op
 import random
 import datetime
+import json
+import os
 import discord
 import BotConfig
 import data as D
+
+# ── Hangman scores ────────────────────────────────────────────────────────────
+_HANGMAN_SCORES_PATH = os.path.join(os.path.dirname(__file__), "hangman_scores.json")
+_hangman_scores: dict = {}
+
+def _load_hangman_scores():
+    global _hangman_scores
+    try:
+        with open(_HANGMAN_SCORES_PATH, encoding="utf-8") as f:
+            _hangman_scores = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        _hangman_scores = {}
+
+def _save_hangman_scores():
+    with open(_HANGMAN_SCORES_PATH, "w", encoding="utf-8") as f:
+        json.dump(_hangman_scores, f, ensure_ascii=False)
+
+def _record_hangman_result(guild_id: int, player_id: int, player_name: str, won: bool):
+    g, p = str(guild_id), str(player_id)
+    _hangman_scores.setdefault(g, {}).setdefault(p, {"name": player_name, "wins": 0, "played": 0})
+    _hangman_scores[g][p]["name"] = player_name
+    _hangman_scores[g][p]["played"] += 1
+    if won:
+        _hangman_scores[g][p]["wins"] += 1
+    _save_hangman_scores()
+
+def get_hangman_ranking(guild_id: int) -> list[dict]:
+    players = _hangman_scores.get(str(guild_id), {}).values()
+    return sorted(players, key=lambda p: (-p["wins"], -p["played"]))[:10]
+
+_load_hangman_scores()
+
+# ── Hangman word dedup (per guild, resets daily) ──────────────────────────────
+_hangman_used: dict[int, tuple[int, set]] = {}  # guild_id -> (day_ordinal, used_words)
+
+def _pick_hangman_word(guild_id: int) -> str:
+    today = datetime.date.today().toordinal()
+    day, used = _hangman_used.get(guild_id, (0, set()))
+    if day != today:
+        used = set()
+    pool = _daily_hangman_pool()
+    available = [w for w in pool if w.upper() not in used]
+    if not available:
+        used = set()
+        available = pool
+    word = random.choice(available).upper()
+    used.add(word)
+    _hangman_used[guild_id] = (today, used)
+    return word
 
 
 def _calc_eval(expr: str) -> str:
@@ -411,11 +462,12 @@ class _Hangman(discord.ui.View):
         ['U','V','X','Y','Z'],
     ]
 
-    def __init__(self, guild_id: int, player_id: int):
+    def __init__(self, guild_id: int, player_id: int, player_name: str = ""):
         super().__init__(timeout=300)
-        self.guild_id = guild_id
-        self.player_id = player_id
-        self.word = random.choice(_daily_hangman_pool()).upper()
+        self.guild_id    = guild_id
+        self.player_id   = player_id
+        self.player_name = player_name
+        self.word = _pick_hangman_word(guild_id)
         self.guessed: set = set()
         self.wrongs = 0
         self.over = False
@@ -447,6 +499,8 @@ class _Hangman(discord.ui.View):
             if word_letters <= self.guessed or self.wrongs >= 6:
                 self.over = True
                 for child in self.children: child.disabled = True
+                won = word_letters <= self.guessed
+                _record_hangman_result(self.guild_id, self.player_id, self.player_name, won)
             await interaction.response.edit_message(embed=self._build_embed(), view=self)
         return cb
 

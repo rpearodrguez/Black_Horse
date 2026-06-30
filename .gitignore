@@ -26,5 +26,8 @@ bot/kavita_seen.json
 # Listas colaborativas por servidor
 bot/listas.json
 
+# Puntuaciones del ahorcado
+bot/hangman_scores.json
+
 # Notas internas del proyecto
 CLAUDE.md

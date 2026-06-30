@@ -727,6 +727,7 @@ async def help_cmd(interaction: discord.Interaction):
         "`/trivia` Pregunta de trivia con 4 opciones (13 categorias)\n"
         "`/dungeon` Dungeon crawler de 3 niveles\n"
         "`/ahorcado` Adivina la palabra letra por letra\n"
+        "`/ranking_ahorcado` Tabla de posiciones del ahorcado\n"
         "`/dosmil` 2048 — combina fichas hasta llegar a 2048\n"
         "`/buscaminas` Buscaminas 5x5 — no pises las minas"
     ))
@@ -979,9 +980,32 @@ async def dungeon_cmd(interaction: discord.Interaction):
 @tree.command(name='ahorcado', description='Adivina la palabra letra por letra')
 async def ahorcado_cmd(interaction: discord.Interaction):
     if not await _check_module(interaction, 'entretenimiento'): return
-    view = _Hangman(interaction.guild_id, interaction.user.id)
+    view = _Hangman(interaction.guild_id, interaction.user.id, interaction.user.display_name)
     await interaction.response.send_message(embed=view._build_embed(), view=view)
 
+
+
+@tree.command(name='ranking_ahorcado', description='Tabla de posiciones del ahorcado en este servidor')
+async def ranking_ahorcado_cmd(interaction: discord.Interaction):
+    if not await _check_module(interaction, 'entretenimiento'): return
+    ranking = get_hangman_ranking(interaction.guild_id)
+    if not ranking:
+        await interaction.response.send_message("Aún no hay partidas registradas en este servidor.", ephemeral=True)
+        return
+    lines = []
+    medals = ['🥇', '🥈', '🥉']
+    for i, p in enumerate(ranking):
+        played = p['played']
+        wins   = p['wins']
+        rate   = f"{wins/played*100:.0f}%" if played else "—"
+        prefix = medals[i] if i < 3 else f"`{i+1}.`"
+        lines.append(f"{prefix} **{p['name']}** — {wins} victoria(s) / {played} partida(s)  `{rate}`")
+    embed = discord.Embed(
+        title="🏆 Ranking — Ahorcado",
+        description="\n".join(lines),
+        color=0xF1C40F,
+    )
+    await interaction.response.send_message(embed=embed)
 
 
 @tree.command(name='dosmil', description='2048 — combina fichas hasta llegar a 2048')
@@ -1500,7 +1524,7 @@ async def vn_cmd(interaction: discord.Interaction, busqueda: str):
 
 
 
-from Games import _Calculator, _Trivia, _RPS, _Minesweeper, _Hangman, _Game2048, _Dungeon, _TicTacToe, _calc_eval
+from Games import _Calculator, _Trivia, _RPS, _Minesweeper, _Hangman, _Game2048, _Dungeon, _TicTacToe, _calc_eval, get_hangman_ranking
 
 class _ImageNav(discord.ui.View):
     def __init__(self, imagenes: list, busqueda: str, guild_id: int):
