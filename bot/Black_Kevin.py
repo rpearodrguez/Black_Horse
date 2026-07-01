@@ -314,16 +314,16 @@ def _parse_numeros(s: str) -> list[int]:
 
 
 class _ListaView(discord.ui.View):
-    _PER_PAGE = 10
 
     def __init__(self, guild_id: int, nombre: str):
         super().__init__(timeout=120)
-        self.guild_id = guild_id
-        self.nombre   = nombre
-        self.filtro   = "todos"
-        self.page     = 0
-        self.message  = None
-        self._uid     = 0  # user id para el filtro "yo"
+        self.guild_id  = guild_id
+        self.nombre    = nombre
+        self.filtro    = "todos"
+        self.page      = 0
+        self.message   = None
+        self._uid      = 0  # user id para el filtro "yo"
+        self._per_page = 10
 
     def _items(self):
         return _guild_listas(self.guild_id).get(self.nombre, {}).get("items", [])
@@ -339,13 +339,13 @@ class _ListaView(discord.ui.View):
     def _render(self) -> discord.Embed:
         shown       = self._filtered()
         total       = len(shown)
-        total_pages = max(1, (total + self._PER_PAGE - 1) // self._PER_PAGE)
+        total_pages = max(1, (total + self._per_page - 1) // self._per_page)
         self.page   = max(0, min(self.page, total_pages - 1))
 
         self.btn_prev.disabled = self.page == 0
         self.btn_next.disabled = self.page >= total_pages - 1
 
-        chunk = shown[self.page * self._PER_PAGE : (self.page + 1) * self._PER_PAGE]
+        chunk = shown[self.page * self._per_page : (self.page + 1) * self._per_page]
         if not chunk:
             desc = "*No hay items en esta vista.*"
         else:
@@ -385,6 +385,23 @@ class _ListaView(discord.ui.View):
     @discord.ui.button(label="▶", style=discord.ButtonStyle.secondary, row=1)
     async def btn_next(self, interaction: discord.Interaction, _):
         self.page += 1
+        await interaction.response.edit_message(embed=self._render(), view=self)
+
+    @discord.ui.select(
+        placeholder="Items por página...",
+        options=[
+            discord.SelectOption(label="10 por página",  value="10",  default=True),
+            discord.SelectOption(label="15 por página",  value="15"),
+            discord.SelectOption(label="20 por página",  value="20"),
+            discord.SelectOption(label="25 por página",  value="25"),
+        ],
+        row=2,
+    )
+    async def sel_per_page(self, interaction: discord.Interaction, select: discord.ui.Select):
+        self._per_page = int(select.values[0])
+        self.page = 0
+        for opt in select.options:
+            opt.default = opt.value == select.values[0]
         await interaction.response.edit_message(embed=self._render(), view=self)
 
     async def on_timeout(self):
