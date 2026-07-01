@@ -295,6 +295,24 @@ def _lista_access(interaction: discord.Interaction, nombre: str) -> bool:
 _listas_load()
 
 
+def _parse_numeros(s: str) -> list[int]:
+    result: set[int] = set()
+    for part in s.split(","):
+        part = part.strip()
+        if "-" in part:
+            try:
+                a, b = part.split("-", 1)
+                result.update(range(int(a.strip()), int(b.strip()) + 1))
+            except (ValueError, OverflowError):
+                pass
+        else:
+            try:
+                result.add(int(part))
+            except ValueError:
+                pass
+    return sorted(result)
+
+
 class _ListaView(discord.ui.View):
     _PER_PAGE = 10
 
@@ -480,14 +498,32 @@ async def lista_rol_cmd(interaction: discord.Interaction, nombre: str, rol: disc
     rol_txt = rol.mention if rol else "sin restricción"
     await interaction.response.send_message(f"✅ Rol de **{nombre}** cambiado a {rol_txt}.", ephemeral=True)
 
-@lista_group.command(name="agregar", description="Agrega un item a la lista")
-@app_commands.describe(nombre="Nombre de la lista", item="Qué quieres agregar", enlace="URL opcional (ej: link de Steam)")
+@lista_group.command(name="agregar", description="Agrega un item a la lista desde su enlace (el nombre se detecta automáticamente)")
+@app_commands.describe(
+    nombre="Nombre de la lista",
+    enlace="URL del item (Steam, GOG, etc. — el nombre se obtiene automáticamente)",
+    item="Nombre del item (opcional si hay enlace; requerido si no hay enlace)",
+)
 @app_commands.autocomplete(nombre=_lista_autocomplete)
-async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, item: str, enlace: str = None):
+async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, enlace: str = None, item: str = None):
     if not await _check_module(interaction, "lista"): return
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
+    if not enlace and not item:
+        await interaction.response.send_message("Proporciona un enlace o un nombre.", ephemeral=True)
+        return
+    deferred = False
+    if enlace and not item:
+        await interaction.response.defer(ephemeral=True)
+        deferred = True
+        item = await asyncio.to_thread(Scrapper.fetch_page_title, enlace)
+        if not item:
+            await interaction.followup.send(
+                "No se pudo obtener el nombre del enlace. Agrega el parámetro `item` manualmente.",
+                ephemeral=True,
+            )
+            return
     gl = _guild_listas(interaction.guild_id)
     gl[nombre]["items"].append({
         "texto": item,
@@ -498,10 +534,12 @@ async def lista_agregar_cmd(interaction: discord.Interaction, nombre: str, item:
     _listas_save()
     total = len(gl[nombre]["items"])
     view = _ListaTengoView(interaction.guild_id, nombre, total - 1)
-    await interaction.response.send_message(
-        f"✅ **{item}** agregado a **{nombre}** (#{total}). ¿Lo tienes?",
-        view=view, ephemeral=True
-    )
+    url_txt = f" · <{enlace}>" if enlace else ""
+    msg = f"✅ **{item}** agregado a **{nombre}**{url_txt} (#{total}). ¿Lo tienes?"
+    if deferred:
+        await interaction.followup.send(msg, view=view, ephemeral=True)
+    else:
+        await interaction.response.send_message(msg, view=view, ephemeral=True)
 
 @lista_group.command(name="ver", description="Muestra el contenido de una lista")
 @app_commands.describe(nombre="Nombre de la lista")
@@ -518,29 +556,40 @@ async def lista_ver_cmd(interaction: discord.Interaction, nombre: str):
     await interaction.response.send_message(embed=view._render(), view=view)
     view.message = await interaction.original_response()
 
-@lista_group.command(name="tengo", description="Marca o desmarca que tienes este item")
-@app_commands.describe(nombre="Nombre de la lista", numero="Número del item")
+@lista_group.command(name="tengo", description="Marca o desmarca que tienes uno o varios items")
+@app_commands.describe(nombre="Nombre de la lista", numeros="Número(s) del item — ej: 3, o 1,3,5, o 2-6")
 @app_commands.autocomplete(nombre=_lista_autocomplete)
-async def lista_tengo_cmd(interaction: discord.Interaction, nombre: str, numero: int):
+async def lista_tengo_cmd(interaction: discord.Interaction, nombre: str, numeros: str):
     if not await _check_module(interaction, "lista"): return
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
     items = _guild_listas(interaction.guild_id)[nombre]["items"]
-    if numero < 1 or numero > len(items):
-        await interaction.response.send_message(f"Número inválido. La lista tiene {len(items)} item(s).", ephemeral=True)
+    valid = [n for n in _parse_numeros(numeros) if 1 <= n <= len(items)]
+    if not valid:
+        await interaction.response.send_message(f"Número(s) inválido(s). La lista tiene {len(items)} item(s).", ephemeral=True)
         return
-    item = items[numero - 1]
-    tienen = item.setdefault("tienen", [])
-    existing = next((t for t in tienen if t["id"] == interaction.user.id), None)
-    if existing:
-        tienen.remove(existing)
-        msg = f"❌ Ya no tienes **{item['texto']}** marcado."
-    else:
-        tienen.append({"id": interaction.user.id, "nombre": interaction.user.display_name})
-        msg = f"✅ Marcaste que tienes **{item['texto']}**."
+    uid   = interaction.user.id
+    uname = interaction.user.display_name
+    marcados: list[str] = []
+    desmarcados: list[str] = []
+    for n in valid:
+        item   = items[n - 1]
+        tienen = item.setdefault("tienen", [])
+        existing = next((t for t in tienen if t["id"] == uid), None)
+        if existing:
+            tienen.remove(existing)
+            desmarcados.append(item["texto"])
+        else:
+            tienen.append({"id": uid, "nombre": uname})
+            marcados.append(item["texto"])
     _listas_save()
-    await interaction.response.send_message(msg, ephemeral=True)
+    lines = []
+    if marcados:
+        lines.append("✅ Marcados: " + ", ".join(f"**{t}**" for t in marcados))
+    if desmarcados:
+        lines.append("❌ Desmarcados: " + ", ".join(f"**{t}**" for t in desmarcados))
+    await interaction.response.send_message("\n".join(lines), ephemeral=True)
 
 @lista_group.command(name="buscar", description="Busca items que un grupo de usuarios tienen en común")
 @app_commands.describe(nombre="Nombre de la lista")
@@ -613,6 +662,50 @@ async def lista_borrar_cmd(interaction: discord.Interaction, nombre: str):
     del gl[nombre]
     _listas_save()
     await interaction.response.send_message(f"🗑️ Lista **{nombre}** eliminada.", ephemeral=True)
+
+@lista_group.command(name="dedup", description="Elimina items duplicados de la lista")
+@app_commands.describe(nombre="Nombre de la lista")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_dedup_cmd(interaction: discord.Interaction, nombre: str):
+    if not await _check_module(interaction, "lista"): return
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    items = _guild_listas(interaction.guild_id)[nombre]["items"]
+    seen: set[str] = set()
+    new_items: list[dict] = []
+    removed = 0
+    for it in items:
+        url  = (it.get("url") or "").strip().rstrip("/").lower()
+        text = it["texto"].strip().lower()
+        key  = url if url else text
+        if key in seen:
+            removed += 1
+        else:
+            seen.add(key)
+            new_items.append(it)
+    _guild_listas(interaction.guild_id)[nombre]["items"] = new_items
+    _listas_save()
+    if removed:
+        await interaction.response.send_message(f"🧹 Se eliminaron {removed} item(s) duplicado(s) de **{nombre}**.", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"✅ No hay duplicados en **{nombre}**.", ephemeral=True)
+
+@lista_group.command(name="aleatorizar", description="Aleatoriza el orden de los items en la lista")
+@app_commands.describe(nombre="Nombre de la lista")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_aleatorizar_cmd(interaction: discord.Interaction, nombre: str):
+    if not await _check_module(interaction, "lista"): return
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    items = _guild_listas(interaction.guild_id)[nombre]["items"]
+    if len(items) < 2:
+        await interaction.response.send_message("La lista necesita al menos 2 items para aleatorizar.", ephemeral=True)
+        return
+    random.shuffle(items)
+    _listas_save()
+    await interaction.response.send_message(f"🎲 **{nombre}** ({len(items)} items) aleatorizado.", ephemeral=True)
 
 
 # ── /config ─────────────────────────────────────
@@ -712,10 +805,12 @@ async def help_cmd(interaction: discord.Interaction):
     if BotConfig.module_enabled(interaction.guild_id, "lista"):
         embed.add_field(name="Listas colaborativas", inline=False, value=(
             "`/lista ver` Muestra una lista con filtros y paginacion\n"
-            "`/lista agregar` Agrega un item a la lista\n"
+            "`/lista agregar [enlace]` Agrega un item — el nombre se detecta automaticamente\n"
             "`/lista editar` Edita el texto o enlace de un item\n"
-            "`/lista tengo` Marca/desmarca que tienes un item\n"
+            "`/lista tengo [nums]` Marca/desmarca items — ej: 3, o 1,3,5, o 2-6\n"
             "`/lista buscar` Filtra items por usuarios (selector multiple)\n"
+            "`/lista dedup` Elimina items duplicados\n"
+            "`/lista aleatorizar` Aleatoriza el orden de la lista\n"
             "`/lista quitar` Quita un item por numero\n"
             "`/lista crear` Crea una lista (solo admins)\n"
             "`/lista borrar` Elimina una lista completa (solo admins)\n"

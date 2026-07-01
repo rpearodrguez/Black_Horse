@@ -520,7 +520,10 @@ def setup_kavita_poller(client: discord.Client) -> bool:
 
     @tasks.loop(minutes=_INTERVAL)
     async def _loop() -> None:
-        await run_poll(client)
+        try:
+            await run_poll(client)
+        except Exception as e:
+            log.error("[Kavita] Unhandled error in poll loop (loop will continue): %s", e, exc_info=True)
 
     @_loop.before_loop
     async def _before() -> None:

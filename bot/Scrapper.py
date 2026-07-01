@@ -16,6 +16,32 @@ logger = logging.getLogger('bot.scrapper')
 _scraper = cloudscraper.create_scraper()
 
 
+def fetch_page_title(url: str) -> str | None:
+    """Return product name from a URL. Uses Steam API for store.steampowered.com, HTML <title> otherwise."""
+    m = re.search(r'store\.steampowered\.com/app/(\d+)', url)
+    if m:
+        try:
+            r = requests.get(
+                f"https://store.steampowered.com/api/appdetails?appids={m.group(1)}&cc=us&l=english",
+                timeout=6,
+            )
+            app = r.json().get(m.group(1), {})
+            if app.get("success") and app.get("data", {}).get("name"):
+                return app["data"]["name"]
+        except Exception:
+            pass
+    try:
+        r = requests.get(url, timeout=6, headers={"User-Agent": "Mozilla/5.0"})
+        soup = BeautifulSoup(r.text, "html.parser")
+        if soup.title and soup.title.string:
+            title = soup.title.string.strip()
+            title = re.sub(r'\s*[|\-–—]\s*(Steam|GOG\.COM|Epic Games|Amazon|itch\.io)\s*$', '', title, flags=re.I)
+            return title or None
+    except Exception:
+        pass
+    return None
+
+
 def translate(text, dest='es'):
     try:
         return GoogleTranslator(source='auto', target=dest).translate(text) or text
