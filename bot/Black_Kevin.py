@@ -323,7 +323,7 @@ class _ListaView(discord.ui.View):
         self.page      = 0
         self.message   = None
         self._uid      = 0  # user id para el filtro "yo"
-        self._per_page = 10
+        self._per_page = 25
 
     def _items(self):
         return _guild_listas(self.guild_id).get(self.nombre, {}).get("items", [])
@@ -390,10 +390,10 @@ class _ListaView(discord.ui.View):
     @discord.ui.select(
         placeholder="Items por página...",
         options=[
-            discord.SelectOption(label="10 por página",  value="10",  default=True),
+            discord.SelectOption(label="10 por página",  value="10"),
             discord.SelectOption(label="15 por página",  value="15"),
             discord.SelectOption(label="20 por página",  value="20"),
-            discord.SelectOption(label="25 por página",  value="25"),
+            discord.SelectOption(label="25 por página",  value="25", default=True),
         ],
         row=2,
     )
