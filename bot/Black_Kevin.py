@@ -295,6 +295,16 @@ def _lista_access(interaction: discord.Interaction, nombre: str) -> bool:
 _listas_load()
 
 
+def _member_name(guild_id: int, t: dict) -> str:
+    """Return the member's current display name, falling back to the stored name."""
+    guild = client.get_guild(guild_id)
+    if guild:
+        member = guild.get_member(t["id"])
+        if member:
+            return member.display_name
+    return t.get("nombre", str(t["id"]))
+
+
 def _parse_numeros(s: str) -> list[int]:
     result: set[int] = set()
     for part in s.split(","):
@@ -353,7 +363,7 @@ class _ListaView(discord.ui.View):
             for i, it in chunk:
                 texto  = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
                 tienen = it.get("tienen", [])
-                duenos = ("  ·  👤 " + ", ".join(t["nombre"] for t in tienen)) if tienen else ""
+                duenos = ("  ·  👤 " + ", ".join(_member_name(self.guild_id, t) for t in tienen)) if tienen else ""
                 lines.append(f"`{i}.` {texto}{duenos}")
             desc = "\n".join(lines)
 
@@ -443,7 +453,7 @@ class _ListaBuscarView(discord.ui.View):
         for i, it in matching:
             texto  = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
             tienen = it.get("tienen", [])
-            duenos = "  ·  👤 " + ", ".join(t["nombre"] for t in tienen)
+            duenos = "  ·  👤 " + ", ".join(_member_name(self.guild_id, t) for t in tienen)
             lines.append(f"`{i}.` {texto}{duenos}  — *{it['autor']}*")
         embed = discord.Embed(
             title=f"📋 {self.nombre}", description="\n".join(lines)[:4096], color=0x5865F2
