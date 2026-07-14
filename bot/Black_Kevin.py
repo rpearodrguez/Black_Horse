@@ -296,11 +296,15 @@ _listas_load()
 
 
 def _member_name(guild_id: int, t: dict) -> str:
-    """Return the member's current display name, falling back to the stored name."""
+    """Return the member's current display name, falling back to the stored name.
+    Updates the stored name in-place if it changed (self-healing)."""
     guild = client.get_guild(guild_id)
     if guild:
         member = guild.get_member(t["id"])
         if member:
+            if t.get("nombre") != member.display_name:
+                t["nombre"] = member.display_name
+                _listas_save()
             return member.display_name
     return t.get("nombre", str(t["id"]))
 
