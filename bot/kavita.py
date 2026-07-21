@@ -43,6 +43,7 @@ _seen: dict = {"initialized": False, "channel_id": 0, "last_poll_time": "", "not
 _NOTIFY_TTL = datetime.timedelta(hours=24)
 _NO_NOTIFY_LIBS: set[int] = {3}   # library IDs silenciadas (se consumen del queue pero no se postean)
 _jwt: str = ""
+_user_api_key: str = _API_KEY  # Kavita user API key for image endpoints (may be updated after auth)
 
 # Exposed so on_ready() can call poll manually via force_poll()
 _poll_task = None
@@ -103,20 +104,25 @@ def set_channel(channel_id: int) -> None:
 # ─── authentication ───────────────────────────────────────────────────────────
 
 def _authenticate() -> bool:
-    global _jwt
+    global _jwt, _user_api_key
     if not _URL:
         return False
+
+    def _capture(data: dict) -> bool:
+        global _jwt, _user_api_key
+        _jwt = data.get("token", "")
+        if data.get("apiKey"):
+            _user_api_key = data["apiKey"]
+        return bool(_jwt)
 
     # Primary: exchange API key for JWT (Kavita 0.8+)
     if _API_KEY:
         url = f"{_URL}/api/Account/authenticate"
         try:
             r = requests.post(url, json={"apiKey": _API_KEY}, timeout=10)
-            if r.ok:
-                _jwt = r.json().get("token", "")
-                if _jwt:
-                    log.info("[Kavita] Authenticated via API key.")
-                    return True
+            if r.ok and _capture(r.json()):
+                log.info("[Kavita] Authenticated via API key.")
+                return True
             log.warning("[Kavita] API key auth failed: %s %s — %s", r.status_code, url, r.text[:200])
         except Exception as e:
             log.warning("[Kavita] API key auth error: %s — %s", url, e)
@@ -126,11 +132,9 @@ def _authenticate() -> bool:
         url = f"{_URL}/api/Account/login"
         try:
             r = requests.post(url, json={"username": _USER, "password": _PASS}, timeout=10)
-            if r.ok:
-                _jwt = r.json().get("token", "")
-                if _jwt:
-                    log.info("[Kavita] Authenticated via username/password.")
-                    return True
+            if r.ok and _capture(r.json()):
+                log.info("[Kavita] Authenticated via username/password.")
+                return True
             log.warning("[Kavita] Login failed: %s %s — %s", r.status_code, url, r.text[:200])
         except Exception as e:
             log.warning("[Kavita] Login error: %s — %s", url, e)
@@ -204,10 +208,13 @@ def _kavita_cover_bytes(series_id: int) -> bytes | None:
     if not series_id:
         return None
     try:
+        params: dict = {"seriesId": series_id}
+        if _user_api_key:
+            params["apiKey"] = _user_api_key
         r = requests.get(
             f"{_URL}/api/Image/series-cover",
             headers=_headers(),
-            params={"seriesId": series_id},
+            params=params,
             timeout=15,
         )
         if r.ok and r.content:
