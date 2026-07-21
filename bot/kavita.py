@@ -189,7 +189,10 @@ def _mal_cover_url(mal_id: int) -> str | None:
         r = requests.get(f"https://api.jikan.moe/v4/manga/{mal_id}", timeout=10)
         if r.ok:
             imgs = r.json().get("data", {}).get("images", {})
-            return (imgs.get("webp") or imgs.get("jpg") or {}).get("large_image_url")
+            url = (imgs.get("webp") or imgs.get("jpg") or {}).get("large_image_url")
+            if not url:
+                log.warning("[Kavita] Jikan cover (mal %s): 200 OK pero sin large_image_url. imgs=%s", mal_id, imgs)
+            return url
         log.warning("[Kavita] Jikan cover (mal %s): HTTP %s", mal_id, r.status_code)
     except Exception as e:
         log.warning("[Kavita] Jikan cover (mal %s): %s", mal_id, e)
