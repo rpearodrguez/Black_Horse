@@ -622,16 +622,56 @@ async def lista_tengo_cmd(interaction: discord.Interaction, nombre: str, numeros
         lines.append("❌ Desmarcados: " + ", ".join(f"**{t}**" for t in desmarcados))
     await interaction.response.send_message("\n".join(lines), ephemeral=True)
 
-@lista_group.command(name="buscar", description="Busca items que un grupo de usuarios tienen en común")
-@app_commands.describe(nombre="Nombre de la lista")
+@lista_group.command(name="buscar", description="Busca items por nombre de juego o por usuarios que lo tienen")
+@app_commands.describe(
+    nombre="Nombre de la lista",
+    texto="Buscar por nombre de juego (si no se indica, filtra por usuarios)",
+)
 @app_commands.autocomplete(nombre=_lista_autocomplete)
-async def lista_buscar_cmd(interaction: discord.Interaction, nombre: str):
+async def lista_buscar_cmd(interaction: discord.Interaction, nombre: str, texto: str = None):
     if not await _check_module(interaction, "lista"): return
     if not _lista_access(interaction, nombre):
         await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
         return
-    view = _ListaBuscarView(interaction.guild_id, nombre)
-    await interaction.response.send_message("Selecciona los usuarios para filtrar:", view=view, ephemeral=True)
+    if texto:
+        items = _guild_listas(interaction.guild_id)[nombre]["items"]
+        query = texto.strip().lower()
+        matches = [(i, it) for i, it in enumerate(items, 1) if query in it["texto"].lower()]
+        if not matches:
+            await interaction.response.send_message(f"No hay items que contengan **{texto}**.", ephemeral=True)
+            return
+        lines = []
+        for i, it in matches:
+            txt    = f"[{it['texto']}]({it['url']})" if it.get("url") else it["texto"]
+            tienen = it.get("tienen", [])
+            duenos = ("  ·  👤 " + ", ".join(_member_name(interaction.guild_id, t) for t in tienen)) if tienen else ""
+            lines.append(f"`{i}.` {txt}{duenos}")
+        embed = discord.Embed(
+            title=f"🔍 {nombre} — \"{texto}\"",
+            description="\n".join(lines)[:4096],
+            color=0x5865F2,
+        )
+        embed.set_footer(text=f"{len(matches)} resultado(s)")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+    else:
+        view = _ListaBuscarView(interaction.guild_id, nombre)
+        await interaction.response.send_message("Selecciona los usuarios para filtrar:", view=view, ephemeral=True)
+
+@lista_group.command(name="ordenar", description="Ordena la lista alfabéticamente")
+@app_commands.describe(nombre="Nombre de la lista")
+@app_commands.autocomplete(nombre=_lista_autocomplete)
+async def lista_ordenar_cmd(interaction: discord.Interaction, nombre: str):
+    if not await _check_module(interaction, "lista"): return
+    if not _lista_access(interaction, nombre):
+        await interaction.response.send_message("No tienes acceso a esta lista o no existe.", ephemeral=True)
+        return
+    items = _guild_listas(interaction.guild_id)[nombre]["items"]
+    if len(items) < 2:
+        await interaction.response.send_message("La lista necesita al menos 2 items para ordenar.", ephemeral=True)
+        return
+    items.sort(key=lambda it: it["texto"].lower())
+    _listas_save()
+    await interaction.response.send_message(f"🔤 **{nombre}** ({len(items)} items) ordenado alfabéticamente.", ephemeral=True)
 
 @lista_group.command(name="editar", description="Edita el texto o enlace de un item existente")
 @app_commands.describe(
@@ -839,7 +879,8 @@ async def help_cmd(interaction: discord.Interaction):
             "`/lista agregar [enlace]` Agrega un item — el nombre se detecta automaticamente\n"
             "`/lista editar` Edita el texto o enlace de un item\n"
             "`/lista tengo [nums]` Marca/desmarca items — ej: 3, o 1,3,5, o 2-6\n"
-            "`/lista buscar` Filtra items por usuarios (selector multiple)\n"
+            "`/lista buscar [texto?]` Busca por nombre de juego o filtra por usuarios\n"
+            "`/lista ordenar` Ordena la lista alfabeticamente\n"
             "`/lista dedup` Elimina items duplicados\n"
             "`/lista aleatorizar` Aleatoriza el orden de la lista\n"
             "`/lista quitar` Quita un item por numero\n"
