@@ -354,7 +354,24 @@ def _fetch_series_info(series_id: int) -> dict | None:
     return None
 
 
-def _make_pending_embed(info: dict, chapters_added: int) -> tuple[discord.Embed, str]:
+_CHAPTERS_MAX_LEN = 1000  # límite de un field de embed: 1024
+
+
+def _format_chapters(chapters: list[str]) -> str:
+    """Lista de capítulos para el embed; se compacta si no cabe en un field."""
+    full = ", ".join(chapters)
+    if len(full) <= _CHAPTERS_MAX_LEN:
+        return full
+    try:
+        nums = [int(c) for c in chapters]
+        if nums == list(range(nums[0], nums[0] + len(nums))):
+            return f"{nums[0]}–{nums[-1]}"
+    except ValueError:
+        pass  # decimales o rangos: no son enteros consecutivos
+    return f"{chapters[0]} … {chapters[-1]} ({len(chapters)} subidos)"
+
+
+def _make_pending_embed(info: dict, chapters_added: int, chapters: list[str] | None = None) -> tuple[discord.Embed, str]:
     """Build embed for a series notified via Episode Catcher (chapter upload event)."""
     name   = info.get("name", "Actualización")
     sid    = info.get("id", 0)
@@ -367,6 +384,8 @@ def _make_pending_embed(info: dict, chapters_added: int) -> tuple[discord.Embed,
     )
     embed.add_field(name="Biblioteca",        value=lib,                   inline=True)
     embed.add_field(name="Capítulos subidos", value=str(chapters_added),   inline=True)
+    if chapters_added > 1 and chapters:
+        embed.add_field(name="Capítulos", value=_format_chapters(chapters), inline=False)
     links = _external_links(info)
     if links:
         embed.add_field(name="Links", value=links, inline=False)
@@ -383,7 +402,8 @@ async def _process_pending(channel: discord.TextChannel) -> int:
     for item in items:
         kavita_id     = item.get("kavita_id", 0)
         chapters_added = item.get("chapters_added", 0)
-        name          = item.get("name", "?")
+        chapters       = [str(c) for c in (item.get("chapters") or [])]
+        name         = item.get("name", "?")
         if not kavita_id:
             log.warning("[Kavita] Pending item '%s' has no kavita_id — skipping.", name)
             continue
@@ -395,7 +415,7 @@ async def _process_pending(channel: discord.TextChannel) -> int:
             if not info:
                 log.warning("[Kavita] Could not fetch series info for kavita_id=%s (%s).", kavita_id, name)
                 continue
-            embed, content = _make_pending_embed(info, chapters_added)
+            embed, content = _make_pending_embed(info, chapters_added, chapters)
             await _send(channel, embed, info.get("malId", 0), content=content, series_id=kavita_id)
             sent += 1
         except Exception as e:
