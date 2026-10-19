@@ -383,7 +383,10 @@ def _make_pending_embed(info: dict, chapters_added: int, chapters: list[str] | N
         color=_cover_color(info),
     )
     embed.add_field(name="Biblioteca",        value=lib,                   inline=True)
-    embed.add_field(name="Capítulos subidos", value=str(chapters_added),   inline=True)
+    if chapters_added == 1 and chapters and len(chapters) == 1:
+        embed.add_field(name="Se subió 1 capítulo", value=f"Capítulo {chapters[0]}", inline=True)
+    else:
+        embed.add_field(name="Capítulos subidos", value=str(chapters_added), inline=True)
     if chapters_added > 1 and chapters:
         embed.add_field(name="Capítulos", value=_format_chapters(chapters), inline=False)
     links = _external_links(info)
